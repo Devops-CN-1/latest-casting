@@ -37,7 +37,7 @@
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <h1 class="text-2xl font-bold text-white">{{ $systemSettings->software_name }}</h1>
+                        <h1 class="text-2xl font-bold text-white">{{ $systemSettings->software_name ?? " " }}</h1>
                     </div>
                     <div class="flex items-center space-x-4">
                         @if(isset($currentUser) && $currentUser && $currentUser->isSuperAdmin())
