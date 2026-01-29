@@ -1,0 +1,27 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "copy:jquery": "node -e \"const fs=require('fs'),path=require('path');const d=path.join('public','js');fs.mkdirSync(d,{recursive:true});fs.copyFileSync(path.join('node_modules','jquery','dist','jquery.min.js'),path.join(d,'jquery.min.js'));\"",
+        "copy:toastr": "node -e \"const fs=require('fs'),path=require('path');const js=path.join('public','js'),css=path.join('public','css');fs.mkdirSync(js,{recursive:true});fs.mkdirSync(css,{recursive:true});fs.copyFileSync(path.join('node_modules','toastr','build','toastr.min.js'),path.join(js,'toastr.min.js'));fs.copyFileSync(path.join('node_modules','toastr','build','toastr.min.css'),path.join(css,'toastr.min.css'));\"",
+        "copy:datatables": "node -e \"const fs=require('fs'),path=require('path');const js=path.join('public','js'),css=path.join('public','css');fs.mkdirSync(js,{recursive:true});fs.mkdirSync(css,{recursive:true});fs.copyFileSync(path.join('node_modules','datatables.net','js','dataTables.min.js'),path.join(js,'jquery.dataTables.min.js'));fs.copyFileSync(path.join('node_modules','datatables.net-dt','css','dataTables.dataTables.min.css'),path.join(css,'jquery.dataTables.min.css'));\"",
+        "postinstall": "npm run copy:jquery && npm run copy:toastr && npm run copy:datatables"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.8.2",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.3.0",
+        "tailwindcss": "^4.0.0",
+        "vite": "^5.2.8"
+    },
+    "dependencies": {
+        "datatables.net": "^2.3.6",
+        "datatables.net-dt": "^2.3.6",
+        "jquery": "^4.0.0",
+        "toastr": "^2.1.4"
+    }
+}
