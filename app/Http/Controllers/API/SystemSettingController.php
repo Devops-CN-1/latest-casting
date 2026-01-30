@@ -91,6 +91,7 @@ class SystemSettingController extends Controller
 
     $encPassword = config('backup.db_backup_password');
     if (empty($encPassword)) {
+        dd('Encryption password not configured. Set DB_BACKUP_PASSWORD in .env');   
         return abort(500, 'Encryption password not configured. Set DB_BACKUP_PASSWORD in .env');
     }
 
@@ -114,6 +115,7 @@ class SystemSettingController extends Controller
 
         // Optional: check SQL file is not empty
         if (!file_exists($sqlFilepath) || filesize($sqlFilepath) === 0) {
+            dd('SQL dump file is empty', ['file' => $sqlFilepath]);
             Log::error('SQL dump file is empty', ['file' => $sqlFilepath]);
             return abort(500, 'SQL dump failed or empty. Check logs.');
         }
@@ -126,12 +128,14 @@ class SystemSettingController extends Controller
         $iv = substr($keyIv, 32, 16);
         $ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         if ($ciphertext === false) {
+            dd('PHP openssl_encrypt failed');
             Log::error('PHP openssl_encrypt failed');
             if (file_exists($sqlFilepath)) unlink($sqlFilepath);
             return abort(500, 'Encryption failed.');
         }
         $encrypted = 'Salted__' . $salt . $ciphertext;
         if (file_put_contents($encFilepath, $encrypted) === false) {
+            dd('Could not write encrypted backup file');
             Log::error('Could not write encrypted backup file');
             if (file_exists($sqlFilepath)) unlink($sqlFilepath);
             return abort(500, 'Could not write backup file.');
@@ -146,6 +150,7 @@ class SystemSettingController extends Controller
         return response()->download($encFilepath, $encFilename)->deleteFileAfterSend(true);
 
     } catch (\Throwable $e) {
+        dd('Backup exception', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         Log::error('Backup exception', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         if (file_exists($sqlFilepath)) unlink($sqlFilepath);
         if (file_exists($encFilepath)) unlink($encFilepath);
