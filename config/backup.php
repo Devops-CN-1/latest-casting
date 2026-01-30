@@ -13,10 +13,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Paths to backup tools (Windows)
+    | Paths to backup tools
     |--------------------------------------------------------------------------
-    | When empty, these default to XAMPP locations. Set in .env if yours differ.
+    | Windows: defaults to XAMPP. Linux/macOS: use "mysqldump" (from PATH).
+    | Set BACKUP_MYSQLDUMP_PATH in .env if your binary is elsewhere
+    | (e.g. /usr/bin/mysqldump or /usr/local/bin/mysqldump).
     */
-    'mysqldump_path' => env('BACKUP_MYSQLDUMP_PATH', 'C:\\xampp\\mysql\\bin\\mysqldump.exe'),
-    'openssl_path'   => env('BACKUP_OPENSSL_PATH', 'C:\\xampp\\apache\\bin\\openssl.exe'),
+    'mysqldump_path' => env('BACKUP_MYSQLDUMP_PATH', PHP_OS_FAMILY === 'Windows'
+        ? 'C:\\xampp\\mysql\\bin\\mysqldump.exe'
+        : 'mysqldump'),
+    'openssl_path'   => env('BACKUP_OPENSSL_PATH', PHP_OS_FAMILY === 'Windows'
+        ? 'C:\\xampp\\apache\\bin\\openssl.exe'
+        : 'openssl'),
 ];
