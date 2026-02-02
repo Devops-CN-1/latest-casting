@@ -13,7 +13,7 @@ class Party extends Model
 		protected $table = 'parties';
 		protected $primaryKey = 'partyID';
 
-		public $incrementing = false;
+		public $incrementing = true;
 
     	protected $keyType = 'int';
 
