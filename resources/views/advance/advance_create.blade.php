@@ -1027,8 +1027,8 @@ $(document).ready(function() {
                     let partyCashAccounDetail = response.data.cash_summary;
                     let accountDetails = response.data.account_details || [];
                     
-                    // Destroy existing DataTable if it exists
-                    if ($.fn.DataTable.isDataTable('#advanceTable')) {
+                    // Destroy existing DataTable if it exists (guard: DataTables may not be loaded)
+                    if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#advanceTable')) {
                         $('#advanceTable').DataTable().destroy();
                     }
                     
@@ -1078,24 +1078,26 @@ $(document).ready(function() {
 
                     $('#party_detail').html(table); // Replace with your div ID
                     
-                    // Initialize DataTable with search and filtering
-                    $('#advanceTable').DataTable({
-                        "pageLength": 10,
-                        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                        "order": [[4, "desc"]], // Sort by Date descending
-                        "searching": true,
-                        "paging": true,
-                        "info": true,
-                        "ordering": true,
-                        "language": {
-                            "search": "Search:",
-                            "lengthMenu": "Show _MENU_ entries",
-                            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                            "infoEmpty": "Showing 0 to 0 of 0 entries",
-                            "infoFiltered": "(filtered from _MAX_ total entries)",
-                            "zeroRecords": "No matching records found"
-                        }
-                    });
+                    // Initialize DataTable with search and filtering (only if DataTables is loaded)
+                    if ($.fn.DataTable) {
+                        $('#advanceTable').DataTable({
+                            "pageLength": 10,
+                            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            "order": [[4, "desc"]], // Sort by Date descending
+                            "searching": true,
+                            "paging": true,
+                            "info": true,
+                            "ordering": true,
+                            "language": {
+                                "search": "Search:",
+                                "lengthMenu": "Show _MENU_ entries",
+                                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                                "infoEmpty": "Showing 0 to 0 of 0 entries",
+                                "infoFiltered": "(filtered from _MAX_ total entries)",
+                                "zeroRecords": "No matching records found"
+                            }
+                        });
+                    }
 
                     $('#partyId').val(partyNo);
                     $('#party_no').val(partyNo);
