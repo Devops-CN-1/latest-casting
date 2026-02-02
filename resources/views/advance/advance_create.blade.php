@@ -1066,12 +1066,10 @@ $(document).ready(function() {
                     });
 
                     if (response.data.party_type === "cash") {
-
                         $("#party_name").val("Cash Party");
-
-                    }else{
-                        $("#party_name").val(response.data.party_regular.businessName);
-
+                    } else {
+                        var pr = response.data.party_regular;
+                        $("#party_name").val(pr ? (pr.businessName || pr.partyName || "—") : "—");
                     }
 
                     table += `</tbody></table>`;
