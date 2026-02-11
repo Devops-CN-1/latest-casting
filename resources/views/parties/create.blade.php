@@ -29,9 +29,7 @@
                 <!-- input fields  -->
                 <form id="party-form">
                     <div class="mt-5">
-                    <input type="number" id="main_party_no" 
-                            class="min-w-0 flex-1 p-1 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white"
-                            value="{{$nextPartyNumber}}" />
+                    <input type="hidden" id="main_party_no" name="main_party_no" value="{{$nextPartyNumber}}" />
                         <!-- column 1 -->
                         <div class="w-full flex gap-3">
                             <div class="w-1/3 sm:flex gap-3 items-center">
