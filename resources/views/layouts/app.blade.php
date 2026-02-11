@@ -40,6 +40,7 @@
                     <div class="flex items-center space-x-3">
                         <a href="{{ url('/') }}" class="flex items-center gap-2 text-2xl font-bold text-white hover:opacity-90 focus:outline-none">
                             {{ $systemSettings->software_name ?? "" }}
+                            
                         </a>
                     </div>
                     <div class="flex items-center space-x-4">
