@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>{{ $systemSettings->software_name ?? "Casting Managemet" }}</title>
 
         <!-- Fonts: use system stack for offline (figtree was fonts.bunny.net) -->
         <style>body{font-family:ui-sans-serif,system-ui,sans-serif,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}</style>
