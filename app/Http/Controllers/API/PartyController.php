@@ -358,13 +358,24 @@ class PartyController extends Controller
             DB::beginTransaction();
 
             try {
-                // Validate request
+                // Validate request: partyID is the number from newPartyId (required for create)
                 $request->validate([
                     'type' => 'required|in:regular,cash',
+                    'partyID' => 'required|integer|min:1',
                 ]);
 
-                // Create Party
+                $partyID = (int) $request->partyID;
+
+                // Check if party with this ID already exists
+                if (Party::find($partyID)) {
+                    return response()->json([
+                        'message' => 'Party already exists.',
+                    ], 422);
+                }
+
+                // Create Party with the given partyID
                 $party = Party::create([
+                    'partyID' => $partyID,
                     'type' => $request->type,
                     'IsActive' => $request->IsActive ?? 1,
                     'created_by'  => Auth::id(),

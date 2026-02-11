@@ -29,6 +29,9 @@
                 <!-- input fields  -->
                 <form id="party-form">
                     <div class="mt-5">
+                    <input type="number" id="main_party_no" 
+                            class="min-w-0 flex-1 p-1 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white"
+                            value="{{$nextPartyNumber}}" />
                         <!-- column 1 -->
                         <div class="w-full flex gap-3">
                             <div class="w-1/3 sm:flex gap-3 items-center">
@@ -526,10 +529,18 @@
     $('#ClearForm').on('click', function (e) {
 
         $('#party-form')[0].reset();
+        $('#main_party_no').val($('#newPartyId').val());
         $('#save-party')
             .attr('disabled', false)
             .addClass('cursor-pointer');
 
+    });
+    // Keep Party No in sync: newPartyId is the source of truth for the party ID when creating
+    $('#newPartyId').on('change input', function () {
+        $('#main_party_no').val($(this).val());
+    });
+    $('#main_party_no').on('change input', function () {
+        $('#newPartyId').val($(this).val());
     });
     $('#save-party').on('click', function (e) {
 
@@ -556,7 +567,12 @@
 
 
         var type = "regular";
-        let formData = $('#party-form').serialize() + '&type=' + encodeURIComponent(type);
+        var partyID = $('#newPartyId').val().trim();
+        if (!partyID) {
+            toastr.error('Please enter Party No.', 'Error');
+            return;
+        }
+        let formData = $('#party-form').serialize() + '&type=' + encodeURIComponent(type) + '&partyID=' + encodeURIComponent(partyID);
 
         $.ajax({
             url: '/api/add-party',
@@ -571,13 +587,19 @@
                 $('#party-form')[0].reset();
 
                 let partyInput = $('#newPartyId');
-                let currentVal = parseInt(partyInput.val()) || 0;
+                let currentVal = parseInt(partyInput.val(), 10) || 0;
                 partyInput.val(currentVal + 1);
+                $('#main_party_no').val(currentVal + 1);
                  toastr.success('Party saved successfully!', 'Success');
 
             },
             error: function (xhr) {
-                toastr.error(xhr.responseText, 'Error');
+                if (xhr.status === 422) {
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Party already exists.';
+                    toastr.error(msg, 'Error');
+                } else {
+                    toastr.error(xhr.responseText || 'Error saving party.', 'Error');
+                }
             }
         });
     });
@@ -585,8 +607,13 @@
     $('#save-cash-party').on('click', function (e) {
         e.preventDefault();
 
+        var partyID = $('#newPartyId').val().trim();
+        if (!partyID) {
+            toastr.error('Please enter Party No.', 'Error');
+            return;
+        }
         var type = "cash";
-        let formData = '&type=' + encodeURIComponent(type);
+        let formData = 'type=' + encodeURIComponent(type) + '&partyID=' + encodeURIComponent(partyID);
 
         $.ajax({
             url: '/api/add-party',
@@ -601,12 +628,18 @@
                 $('#party-form')[0].reset();
 
                 let partyInput = $('#newPartyId');
-                let currentVal = parseInt(partyInput.val()) || 0;
+                let currentVal = parseInt(partyInput.val(), 10) || 0;
                 partyInput.val(currentVal + 1);
+                $('#main_party_no').val(currentVal + 1);
                 toastr.success('Party saved successfully!', 'Success');
             },
             error: function (xhr) {
-                toastr.error(xhr.responseText, 'Error');
+                if (xhr.status === 422) {
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Party already exists.';
+                    toastr.error(msg, 'Error');
+                } else {
+                    toastr.error(xhr.responseText || 'Error saving party.', 'Error');
+                }
             }
         });
     });  
