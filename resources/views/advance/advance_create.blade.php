@@ -449,8 +449,13 @@
     var lastGoldTransaction = null; // Track last gold transaction
     var lastCashTransaction = null; // Track last cash transaction
     
-    // Get all table rows from party_detail
-    $('#party_detail table tbody tr').each(function() {
+    // Get ALL rows (all pages) from DataTable; if not DataTable, use all tbody tr
+    var $table = $('#party_detail #advanceTable');
+    var $rows = $table.length && $.fn.DataTable && $.fn.DataTable.isDataTable($table[0])
+        ? $table.DataTable().rows({ page: 'all' }).nodes()
+        : $table.find('tbody tr');
+    
+    $($rows).each(function() {
         var gold = $(this).find('td:eq(0)').text().trim();
         var cash = $(this).find('td:eq(1)').text().trim();
         var status = $(this).find('td:eq(2)').text().trim();
