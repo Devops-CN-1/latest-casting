@@ -454,7 +454,10 @@
             if (hasData === false) {
                 return;
             }
-            
+            // Guard: DataTables may not be loaded (e.g. script failed or wrong order)
+            if (!$.fn.DataTable || !$.fn.DataTable.isDataTable) {
+                return;
+            }
             // Destroy existing DataTable if it exists
             if ($.fn.DataTable.isDataTable('#' + tableId)) {
                 try {
@@ -1644,8 +1647,8 @@
             const tableId = table.attr('id');
             let tableHTML = '';
             
-            // Check if DataTable is initialized on this table
-            if (tableId && $.fn.DataTable.isDataTable('#' + tableId)) {
+            // Check if DataTable is initialized on this table (guard: DataTables may not be loaded)
+            if (tableId && $.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#' + tableId)) {
                 // Get DataTable instance
                 const dataTable = $('#' + tableId).DataTable();
                 
