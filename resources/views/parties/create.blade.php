@@ -363,11 +363,12 @@
                 url: '/api/parties/type/' + type,
                 type: 'GET',
                 success: function (data) {
-                    // Destroy existing DataTable if it exists
-                    if ($.fn.DataTable.isDataTable('#partiesTable')) {
-                        $('#partiesTable').DataTable().destroy();
+                    // Destroy existing DataTable only if the table element exists and is already a DataTable
+                    var $existing = $('#partiesTable');
+                    if ($existing.length && $.fn.DataTable && $.fn.DataTable.isDataTable($existing)) {
+                        $existing.DataTable().destroy();
                     }
-                    
+
                     let table = `
                         <table id="partiesTable" class="min-w-full border-collapse border border-gray-300">
                             <thead>
@@ -432,26 +433,29 @@
                     table += `</tbody></table>`;
 
                     $('#party-container').html(table);
-                    
-                    // Initialize DataTable with search and filtering
-                    $('#partiesTable').DataTable({
-                        "pageLength": 10,
-                        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                        "order": [[0, "asc"]],
-                        "searching": true,
-                        "paging": true,
-                        "info": true,
-                        "ordering": true,
-                        "language": {
-                            "search": "Search:",
-                            "lengthMenu": "Show _MENU_ entries",
-                            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                            "infoEmpty": "Showing 0 to 0 of 0 entries",
-                            "infoFiltered": "(filtered from _MAX_ total entries)",
-                            "zeroRecords": "No matching records found"
-                        }
-                    });
-                    
+
+                    // Initialize DataTable only if the table exists and DataTable is available
+                    var $table = $('#partiesTable');
+                    if ($table.length && $.fn.DataTable) {
+                        $table.DataTable({
+                            "pageLength": 10,
+                            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            "order": [[0, "asc"]],
+                            "searching": true,
+                            "paging": true,
+                            "info": true,
+                            "ordering": true,
+                            "language": {
+                                "search": "Search:",
+                                "lengthMenu": "Show _MENU_ entries",
+                                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                                "infoEmpty": "Showing 0 to 0 of 0 entries",
+                                "infoFiltered": "(filtered from _MAX_ total entries)",
+                                "zeroRecords": "No matching records found"
+                            }
+                        });
+                    }
+
                     hideLoader();
                 },
                 error: function (xhr) {
