@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{{ $systemSettings->software_name ?? "Casting Managemet" }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('assets/images/makkahmadina.png') }}">
 
         <!-- Fonts: use system stack for offline (figtree was fonts.bunny.net) -->
         <style>body{font-family:ui-sans-serif,system-ui,sans-serif,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}</style>
@@ -37,7 +38,10 @@
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <a href="{{ url('/') }}" class="text-2xl font-bold text-white hover:opacity-90 focus:outline-none">{{ $systemSettings->software_name ?? "" }}</a>
+                        <a href="{{ url('/') }}" class="flex items-center gap-2 text-2xl font-bold text-white hover:opacity-90 focus:outline-none">
+                            <img src="{{ asset('assets/images/makkahmadina.png') }}" alt="" class="h-8 w-auto" onerror="this.style.display='none'">
+                            {{ $systemSettings->software_name ?? "" }}
+                        </a>
                     </div>
                     <div class="flex items-center space-x-4">
                         @if(isset($currentUser) && $currentUser && $currentUser->isSuperAdmin())
