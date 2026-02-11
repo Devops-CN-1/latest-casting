@@ -136,10 +136,14 @@ class ImportDbDataController extends Controller
             $totalWasteCasted = floatval(trim($data['TotalWasteCasted']));
             $totalMazdoori    = floatval(trim($data['TotalMazdori']));
 
+            // Map CSV type: 0 = regular, 1 = cash (store as text in DB)
+            $typeRaw = trim($data['type'] ?? '');
+            $type = ($typeRaw === '1') ? 'cash' : 'regular';
+
             Party::updateOrCreate(
                 ['partyID' => $data['PtyID']],
                 [
-                    'type'               => intval(trim($data['type'])),
+                    'type'               => $type,
                     'goldIn'             => $goldIn,
                     'goldOut'            => $goldOut,
                     'cashIn'             => $cashIn,
