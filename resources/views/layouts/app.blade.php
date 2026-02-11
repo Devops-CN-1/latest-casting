@@ -39,7 +39,6 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <a href="{{ url('/') }}" class="flex items-center gap-2 text-2xl font-bold text-white hover:opacity-90 focus:outline-none">
-                            <img src="{{ asset('assets/images/makkahmadina.png') }}" alt="" class="h-8 w-auto" onerror="this.style.display='none'">
                             {{ $systemSettings->software_name ?? "" }}
                         </a>
                     </div>
