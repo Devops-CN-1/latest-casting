@@ -95,10 +95,10 @@
                         <span class="text-blue-100">Wapsi</span>
                         <span class="text-blue-100 mt-2">Net Weight</span>
                         <span class="mt-2">ویسٹ</span>
-                        <span class="mt-2">مکمل وزن</span>
-                        <span class="mt-4">سینٹر نکالا</span>
+                        <span class="mt-2">کُل وزن</span>
+                        <span class="mt-4">میل نکالا</span>
                         <span class="mt-3">خالص</span>
-                        <span class="mt-2">ایڈ واپس</span>
+                        <span class="mt-2">ایڈوانس</span>
                         <span class="mt-3">کل خالص</span>
                     </div>
                 </div>

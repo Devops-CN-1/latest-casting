@@ -98,11 +98,11 @@
                         <span class="text-blue-100">Wapsi</span>
                         <span class="text-blue-100 mt-2">Net Weight</span>
                         <span class="mt-2">ویسٹ</span>
-                        <span class="mt-2">مکمل وزن</span>
-                        <span class="mt-4">سینٹر نکالا</span>
+                        <span class="mt-2">کُل وزن</span>
+                        <span class="mt-4">میل نکالا</span>
                         <span class="mt-3">خالص</span>
-                        <span class="mt-2">ایڈ واپس</span>
-                        <span class="mt-3">کل خالص</span>
+                        <span class="mt-2">ایڈوانس</span>
+                        <span class="mt-3">کُل خالص</span>
                     </div>
                 </div>
                 <div class="w-[40%]">
@@ -128,7 +128,7 @@
                         <div class="text-center bg-[#800000] text-[#f1da69] font-semibold w-1/3">
                             <span class="block">مزدوری</span>
                             <span class="mt-2 block">سابقہ مزدوری</span>
-                            <span class="mt-2 block">کل مزدوری</span>
+                            <span class="mt-2 block">کُل مزدوری</span>
                         </div>
                     </div>
                     <div class="mt-2 flex justify-center items-center">
