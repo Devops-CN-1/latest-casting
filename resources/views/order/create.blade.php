@@ -897,7 +897,9 @@ $(document).ready(function() {
             var hours = String(now.getHours()).padStart(2, '0'); // Hours with leading zero
             var minutes = String(now.getMinutes()).padStart(2, '0'); // Minutes with leading zero
             var seconds = String(now.getSeconds()).padStart(2, '0'); // Seconds with leading zero
-            var dateTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds; // Format: 07/May/2025 14:30:45
+            
+            // var dateTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds; // Format: 07/May/2025 14:30:45
+            / var dateTime = day + '/' + month + '/' + year; // Format: 07/May/2025
             $('#currentDateTime').val(dateTime);
         }
 
