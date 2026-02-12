@@ -47,46 +47,54 @@
                 </div>
             </div>
 
-            <!-- Input Sections: unified field sizes (same width/height per column) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold">Gold Received</label>
-                    <input type="text" id="gold-received"
-                        class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                    <div class="flex gap-2 items-center">
-                        <label class="font-semibold shrink-0">Laina:</label>
-                        <input type="text" id="gold-laina"
-                            class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+            <!-- Input Sections -->
+            <div class="flex items-center gap-4 mt-5">
+                <div class="w-1/4 xl:w-1/5 flex flex-col items-end gap-1">
+                    <div class="w-9/12 xl:w-4/5 flex flex-col">
+                        <label class="font-semibold">Gold Received</label>
+                        <input type="text" id="gold-received" 
+                            class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                    </div>
+                    <div class="w-full flex gap-2 items-center justify-end">
+                        <label class="font-semibold">Laina:</label>
+                        <input type="text" id="gold-laina" 
+                            class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold">Gold Paid</label>
-                    <input type="text" id="gold-paid"
-                        class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                    <div class="flex gap-2 items-center">
-                        <label class="font-semibold shrink-0">Daina:</label>
-                        <input type="text" id="gold-daina"
-                            class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                <div class="w-1/4 xl:w-1/5 flex flex-col items-end gap-1">
+                    <div class="w-9/12 xl:w-4/5 flex flex-col">
+                        <label class="font-semibold">Gold Paid</label>
+                        <input type="text" id="gold-paid" 
+                            class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                    </div>
+                    <div class="w-full flex gap-2 items-center justify-end">
+                        <label class="font-semibold">Daina:</label>
+                        <input type="text" id="gold-daina" 
+                            class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold">Cash Received</label>
-                    <input type="text" id="cash-received"
-                        class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                    <div class="flex gap-2 items-center">
-                        <label class="font-semibold shrink-0">Laina:</label>
-                        <input type="text" id="cash-laina"
-                            class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                <div class="w-1/4 xl:w-[30%] flex flex-col items-end gap-1">
+                    <div class="w-9/12 xl:w-4/5 flex flex-col">
+                        <label class="font-semibold">Cash Received</label>
+                        <input type="text" id="cash-received" 
+                            class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                    </div>
+                    <div class="w-full flex gap-2 items-center justify-end">
+                        <label class="font-semibold">Laina:</label>
+                        <input type="text" id="cash-laina" 
+                            class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold">Cash Paid</label>
-                    <input type="text" id="cash-paid"
-                        class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                    <div class="flex gap-2 items-center">
-                        <label class="font-semibold shrink-0">Daina:</label>
-                        <input type="text" id="cash-daina"
-                            class="advance-summary-input w-full min-h-[2.25rem] p-2 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                <div class="w-1/4 xl:w-[30%] flex flex-col items-end gap-1">
+                    <div class="w-9/12 xl:w-4/5 flex flex-col">
+                        <label class="font-semibold">Cash Paid</label>
+                        <input type="text" id="cash-paid" 
+                            class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                    </div>
+                    <div class="w-full flex gap-2 items-center justify-end">
+                        <label class="font-semibold">Daina:</label>
+                        <input type="text" id="cash-daina" 
+                            class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
             </div>
@@ -100,20 +108,20 @@
                     <input type="text" hidden name="partyId" id="partyId">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                         <label class="w-14 font-extrabold">Gold :</label>
-                        <input type="text" id="gold" name="gold"
-                            class="advance-form-input w-full sm:flex-1 min-h-[2.25rem] p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                        <select id="gold-in-out" name="gold_in_out"
-                            class="advance-form-input sm:w-1/3 min-h-[2.25rem] p-2 font-extrabold outline-none bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
+                        <input type="text" id="gold" name="gold" 
+                            class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                        <select id="gold-in-out" name="gold_in_out" 
+                            class="sm:w-1/3 p-2 col-span-1 font-extrabold outline-none  bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
                             <option value="Received">Received</option>
                             <option value="Paid">Paid</option>
                         </select>
                     </div>
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
                         <label class="w-14 font-extrabold">Cash :</label>
-                        <input type="text" id="cash" name="cash"
-                            class="advance-form-input w-full sm:flex-1 min-h-[2.25rem] p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
-                        <select id="cash-in-out" name="cash_in_out"
-                            class="advance-form-input sm:w-1/3 min-h-[2.25rem] p-2 font-extrabold outline-none bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
+                        <input type="text" id="cash" name="cash" 
+                            class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                        <select id="cash-in-out"  name="cash_in_out" 
+                            class="sm:w-1/3 p-2 col-span-1 font-extrabold outline-none  bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
                             <option value="Received">Received</option>
                             <option value="Paid">Paid</option>
                         </select>
@@ -121,54 +129,72 @@
                     <div class="mt-2 flex flex-col md:flex-row gap-2">
                         <div class="md:w-9/12 md:flex gap-2 items-center">
                             <label class="w-14 font-extrabold">Gold Rate</label>
-                            <input type="text" id="goldRate" name="goldrate"
-                                class="advance-form-input w-full sm:flex-1 min-h-[2.25rem] p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                            <input type="text" id="goldRate" name="goldrate" 
+                                class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         </div>
                         <div class="md:w-1/2 md:flex gap-2 items-center">
                             <label class="font-extrabold">Gold N</label>
-                            <input type="text" id="goldN" name="goldN"
-                                class="advance-form-input w-full sm:flex-1 min-h-[2.25rem] p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                            <input type="text" id="goldN" name="goldN" 
+                                class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         </div>
                     </div>
                     <div class="mt-2 md:flex gap-2 items-center">
                         <label class="font-extrabold">Hawala</label>
-                        <input type="text" id="hawala" name="hawala"
-                            class="advance-form-input w-full sm:flex-1 min-h-[2.25rem] p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
+                        <input type="text" id="hawala" name="hawala" 
+                            class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </form>
-                    <div class="w-1/2 mt-2 py-4 px-3 bg-green-200 border border-green-300 rounded text-center">
-                        <span class="text-xs font-semibold text-gray-600 block mb-1">Software</span>
-                        <span class="text-lg font-medium">{{ $systemSettings->software_name }}</span>
-                    </div>
+                    <div class="w-1/2 mt-2 py-8 text-lg bg-green-200 text-center">{{ $systemSettings->software_name }}</div>
 
                 </div>
             
 
-                <!-- right side: action buttons in single grid + Walkin panel -->
+                <!-- right side  -->
                 <div class="w-4/12 mx-auto mt-2">
                     <div class="flex flex-col md:flex-row gap-6">
 
-                        <!-- Left Panel: buttons grid + Walkin -->
+                        <!-- Left Panel -->
                         <div class="w-full md:w-2/3">
-                            <!-- Action buttons: single row, same size and style -->
-                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
-                                <button id="save-party-advance" type="button"
-                                    class="advance-btn advance-btn-primary py-2 px-4 font-bold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4]">Save</button>
-                                <button type="button" onclick="printdata()"
-                                    class="advance-btn advance-btn-primary py-2 px-4 font-bold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4]">Print</button>
-                                <button id="clear_button" type="button"
-                                    class="advance-btn advance-btn-secondary py-2 px-4 font-bold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4]">Clear</button>
-                                <a href="{{ url('/') }}" class="advance-btn advance-btn-secondary py-2 px-4 font-bold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] text-center inline-flex items-center justify-center">Back</a>
-                                <a href="{{ route('party.create.form') }}" class="advance-btn advance-btn-secondary py-2 px-4 font-bold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] text-center inline-flex items-center justify-center">Parties</a>
+                            <div class="flex gap-5 justify-end">
+
+                                <!-- Save & Print -->
+                                <div>
+                                    <div class="flex justify-end h-10">
+                                        <button id="save-party-advance" 
+                                            class="py-2 px-8 font-bold bg-red-600 border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Save</button>
+                                    </div>
+                                    <div class="mt-2 flex justify-end h-10">
+                                        <button onclick="printdata()" 
+                                            class="py-2 px-8 font-bold bg-purple-300 border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Print</button>
+                                    </div>
+                                </div>
+
+                                <!-- Walkin + Gold Rate -->
+                                <div class="w-28">
+                                    <p class="text-sm font-semibold">Walkin Customers</p>
+                                    <div class="mt-1">
+                                        <label class="text-base font-bold block mb-1">Gold Rate</label>
+                                        <input type="text" id="gold_rate_current" value="{{ $systemSettings->gold_rate }}"
+                                            class="w-full text-center font-bold text-xl p-1 outline-none bg-red-200 border border-black shadow-inner" />
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Walkin + Gold Rate -->
-                            <div class="w-28">
-                                <p class="text-sm font-semibold">Walkin Customers</p>
-                                <div class="mt-1">
-                                    <label class="text-base font-bold block mb-1">Gold Rate</label>
-                                    <input type="text" id="gold_rate_current" value="{{ $systemSettings->gold_rate }}"
-                                        class="w-full text-center font-bold text-xl p-2 min-h-[2.25rem] outline-none bg-red-200 border border-black shadow-inner" />
+                            <!-- Back & Clear Buttons -->
+                            <div class="flex gap-2">
+                                <div class="w-full flex">
+                                    <a href="{{ url('/') }}"
+                                        class="sm:flex-1 py-4 px-6 font-bold bg-red-600 border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Back</a>
+                                </div>
+                                <div class="w-full flex items-end">
+                                    <button id="clear_button" 
+                                        class="sm:flex-1 py-2 px-6 font-bold bg-orange-300 border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Clear</button>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <div class="w-full flex">
+                                    <a href = "{{route('party.create.form')}}" ><button class="sm:flex-1 py-2 px-6 font-bold bg-green-100 border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Parties</button></a>
                                 </div>
                             </div>
                         </div>
@@ -193,13 +219,6 @@
 <!-- DataTables JS (local for offline) -->
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 <style>
-    /* Advance page: unified button styles (single primary + secondary color) */
-    .advance-btn { min-width: 0; }
-    .advance-btn-primary { background-color: #2563eb; color: #fff; }
-    .advance-btn-primary:hover { background-color: #1d4ed8; color: #fff; }
-    .advance-btn-secondary { background-color: #475569; color: #fff; }
-    .advance-btn-secondary:hover { background-color: #334155; color: #fff; }
-
     /* DataTables Search Input Styling */
     .dataTables_wrapper .dataTables_filter input {
         background-color: white !important;
@@ -972,8 +991,8 @@ $(document).ready(function() {
             fetchCustomerData(partyNo);
     }); 
     $(document).on('click', '#clear_button', function() {
-        $('#party-advance-form')[0].reset();
-        $('#gold_rate_current').val("{{ $systemSettings->gold_rate ?? '' }}");
+    $('#party-advance-form')[0].reset();
+
     });
 
     $('#goldRate').on('keydown', function(e) {
