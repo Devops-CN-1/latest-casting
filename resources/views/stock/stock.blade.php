@@ -802,7 +802,7 @@
                 },
                 success: function(response) {
 
-                    toastr.success('Stock Add successfullyu', 'Success');
+                    toastr.success('Stock Add successfully', 'Success');
                     
                 },
                 error: function (xhr) {
