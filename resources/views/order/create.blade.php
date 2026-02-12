@@ -310,7 +310,7 @@
                 <!-- Bottom Buttons -->
                 <div class="w-3/5">
                     <div class="flex items-center justify-between">
-                        <span class="w-1/3text-black font-mono text-xl font-bold">8:15:27 PM</span>
+                        <span id="currentTime" class="w-1/3 text-black font-mono text-xl font-bold"></span>
                         <select id="orderSelect" onchange="fetchOldParchies(this.value)" class="w-4/6 bg-white text-black border border-gray-300">
                           </select>
                     </div>
@@ -839,7 +839,21 @@
 
 
 
+function updateCurrentTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var seconds = String(now.getSeconds()).padStart(2, '0');
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        var timeStr = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+        var el = document.getElementById('currentTime');
+        if (el) el.textContent = timeStr;
+    }
+
 $(document).ready(function() {
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
         $('#getPartyData').focus();
         var tollaRate = $('#tollaRate').val();
         let RatePerGram = tollaRate / 11.664; 
