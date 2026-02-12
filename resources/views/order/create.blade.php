@@ -899,7 +899,7 @@ $(document).ready(function() {
             var seconds = String(now.getSeconds()).padStart(2, '0'); // Seconds with leading zero
             
             // var dateTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds; // Format: 07/May/2025 14:30:45
-            / var dateTime = day + '/' + month + '/' + year; // Format: 07/May/2025
+            var dateTime = day + '/' + month + '/' + year ;
             $('#currentDateTime').val(dateTime);
         }
 
