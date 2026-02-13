@@ -180,7 +180,7 @@
                         <label class="p-1 w-32 text-center font-semibold bg-[#400040] text-[#f1da69]" for="">سیریل نمبر</label>
                     </div>
                     <div class="mt-2">
-                        <input class="w-full outline-none shadow-inner bg-[#ffc0c0] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white text-center font-semibold" type="text" id="currentDateTime" value="">
+                        <input class="w-full outline-none shadow-inner bg-[#ffc0c0] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white text-center font-semibold" type="text" id="currentDateTime" value="" readonly>
                     </div>
                 </div>
             </div>
