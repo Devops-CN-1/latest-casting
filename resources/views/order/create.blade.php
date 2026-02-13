@@ -171,16 +171,16 @@
                     </div>
                     <div class="mt-2 w-full flex items-center justify-between">
                         <label class="text-white font-semibold" for="">Last Deal Party</label>
-                        <input class="w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBillNo" readonly  type="number">
+                        <input class="order-readonly-input w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBillNo" readonly tabindex="-1" type="number">
                     </div>
                     <div class="flex items-center text-sm gap-1 mt-2">
-                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBills" value="" readonly  type="number">
+                        <input class="order-readonly-input w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBills" value="" readonly tabindex="-1" type="number">
                         <label class="p-1 w-32 text-center font-semibold bg-[#400040] text-[#f1da69]" for="">پارٹی بل</label>
-                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="serialNumber"  readonly  type="number">
+                        <input class="order-readonly-input w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="serialNumber" readonly tabindex="-1" type="number">
                         <label class="p-1 w-32 text-center font-semibold bg-[#400040] text-[#f1da69]" for="">سیریل نمبر</label>
                     </div>
                     <div class="mt-2">
-                        <input class="w-full outline-none shadow-inner bg-[#ffc0c0] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white text-center font-semibold" type="text" id="currentDateTime" value="" readonly>
+                        <input class="order-readonly-input w-full outline-none shadow-inner bg-[#ffc0c0] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white text-center font-semibold" type="text" id="currentDateTime" value="" readonly tabindex="-1">
                     </div>
                 </div>
             </div>
@@ -337,6 +337,14 @@
     </div>
 
     <style>
+        /* Prevent editing and focus on readonly display inputs (JS can still set .val()) */
+        .order-readonly-input {
+            pointer-events: none;
+            cursor: default;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
         .loader-spinner {
             width: 60px;
             height: 60px;
