@@ -171,12 +171,12 @@
                     </div>
                     <div class="mt-2 w-full flex items-center justify-between">
                         <label class="text-white font-semibold" for="">Last Deal Party</label>
-                        <input class="w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBillNo"  type="number">
+                        <input class="w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBillNo" readonly  type="number">
                     </div>
                     <div class="flex items-center text-sm gap-1 mt-2">
-                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBills" value=""  type="number">
+                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBills" value="" readonly  type="number">
                         <label class="p-1 w-32 text-center font-semibold bg-[#400040] text-[#f1da69]" for="">پارٹی بل</label>
-                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="serialNumber"  type="number">
+                        <input class="w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="serialNumber"  readonly  type="number">
                         <label class="p-1 w-32 text-center font-semibold bg-[#400040] text-[#f1da69]" for="">سیریل نمبر</label>
                     </div>
                     <div class="mt-2">
