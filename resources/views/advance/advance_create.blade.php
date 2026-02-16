@@ -10,7 +10,7 @@
                     <label class="w-full sm:w-20 font-extrabold">PTY #:</label>
                     <input type="text" id="party_no" 
                         class="p-1 w-full sm:w-32 font-bold shadow-inner bg-yellow-100 border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" placeholder="Enter Party" />
-                    <input type="text" id="party_name" 
+                    <input type="text" id="party_name" readonly
                         class="p-1 w-full sm:flex-1 font-bold shadow-inner bg-yellow-100 border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                 </div>
 
