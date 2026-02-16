@@ -1180,6 +1180,8 @@ $(document).ready(function() {
     $('#save-party-advance').on('click', function (e) {
         e.preventDefault();
 
+        if ($(this).prop('disabled')) return;
+
         let gold = $('#gold').val().trim();
         let cash = $('#cash').val().trim();
         let hawala = $('#hawala').val().trim();
@@ -1195,6 +1197,10 @@ $(document).ready(function() {
             toastr.error('Hawala is required.', 'Error');
             return false;
         }
+
+        let $btn = $(this);
+        $btn.prop('disabled', true);
+
         let formData = $('#party-advance-form').serialize();
         $.ajax({
 
@@ -1224,7 +1230,9 @@ $(document).ready(function() {
             },
             error: function (xhr) {
                 toastr.error(xhr.responseText, 'Error');
-            
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
             }
         });
     });
