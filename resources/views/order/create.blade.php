@@ -244,22 +244,22 @@
 
                         <div class="flex items-center">
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2cash" id="op2cash" />
-                            <label class="w-32 font-semibold text-center text-[#f1da69] bg-[#800000]">Cash</label>
-                            <label class="w-32 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1"> وصول کیا</label>
+                            <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000]">Cash</label>
+                            <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1"> وصول کیا</label>
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2GoldRecieved" id="op2GoldRecieved" />
                         </div>
 
                         <div class="flex items-center">
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2CashRecieved" id="op2CashRecieved" />
-                            <label class="w-32 font-semibold text-center text-[#f1da69] bg-[#800000]">وصول کیا</label>
-                            <label class="w-32 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1">واپس دیا</label>
+                            <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000]">وصول کیا</label>
+                            <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1">واپس دیا</label>
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2GoldPaid" id="op2GoldPaid" />
                         </div>
 
                         <div class="flex items-center">
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2RemainingCash" id="op2RemainingCash" />
-                            <label class="w-16 font-semibold text-center text-[#f1da69] bg-[#800000]"> بقایا</label>
-                            <label class="w-16 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1"> بقایا</label>
+                            <label class="w-16 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000]"> بقایا</label>
+                            <label class="w-16 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1"> بقایا</label>
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2RemainingGold" id="op2RemainingGold" />
                         </div>
                     </div>
@@ -282,17 +282,17 @@
 
 
                         <div class="flex items-center justify-end">
-                            <label class="w-20 font-bold text-center bg-[#400040] text-[#f1da69]"> وصول کیا</label>
+                            <label class="w-20 py-1.5 font-bold text-center bg-[#400040] text-[#f1da69]"> وصول کیا</label>
                             <input class="w-1/2 border  px-1 bg-[#ffc0c0]" type="number" name="op3CashRecieved" id="op3CashRecieved" />
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <label class="w-20 font-bold text-center bg-[#400040] text-[#f1da69]">واپس دیا</label>
+                            <label class="w-20 py-1.5 font-bold text-center bg-[#400040] text-[#f1da69]">واپس دیا</label>
                             <input class="w-1/2 border  px-1 bg-[#ffc0c0]" type="number" name="op3CashPaid" id="op3CashPaid" />
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <label class="w-20 font-bold text-center bg-[#400040] text-[#f1da69]"> بقایا</label>
+                            <label class="w-20 py-1.5 font-bold text-center bg-[#400040] text-[#f1da69]"> بقایا</label>
                             <input class="w-1/2 border  px-1 bg-[#ffc0c0]" type="number" name="op3RemainingCash" id="op3RemainingCash" />
                         </div>
                     </div>
