@@ -300,6 +300,7 @@
      // Show modal on button click
     $('#openStockModal').click(function () {
         $('#stockModal').removeClass('hidden');
+        setTimeout(function () { $('#stock_password').focus(); }, 0);
     });
 
     // Close modal
