@@ -51,8 +51,10 @@ input[type="date"],
 input[type="datetime-local"],
 select,
 textarea {
-    font-weight: 700;
-    font-size: 1.0625rem; /* 17px - larger than default */
+    /* font-weight: 700;
+    font-size: 1.0625rem;  */
+    font-weight: 900; /* max valid weight (100–900); 1000 is invalid */
+    font-size: 1.4rem;
 }
 
 /* Visible caret in text inputs */
