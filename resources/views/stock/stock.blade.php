@@ -803,6 +803,8 @@
                 success: function(response) {
 
                     toastr.success('Stock Add successfully', 'Success');
+                    $('#goldStockEnter').val('');
+                    $('#cashStockEnter').val('');
                     
                 },
                 error: function (xhr) {
