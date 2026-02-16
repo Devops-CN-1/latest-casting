@@ -52,48 +52,48 @@
                 <div class="w-1/4 xl:w-1/5 flex flex-col items-end gap-1">
                     <div class="w-9/12 xl:w-4/5 flex flex-col">
                         <label class="font-semibold">Gold Received</label>
-                        <input type="text" id="gold-received" 
+                        <input type="text" id="gold-received" readonly
                             class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                     <div class="w-full flex gap-2 items-center justify-end">
                         <label class="font-semibold">Laina:</label>
-                        <input type="text" id="gold-laina" 
+                        <input type="text" id="gold-laina" readonly
                             class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
                 <div class="w-1/4 xl:w-1/5 flex flex-col items-end gap-1">
                     <div class="w-9/12 xl:w-4/5 flex flex-col">
                         <label class="font-semibold">Gold Paid</label>
-                        <input type="text" id="gold-paid" 
+                        <input type="text" id="gold-paid" readonly
                             class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                     <div class="w-full flex gap-2 items-center justify-end">
                         <label class="font-semibold">Daina:</label>
-                        <input type="text" id="gold-daina" 
+                        <input type="text" id="gold-daina" readonly
                             class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
                 <div class="w-1/4 xl:w-[30%] flex flex-col items-end gap-1">
                     <div class="w-9/12 xl:w-4/5 flex flex-col">
                         <label class="font-semibold">Cash Received</label>
-                        <input type="text" id="cash-received" 
+                        <input type="text" id="cash-received" readonly
                             class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                     <div class="w-full flex gap-2 items-center justify-end">
                         <label class="font-semibold">Laina:</label>
-                        <input type="text" id="cash-laina" 
+                        <input type="text" id="cash-laina" readonly
                             class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
                 <div class="w-1/4 xl:w-[30%] flex flex-col items-end gap-1">
                     <div class="w-9/12 xl:w-4/5 flex flex-col">
                         <label class="font-semibold">Cash Paid</label>
-                        <input type="text" id="cash-paid" 
+                        <input type="text" id="cash-paid" readonly
                             class="w-full p-1 outline-none bg-yellow-100 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                     <div class="w-full flex gap-2 items-center justify-end">
                         <label class="font-semibold">Daina:</label>
-                        <input type="text" id="cash-daina" 
+                        <input type="text" id="cash-daina" readonly
                             class="w-9/12 xl:w-4/5 p-1 outline-none bg-red-200 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                     </div>
                 </div>
