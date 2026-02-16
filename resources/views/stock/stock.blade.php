@@ -868,6 +868,7 @@
                         toastr.success('Expense Gold Add successfully', 'Success');
                         $('#expSona').val('');
                         $('#expSonaRemarks').val('');
+                        stockTotal();
 
                     },
                     error: function (xhr) {
@@ -909,9 +910,10 @@
                         rate_to_buy_gold: rateToBuyGold,
                     },
                     success: function(response) {
-                        toastr.success('Expense Gold Add successfully', 'Success');
-                        $('#expCash').val('');
-                        $('#expCashRemarks').val('');
+                        toastr.success('Gold Buy successfully', 'Success');
+                        $('#cashForBuyGold').val('');
+                        $('#rateToBuyGold').val('');
+                        stockTotal();
                     },
                     error: function (xhr) {
                         toastr.error(xhr.responseJSON, 'Error');
@@ -960,6 +962,7 @@
                         toastr.success('Expense Gold Add successfully', 'Success');
                         $('#expCash').val('');
                         $('#expCashRemarks').val('');
+                        stockTotal();
                     },
                     error: function (xhr) {
                         toastr.error(xhr.responseJSON, 'Error');
@@ -998,9 +1001,10 @@
                         sell_Sona_In_Rupees: sellSonaInRupees,
                     },
                     success: function(response) {
-                       toastr.success('Expense Gold Add successfully', 'Success');
-                        $('#expCash').val('');
-                        $('#expCashRemarks').val('');
+                       toastr.success('Sell Gold successfully', 'Success');
+                        $('#sellSona').val('');
+                        $('#sellSonaInRupees').val('');
+                        stockTotal();
                     },
                     error: function (xhr) {
                         if (xhr.responseJSON && xhr.responseJSON.message) {
