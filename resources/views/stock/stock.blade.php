@@ -811,6 +811,25 @@
             });
         });
 
+        // Enter key: Gold → Cash → Enter Stock button (then submit)
+        $('#goldStockEnter').on('keydown', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#cashStockEnter').focus();
+            }
+        });
+        $('#cashStockEnter').on('keydown', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#enterStock').focus();
+            }
+        });
+        $('#enterStock').on('keydown', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $(this).click();
+            }
+        });
 
         $('#expSona').on('keydown', function(e) {
             if (e.which === 13 || e.which === 9) {
