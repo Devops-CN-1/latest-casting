@@ -199,30 +199,30 @@
                         <div class="flex items-center">
                             <label class="w-32 py-1.5 font-bold text-right text-[#f1da69] bg-[#804000]"> خالص</label>
                             <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1khalasGold" id="op1khalasGold" />
-                            <input class="w-1/2 py-1.5 border  text-right px-1 bg-[#ffff80]" name="op1mazdori" id="op1mazdori" type="number" />
-                            <label class="w-32 font-bold text-left text-[#f1da69] bg-[#804000]">مزدوری</label>
+                            <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" name="op1mazdori" id="op1mazdori" type="number" />
+                            <label class="w-32 py-1.5 font-bold text-left text-[#f1da69] bg-[#804000]">مزدوری</label>
                         </div>
 
 
                         <div class="flex items-center">
                             <label class="w-32 py-1.5 font-bold text-right text-[#f1da69] bg-[#804000]"> وصول کیا</label>
                             <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1GoldRecieved" id="op1GoldRecieved" />
-                            <input class="w-1/2 py-1.5 border  text-right px-1 bg-[#ffff80]" type="number" name="op1MazdooriRecieved" id="op1MazdooriRecieved" />
-                            <label class="w-32 font-bold text-left text-[#f1da69] bg-[#804000]"> وصول کیا</label>
+                            <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1MazdooriRecieved" id="op1MazdooriRecieved" />
+                            <label class="w-32 py-1.5 font-bold text-left text-[#f1da69] bg-[#804000]"> وصول کیا</label>
                         </div>
 
                         <div class="flex items-center">
                             <label class="w-32 py-1.5 font-bold text-right text-[#f1da69] bg-[#804000]">واپس دیا</label>
                             <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1GoldPaid" id="op1GoldPaid" />
-                            <input class="w-1/2 py-1.5 border  text-right px-1 bg-[#ffff80]" type="number" name="op1MazdooriPaid" id="op1MazdooriPaid" />
-                            <label class="w-32 font-bold text-left text-[#f1da69] bg-[#804000]">واپس دیا</label>
+                            <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1MazdooriPaid" id="op1MazdooriPaid" />
+                            <label class="w-32 py-1.5 font-bold text-left text-[#f1da69] bg-[#804000]">واپس دیا</label>
                         </div>
 
                         <div class="flex items-center">
-                            <label class="w-16 py-1.5font-bold text-right text-[#f1da69] bg-[#804000]">بقایا</label>
+                            <label class="w-16 py-1.5 font-bold text-right text-[#f1da69] bg-[#804000]">بقایا</label>
                             <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1RemainingGold" id="op1RemainingGold" />
-                            <input class="w-1/2 py-1.5 border  text-right px-1 bg-[#ffff80]" type="number" name="op1RemainingCash" id="op1RemainingCash" />
-                            <label class="w-16 font-bold text-left text-[#f1da69] bg-[#804000]"> بقایا</label>
+                            <input class="w-1/2 border  text-right px-1 bg-[#ffff80]" type="number" name="op1RemainingCash" id="op1RemainingCash" />
+                            <label class="w-16 py-1.5 font-bold text-left text-[#f1da69] bg-[#804000]"> بقایا</label>
                         </div>
                     </div>
                 </div>
