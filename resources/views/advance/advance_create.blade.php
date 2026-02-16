@@ -108,7 +108,7 @@
                     <input type="text" hidden name="partyId" id="partyId">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                         <label class="w-14 font-extrabold">Gold :</label>
-                        <input type="text" id="gold" name="gold" 
+                        <input type="number" id="gold" name="gold" 
                             class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         <select id="gold-in-out" name="gold_in_out" 
                             class="sm:w-1/3 p-2 col-span-1 font-extrabold outline-none  bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
@@ -118,7 +118,7 @@
                     </div>
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
                         <label class="w-14 font-extrabold">Cash :</label>
-                        <input type="text" id="cash" name="cash" 
+                        <input type="number" id="cash" name="cash" 
                             class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         <select id="cash-in-out"  name="cash_in_out" 
                             class="sm:w-1/3 p-2 col-span-1 font-extrabold outline-none  bg-yellow-100 text-red-600 shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white">
@@ -129,12 +129,12 @@
                     <div class="mt-2 flex flex-col md:flex-row gap-2">
                         <div class="md:w-9/12 md:flex gap-2 items-center">
                             <label class="w-14 font-extrabold">Gold Rate</label>
-                            <input type="text" id="goldRate" name="goldrate" 
+                            <input type="number" id="goldRate" name="goldrate" 
                                 class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         </div>
                         <div class="md:w-1/2 md:flex gap-2 items-center">
                             <label class="font-extrabold">Gold N</label>
-                            <input type="text" id="goldN" name="goldN" 
+                            <input type="number" id="goldN" name="goldN" 
                                 class="w-full sm:flex-1 p-2 outline-none shadow-inner border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white" />
                         </div>
                     </div>
