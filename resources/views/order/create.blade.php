@@ -812,7 +812,12 @@
         return;
     }
 
-
+    // Prevent double submit: disable button and ignore further clicks
+    var $saveBtn = $('#saveOrder');
+    if ($saveBtn.prop('disabled')) {
+        return;
+    }
+    $saveBtn.prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
 
         console.log(payload); // Debu
         $.ajax({
@@ -840,6 +845,9 @@
                 } else {
                      toastr.error(xhr.responseText, 'Error');
                 }
+            },
+            complete: function() {
+                $saveBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
             }
         });
 }
