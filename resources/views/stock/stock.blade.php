@@ -785,7 +785,7 @@
             var cashStockEnter = $('#cashStockEnter').val();
             // ✅ Validate inputs
             if (goldStockEnter === '' && cashStockEnter === '') {
-                alert('Please select Gold or Cash');
+                toastr.error('Please select Gold or Cash', 'Error');
                 return false;
             }
 
