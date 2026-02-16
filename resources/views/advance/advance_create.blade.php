@@ -1219,7 +1219,7 @@ $(document).ready(function() {
                 $('#cash-paid').val('');
                 $('#cash-daina').val('');
                 getPartiesStatus();
-                fetchCustomerData('');
+                // fetchCustomerData('');
                 toastr.success('Party saved successfully!', 'Success');
             },
             error: function (xhr) {
