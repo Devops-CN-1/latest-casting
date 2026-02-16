@@ -1157,6 +1157,26 @@ $(document).ready(function() {
             });
     }
 
+    // Enter key navigation for party-advance-form: gold → gold-in-out → cash → cash-in-out → hawala → save button
+    $('#party-advance-form').on('keydown', '#gold', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#gold-in-out').focus(); }
+    });
+    $('#party-advance-form').on('keydown', '#gold-in-out', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#cash').focus(); }
+    });
+    $('#party-advance-form').on('keydown', '#cash', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#cash-in-out').focus(); }
+    });
+    $('#party-advance-form').on('keydown', '#cash-in-out', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#hawala').focus(); }
+    });
+    $('#party-advance-form').on('keydown', '#hawala', function (e) {
+        if (e.which === 13) { e.preventDefault(); $('#save-party-advance').focus(); }
+    });
+    $('#save-party-advance').on('keydown', function (e) {
+        if (e.which === 13) { e.preventDefault(); $(this).click(); }
+    });
+
     $('#save-party-advance').on('click', function (e) {
         e.preventDefault();
 
