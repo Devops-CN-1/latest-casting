@@ -980,8 +980,7 @@ $(document).ready(function() {
                 return;
             }
             fetchCustomerData(partyNo);
-
-            
+            $('#gold').focus();
         }
     });
 
