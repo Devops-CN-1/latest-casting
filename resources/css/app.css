@@ -39,6 +39,22 @@ button:focus {
 select:focus {
     background-color: #eff6ff !important;
 }
+/* Input text: bold and larger size site-wide */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="date"],
+input[type="datetime-local"],
+select,
+textarea {
+    font-weight: 700;
+    font-size: 1.0625rem; /* 17px - larger than default */
+}
+
 /* Visible caret in text inputs */
 input[type="text"],
 input[type="number"],
