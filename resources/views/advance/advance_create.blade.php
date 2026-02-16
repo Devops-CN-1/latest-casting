@@ -1208,8 +1208,18 @@ $(document).ready(function() {
             success: function (response) {
 
                 $('#party-advance-form')[0].reset();
+                $('#party_no').val('');
+                $('#party_name').val('');
+                $('#gold-received').val('');
+                $('#gold-laina').val('');
+                $('#gold-paid').val('');
+                $('#gold-daina').val('');
+                $('#cash-received').val('');
+                $('#cash-laina').val('');
+                $('#cash-paid').val('');
+                $('#cash-daina').val('');
                 getPartiesStatus();
-                fetchCustomerData($('#party_no').val());
+                fetchCustomerData('');
                 toastr.success('Party saved successfully!', 'Success');
             },
             error: function (xhr) {
