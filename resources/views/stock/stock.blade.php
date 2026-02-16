@@ -805,6 +805,7 @@
                     toastr.success('Stock Add successfully', 'Success');
                     $('#goldStockEnter').val('');
                     $('#cashStockEnter').val('');
+                    stockTotal()
                     
                 },
                 error: function (xhr) {
