@@ -32,7 +32,7 @@
             }
         </style>
 </head>
-<body class="font-sans antialiased dark:bg-black dark:text-white/50">
+<body class="font-sans antialiased dark:bg-black dark:text-white/50 min-h-screen flex flex-col">
         @if(session('auth_token'))
         <header class="header-gradient shadow-lg">
             <div class="container mx-auto px-4 py-4">
@@ -77,8 +77,7 @@
         @endif
 
         
-            <main>
-                    
+            <main class="flex-1 flex flex-col min-h-0">
                 @yield('content')
             </main>
 
