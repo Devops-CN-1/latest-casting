@@ -242,6 +242,29 @@
         font-weight: 500 !important;
     }
 
+    /* Party advance form: bold cursor and highlight focused field */
+    #party-advance-form input,
+    #party-advance-form select {
+        transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+        caret-color: #b91c1c;
+    }
+    #party-advance-form input:focus,
+    #party-advance-form select:focus {
+        outline: none;
+        border: 3px solid #2563eb !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35);
+        background-color: #eff6ff !important;
+    }
+    #party-advance-form input:focus {
+        caret-color: #b91c1c;
+    }
+    #save-party-advance:focus {
+        outline: none;
+        border: 3px solid #2563eb !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35);
+        background-color: #dc2626 !important;
+    }
+
     /* Apply color changes only in dark mode */
     @media (prefers-color-scheme: dark) {
         /* Force input text color to black in dark mode */
