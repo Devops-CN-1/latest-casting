@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <div class="w-full p-2 bg-[#ece9d8] h-screen">
+        <div class="h-full w-full p-2 bg-[#ece9d8] h-screen">
             <!-- table container  -->
             <div
                 class="h-60 overflow-y-auto border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white bg-[#808080]">
