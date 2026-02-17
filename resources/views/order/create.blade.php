@@ -1338,14 +1338,24 @@ $(document).ready(function() {
     $('#op1').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { 
             e.preventDefault();
-            $('#op1GoldRecieved').focus();
+            let op1khalasGold = parseFloat($('#op1khalasGold').val()) || 0;
+            if (op1khalasGold >= 0) {
+                $('#op1GoldRecieved').focus();
+            } else {
+                $('#op1MazdooriPaid').focus();
+            }
         }
     });
 
     $('#op3').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { 
             e.preventDefault();
-            $('#op3CashRecieved').focus();
+            let op3totalCashwithMazdooriInCash = parseFloat($('#op3totalCashwithMazdooriInCash').val()) || 0;
+            if (op3totalCashwithMazdooriInCash >= 0) {
+                $('#op3CashRecieved').focus();
+            } else {
+                $('#op3CashPaid').focus();
+            }
         }
     });
     $('#op1GoldRecieved').on('keydown', function(e) {
