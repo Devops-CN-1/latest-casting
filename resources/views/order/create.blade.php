@@ -1087,7 +1087,7 @@ $(document).ready(function() {
         }
     });
     
-    $('#wasteRate').on('keydown', function(e) {
+    $('#wasteDiscountRate').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { // Enter or Tab
             e.preventDefault(); // Prevent default navigation
 
