@@ -98,6 +98,8 @@
                         <button id="openStockModal" class="w-24 px-5 py-1 font-semibold bg-[#ffc0c0] border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">
                             Stock
                         </button>
+                        <button id="leenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#ff0000] cursor-pointer">Leena</button>
+                        <button id="deenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#c000c0] cursor-pointer">Deena</button>
                         <button id="save-party" type="button" class="w-24 px-5 py-1 font-semibold bg-[#ffffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer ">Save</button>
                         <button class="w-24 px-5 py-1 font-semibold bg-[#c0ffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Delete</button>
                         <button id="ClearForm" type="button"  class="w-24 px-5 py-1 font-semibold bg-[#c0c0ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Clear</button>
@@ -358,17 +360,174 @@
             fetchParties('cash');
         });
 
+        // Destroy any DataTable inside party-container (parties, leena, deena tables)
+        function destroyPartyContainerDataTable() {
+            var ids = ['partiesTable', 'leenaCashGoldTable', 'deenaCashGoldTable'];
+            ids.forEach(function(id) {
+                var $t = $('#' + id);
+                if ($t.length && $.fn.DataTable && $.fn.DataTable.isDataTable($t)) {
+                    $t.DataTable().destroy();
+                }
+            });
+        }
+
+        function initPartyDataTable(tableId, hasData) {
+            if (!hasData || !$.fn.DataTable) return;
+            var $table = $('#' + tableId);
+            if ($table.length) {
+                $table.DataTable({
+                    "pageLength": 10,
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "order": [[0, "asc"]],
+                    "searching": true,
+                    "paging": true,
+                    "info": true,
+                    "ordering": true,
+                    "language": {
+                        "search": "Search:",
+                        "lengthMenu": "Show _MENU_ entries",
+                        "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                        "infoEmpty": "Showing 0 to 0 of 0 entries",
+                        "infoFiltered": "(filtered from _MAX_ total entries)",
+                        "zeroRecords": "No matching records found"
+                    }
+                });
+            }
+        }
+
+        // Leena button – same as stock: fetch leena Cash/Gold and show in table
+        $('#leenaCashGold').on('click', function() {
+            showLoader();
+            destroyPartyContainerDataTable();
+            $.ajax({
+                url: '/api/leena-Cash-Gold',
+                type: 'get',
+                headers: {
+                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    var table = $('#party-container');
+                    table.empty();
+                    var html = `
+                        <table id="leenaCashGoldTable" class="min-w-full border-collapse border border-gray-300">
+                        <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                            <th class="border border-gray-300 px-4 py-2 text-left">Serial #</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Party</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">PartyName</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">GoldStatus</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">CashStatus</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">PhoneNo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                    `;
+                    if (response.data && response.data.length) {
+                        $.each(response.data, function(index, item) {
+                            html += `
+                              <tr class="hover:bg-gray-100">
+                                <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
+                              </tr>
+                            `;
+                        });
+                    } else {
+                        html += `
+                          <tr>
+                            <td colspan="6" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
+                          </tr>
+                        `;
+                    }
+                    html += '</tbody></table>';
+                    table.html(html);
+                    var hasData = response.data && response.data.length > 0;
+                    setTimeout(function() {
+                        initPartyDataTable('leenaCashGoldTable', hasData);
+                        hideLoader();
+                    }, 50);
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error loading Leena data.');
+                    hideLoader();
+                }
+            });
+        });
+
+        // Deena button – same as stock: fetch deena Cash/Gold and show in table
+        $('#deenaCashGold').on('click', function() {
+            showLoader();
+            destroyPartyContainerDataTable();
+            $.ajax({
+                url: '/api/deena-Cash-Gold',
+                type: 'get',
+                headers: {
+                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    var table = $('#party-container');
+                    table.empty();
+                    var html = `
+                        <table id="deenaCashGoldTable" class="min-w-full border-collapse border border-gray-300">
+                        <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                            <th class="border border-gray-300 px-4 py-2 text-left">Serial #</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Party</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">PartyName</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">GoldStatus</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">CashStatus</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">PhoneNo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                    `;
+                    if (response.data && response.data.length) {
+                        $.each(response.data, function(index, item) {
+                            html += `
+                              <tr class="hover:bg-gray-100">
+                                <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
+                              </tr>
+                            `;
+                        });
+                    } else {
+                        html += `
+                          <tr>
+                            <td colspan="6" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
+                          </tr>
+                        `;
+                    }
+                    html += '</tbody></table>';
+                    table.html(html);
+                    var hasData = response.data && response.data.length > 0;
+                    setTimeout(function() {
+                        initPartyDataTable('deenaCashGoldTable', hasData);
+                        hideLoader();
+                    }, 50);
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error loading Deena data.');
+                    hideLoader();
+                }
+            });
+        });
+
         function fetchParties(type) {
             showLoader();
+            destroyPartyContainerDataTable();
             $.ajax({
                 url: '/api/parties/type/' + type,
                 type: 'GET',
                 success: function (data) {
-                    // Destroy existing DataTable only if the table element exists and is already a DataTable
-                    var $existing = $('#partiesTable');
-                    if ($existing.length && $.fn.DataTable && $.fn.DataTable.isDataTable($existing)) {
-                        $existing.DataTable().destroy();
-                    }
 
                     let table = `
                         <table id="partiesTable" class="min-w-full border-collapse border border-gray-300">
