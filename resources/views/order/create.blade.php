@@ -185,7 +185,7 @@
                 </div>
             </div>
             <!-- bottok Section -->
-            <div class="mt-2 grid grid-cols-3 gap-2 text-sm border-2 border-black p-2">
+            <div id="order-options-grid" class="mt-2 grid grid-cols-3 gap-2 text-sm border-2 border-black p-2">
 
                 <!-- Box 1 -->
                 <div class="">
@@ -1113,6 +1113,9 @@ $(document).ready(function() {
                 toastr.error('Please enter weight first!', 'Error');
                 $('#weightCastig').focus(); // Stay on the same input
             } else {
+                // Clear all inputs in the order options grid (op1, op2, op3 sections)
+                $('#order-options-grid').find('input[type="text"], input[type="number"]').val('');
+                $('#order-options-grid').find('input[type="radio"]').prop('checked', false);
                 $('#wapsiGold').focus(); // Move to next input
             }
         }
