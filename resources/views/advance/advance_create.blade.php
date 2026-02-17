@@ -1119,29 +1119,26 @@ $(document).ready(function() {
                 var cashDiff =  cashPaid - cashReceived;
                 var goldDiff =  goldPaid - goldReceived;
 
-                // For cash difference
+                // For cash difference (show with 2 decimals, rounded)
                 if (cashDiff < 0) {
-                    $("#cash-laina").val(0.00);
-                    $("#cash-daina").val(cashDiff.toFixed(2));
+                    $("#cash-laina").val((0).toFixed(2));
+                    $("#cash-daina").val(Number(cashDiff).toFixed(2));
                     
                 } else {
-                    $("#cash-laina").val(Math.abs(cashDiff).toFixed(2)); // Show positive value with 2 decimals
-                    $("#cash-daina").val(0.00);
+                    $("#cash-laina").val(Number(Math.abs(cashDiff)).toFixed(2));
+                    $("#cash-daina").val((0).toFixed(2));
                     
                 }
 
 
-                // For gold difference
+                // For gold difference (show with 2 decimals, rounded)
                 if (goldDiff < 0) {
-
-                    $("#gold-laina").val(0);
-                    $("#gold-daina").val(goldDiff);
+                    $("#gold-laina").val((0).toFixed(2));
+                    $("#gold-daina").val(Number(goldDiff).toFixed(2));
                     
                 } else {
-                    
-
-                    $("#gold-laina").val(Math.abs(goldDiff)); // Show positive value
-                    $("#gold-daina").val(0);
+                    $("#gold-laina").val(Number(Math.abs(goldDiff)).toFixed(2));
+                    $("#gold-daina").val((0).toFixed(2));
                 }
             }else{
                 toastr.error('party not found', 'Error');
