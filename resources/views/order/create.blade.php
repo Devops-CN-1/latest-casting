@@ -314,14 +314,14 @@
                         <select id="orderSelect" onchange="fetchOldParchies(this.value)" class="w-4/6 bg-white text-black border border-gray-300">
                           </select>
                     </div>
-                    <div>
+                    <div class="flex items-center gap-2">
+                        <button class="bg-pink-400 text-black py-1 w-20 cursor-pointer">Exit</button>
                         <button id="JustPrint" class="bg-amber-100 text-black py-1 w-20 cursor-pointer justPrint" onclick="justprint()">JustPrint</button>
                         <button type="button" onclick="saveOrder()" id="saveOrder" class="bg-stone-500 py-1 w-20 cursor-pointer">Save</button>
                         <button id="Print" class="bg-pink-200 text-black py-1 w-20 cursor-pointer" onclick="print()">Print</button>
                         <button id="clearButton" class="bg-red-600 py-1 w-20 cursor-pointer">Clear</button>
                         <a href = "{{route('party.create.form')}}" ><button class="bg-green-100 text-black py-1 w-20 cursor-pointer cursor-pointer">Parties</button></a>
                         <a href="{{url('advance')}}" class="bg-orange-400 text-black py-1 w-20">Advance</a>
-                        <button class="bg-pink-400 text-black py-1 w-20 cursor-pointer">Exit</button>
                     </div>
                 </div>
             </div>
