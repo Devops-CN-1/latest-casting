@@ -837,9 +837,9 @@
                      $('#clearButton').trigger('click');
                 }
 
-                debugger;
-
                 $('#serialNumber').val(response.order);
+                $('#lastPartyBills').val(response.total_orders_for_party);
+                $('#lastPartyBillNo').val(response.party_id);
                 $('#party_id').val(party_id);
             },
             error: function(xhr) {

@@ -980,6 +980,8 @@ class OrderController extends Controller
             //     'remarks' => 'Mazdoorie cash added successfully'
             // ]);
 
+            $totalOrders = Order::where('party_id', $request->party_id)->count();
+
             DB::commit(); // ✅ Commit transaction
 
             return response()->json([
@@ -987,6 +989,7 @@ class OrderController extends Controller
                 'order' => $order,
                 'party' => $party,
                 'order' =>$order->id,
+                'total_orders_for_party' => $totalOrders,
             ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
