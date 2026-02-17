@@ -836,6 +836,7 @@
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
                 }
+                debugger;
 
                 $('#serialNumber').val(response.order);
                 $('#lastPartyBills').val(response.total_orders_for_party);
