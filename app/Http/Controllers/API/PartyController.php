@@ -60,7 +60,15 @@ class PartyController extends Controller
 
     public function getPartiesStatus()
     {
-       $parties = Party::where('type', 'cash')->get();
+        // Get parties ordered by last activity (most recently changed first)
+        $parties = Party::where('type', 'cash')
+            ->selectRaw('parties.*, GREATEST(
+                COALESCE((SELECT MAX(updated_at) FROM account_cash WHERE party_id = parties.partyID), "1970-01-01 00:00:00"),
+                COALESCE((SELECT MAX(updated_at) FROM account_gold WHERE party_id = parties.partyID), "1970-01-01 00:00:00")
+            ) as last_activity')
+            ->orderByDesc('last_activity')
+            ->get();
+
         $freeUsers = [];
         $nonFreeUsers = [];
         foreach ($parties as $party) {
