@@ -1478,6 +1478,8 @@ $(document).ready(function() {
         e.preventDefault();
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
+        $('#mazdoriRate').val('0.00');
+        $('#wasteRate').val('0.00');
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
         $('select').prop('selectedIndex', 0);
 
