@@ -836,12 +836,11 @@
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
                 }
-                debugger;
 
                 $('#serialNumber').val(response.order);
                 $('#lastPartyBills').val(response.total_orders_for_party);
-                $('#lastPartyBillNo').val(party_id);
-                $('#party_id').val(party_id);
+                $('#lastPartyBillNo').val(response.party.partyID);
+                $('#party_id').val(response.party.partyID);
             },
             error: function(xhr) {
                 if (xhr.status === 401) {
