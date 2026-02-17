@@ -1029,13 +1029,13 @@ $(document).ready(function() {
     $('#pieceCheck').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
-            $('#mazdoriRate').focus();
+            $('#mazdoridiscountRate').focus();
         }
     });
-    $('#mazdoriRate').on('keydown', function(e) {
+    $('#mazdoridiscountRate').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
-            $('#wasteRate').focus();
+            $('#wasteDiscountRate').focus();
         }
     });
     
