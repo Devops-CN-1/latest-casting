@@ -1280,9 +1280,14 @@ $(document).ready(function() {
     });
 
     $('#op2').on('keydown', function(e) {
-        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
-            e.preventDefault(); // Prevent default tab behavior
-            $('#op2GoldRecieved').focus();
+        if (e.which === 13 || e.which === 9) { 
+            e.preventDefault(); 
+            let op2TotalGoldwithMazdooriInGold = parseFloat($('#op2TotalGoldwithMazdooriInGold').val()) || 0;
+            if (op2TotalGoldwithMazdooriInGold >= 0) {
+                $('#op2GoldRecieved').focus();
+            } else {
+                $('#op2GoldPaid').focus();
+            }
         }
     });
 
