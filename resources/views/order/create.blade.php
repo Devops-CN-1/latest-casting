@@ -837,6 +837,8 @@
                      $('#clearButton').trigger('click');
                 }
 
+                debugger;
+
                 $('#serialNumber').val(response.order);
                 $('#party_id').val(party_id);
             },
