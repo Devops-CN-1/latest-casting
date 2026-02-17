@@ -441,6 +441,7 @@ class PartyController extends Controller
         $orders = DB::table('orders')
                     ->where('party_id', $id)
                     ->select('id', 'created_at')
+                    ->orderByDesc('created_at')
                     ->get(); // returns collection of objects [{id:..., created_at:...}]
 
         return response()->json($orders);
