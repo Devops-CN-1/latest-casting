@@ -98,8 +98,7 @@
                         <button id="openStockModal" class="w-24 px-5 py-1 font-semibold bg-[#ffc0c0] border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">
                             Stock
                         </button>
-                        <button id="leenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#ff0000] cursor-pointer">Leena</button>
-                        <button id="deenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#c000c0] cursor-pointer">Deena</button>
+                        
                         <button id="save-party" type="button" class="w-24 px-5 py-1 font-semibold bg-[#ffffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer ">Save</button>
                         <button class="w-24 px-5 py-1 font-semibold bg-[#c0ffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Delete</button>
                         <button id="ClearForm" type="button"  class="w-24 px-5 py-1 font-semibold bg-[#c0c0ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Clear</button>
@@ -111,6 +110,8 @@
                         <a href="{{url('/')}}" class="w-24 px-5 py-1 font-semibold bg-[#ff00ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Order</a>
                         <button class="w-24 px-5 py-1 font-semibold bg-[#c00000] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Quit</button>
                         <button id="list-c-btn" type="button" class="w-24 py-1 px-5 font-semibold bg-[#c0c0c0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">List(C)</button>
+                        <button id="leenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#ff0000] cursor-pointer">Leena</button>
+                        <button id="deenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#c000c0] cursor-pointer">Deena</button>
                     </div>
                 </div>
             </div>
