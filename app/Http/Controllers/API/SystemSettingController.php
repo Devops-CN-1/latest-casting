@@ -152,6 +152,62 @@ class SystemSettingController extends Controller
         if (isset($encFilepath) && file_exists($encFilepath)) unlink($encFilepath);
         return abort(500, 'An unexpected error occurred. Check logs.');
     }
-}
+
+    /**
+     * Show the form to upload an encrypted backup and enter password to decrypt & download.
+     */
+    public function decryptBackupForm()
+    {
+        return view('backup.decrypt');
+    }
+
+    /**
+     * Decrypt uploaded .enc file with given password and return SQL file for download.
+     */
+    public function decryptBackup(Request $request)
+    {
+        $validated = $request->validate([
+            'encrypted_file' => 'required|file|max:512000', // max ~500MB
+            'password'       => 'required|string|min:1',
+        ], [
+            'encrypted_file.required' => 'Please select an encrypted backup file.',
+            'password.required'       => 'Please enter the backup password.',
+        ]);
+
+        $file = $request->file('encrypted_file');
+        $password = $validated['password'];
+        $inputPath = $file->getRealPath();
+
+        $raw = file_get_contents($inputPath);
+        if (strlen($raw) < 16 || substr($raw, 0, 8) !== 'Salted__') {
+            return redirect()->route('backup.decrypt.form')->with('error', 'Invalid encrypted backup format (expected Salted__ header).');
+        }
+
+        $salt = substr($raw, 8, 8);
+        $ciphertext = substr($raw, 16);
+        $keyIv = hash_pbkdf2('sha256', $password, $salt, 10000, 48, true);
+        $key = substr($keyIv, 0, 32);
+        $iv = substr($keyIv, 32, 16);
+
+        $plaintext = openssl_decrypt($ciphertext, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        if ($plaintext === false) {
+            return redirect()->route('backup.decrypt.form')->with('error', 'Decryption failed. Check password.');
+        }
+
+        $tmpDir = storage_path('app/db_backups');
+        if (!file_exists($tmpDir)) {
+            mkdir($tmpDir, 0755, true);
+        }
+        $originalName = $file->getClientOriginalName();
+        $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+        $sqlFilename = (str_ends_with(strtolower($baseName), '.enc') ? substr($baseName, 0, -4) : $baseName) . '.sql';
+        $outputPath = $tmpDir . DIRECTORY_SEPARATOR . 'decrypted_' . uniqid() . '.sql';
+
+        if (file_put_contents($outputPath, $plaintext) === false) {
+            return redirect()->route('backup.decrypt.form')->with('error', 'Could not write decrypted file.');
+        }
+
+        return response()->download($outputPath, $sqlFilename)->deleteFileAfterSend(true);
+    }
 
 }

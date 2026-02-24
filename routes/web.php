@@ -29,6 +29,8 @@ Route::middleware(['web', 'check.auth.token'])->group(function () {
     // Super admin only: system settings, backup, import, user management
     Route::middleware(['super.admin'])->group(function () {
         Route::get('/download-encrypted-backup', [SystemSettingController::class, 'downloadEncryptedBackup'])->name('backup.download');
+        Route::get('/decrypt-backup', [SystemSettingController::class, 'decryptBackupForm'])->name('backup.decrypt.form');
+        Route::post('/decrypt-backup', [SystemSettingController::class, 'decryptBackup'])->name('backup.decrypt');
         Route::get('system-settings', [SystemSettingController::class, 'systemsettingform']);
         Route::get('/import', [\App\Http\Controllers\ImportDbDataController::class, 'index'])->name('import.index');
         Route::get('/import/{table}', [\App\Http\Controllers\ImportDbDataController::class, 'showForm'])->name('import.form')->where('table', 'party-regular|parties|party-cash|account-cash|account-gold|account-history-cash|account-history-gold|account-main|expense-cash|expense-gold|orders|stock-cash|stock-gold');

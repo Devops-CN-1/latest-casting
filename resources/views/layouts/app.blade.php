@@ -55,6 +55,7 @@
                                 <a href="{{ url('system-settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">System Settings</a>
                                 <a href="{{ route('import.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Upload DB (Import)</a>
                                 <a href="{{ route('backup.download') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Download Encrypted DB</a>
+                                <a href="{{ route('backup.decrypt.form') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Decrypt Backup</a>
                                 <a href="{{ route('users.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-100 dark:border-gray-600 mt-1 pt-2">User Management</a>
                             </div>
                         </div>
