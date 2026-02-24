@@ -152,6 +152,7 @@ class SystemSettingController extends Controller
         if (isset($encFilepath) && file_exists($encFilepath)) unlink($encFilepath);
         return abort(500, 'An unexpected error occurred. Check logs.');
     }
+    }
 
     /**
      * Show the form to upload an encrypted backup and enter password to decrypt & download.
