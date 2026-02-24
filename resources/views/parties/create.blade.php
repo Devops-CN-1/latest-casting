@@ -101,7 +101,7 @@
                         
                         <button id="save-party" type="button" class="w-24 px-5 py-1 font-semibold bg-[#ffffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer ">Save</button>
                         <!-- <button class="w-24 px-5 py-1 font-semibold bg-[#c0ffc0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Delete</button> -->
-                        <button id="ClearForm" type="button"  class="w-24 px-5 py-1 font-semibold bg-[#c0c0ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Clear</button>
+                        <!-- <button id="ClearForm" type="button"  class="w-24 px-5 py-1 font-semibold bg-[#c0c0ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Clear</button> -->
                         <button id="list-btn" type="button" class="w-24 px-5 py-1 font-semibold bg-[#ffc0ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">List...</button>
                     </div>
                     <div class="mt-2">
