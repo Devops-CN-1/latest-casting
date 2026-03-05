@@ -365,7 +365,7 @@ class OrderController extends Controller
                     StockGold::create([
                         'gold' => $request->op1GoldPaid,
                         'status' => 'Paid',
-                        'remarks' => 'Gold Paid to customer'
+                        'remarks' => 'Gold Paid'
                     ]);
                 }
 
@@ -563,7 +563,7 @@ class OrderController extends Controller
                             'party_id' => $request->party_id,
                             'gold' => $request->khalis,
                             'status' => 'Paid',
-                            'remarks' => 'Gold Paid to customer',
+                            'remarks' => 'Gold Paid',
                             'user_id' => Auth::id()
                         ]);
                     }
@@ -675,7 +675,7 @@ class OrderController extends Controller
                             'party_id' => $request->party_id,
                             'gold' => $request->khalis,
                             'status' => 'Paid',
-                            'remarks' => 'Gold Paid to customer',
+                            'remarks' => 'Gold Paid',
                             'user_id' => Auth::id()
                         ]);
                     }
