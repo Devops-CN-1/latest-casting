@@ -354,13 +354,20 @@
             }
         });
 
-        // Print / Save as PDF – print ALL table data (all pages) from party-container
+        // Print / Save as PDF – print ALL table data (all pages) without changing the on-screen table
         $('#print-table-btn').on('click', function () {
             var $container = $('#party-container');
             var $table = $container.find('table');
             if (!$table.length) {
                 toastr.warning('Load a list first (List... or List(C) or Leena/Deena).');
                 return;
+            }
+            function escapeHtml(str) {
+                if (str == null) return '';
+                var s = String(str);
+                var div = document.createElement('div');
+                div.textContent = s;
+                return div.innerHTML;
             }
             function doPrint(tableHtml) {
                 var printWindow = window.open('', '_blank');
@@ -380,20 +387,37 @@
                     printWindow.onafterprint = function () { printWindow.close(); };
                 }, 250);
             }
+            var tableHtml;
             if ($.fn.DataTable && $.fn.DataTable.isDataTable($table)) {
                 var dt = $table.DataTable();
-                var oldPageLen = dt.page.len();
-                dt.page.len(-1);
-                dt.draw(false);
-                $table.one('draw.dt', function () {
-                    var tableHtml = $table.clone().get(0).outerHTML;
-                    dt.page.len(oldPageLen);
-                    dt.draw(false);
-                    doPrint(tableHtml);
+                var theadHtml = $table.find('thead').clone().get(0).outerHTML;
+                var rowDataList = [];
+                dt.rows({ search: 'applied' }).every(function () {
+                    rowDataList.push(this.data());
                 });
+                var tbodyHtml = '<tbody>';
+                for (var i = 0; i < rowDataList.length; i++) {
+                    var row = rowDataList[i];
+                    tbodyHtml += '<tr>';
+                    if (Array.isArray(row)) {
+                        for (var j = 0; j < row.length; j++) {
+                            tbodyHtml += '<td>' + escapeHtml(row[j]) + '</td>';
+                        }
+                    } else {
+                        for (var k in row) {
+                            if (row.hasOwnProperty(k)) {
+                                tbodyHtml += '<td>' + escapeHtml(row[k]) + '</td>';
+                            }
+                        }
+                    }
+                    tbodyHtml += '</tr>';
+                }
+                tbodyHtml += '</tbody>';
+                tableHtml = '<table class="min-w-full border-collapse border border-gray-300">' + theadHtml + tbodyHtml + '</table>';
             } else {
-                doPrint($table.clone().get(0).outerHTML);
+                tableHtml = $table.clone().get(0).outerHTML;
             }
+            doPrint(tableHtml);
         });
 
         // On clicking list button
