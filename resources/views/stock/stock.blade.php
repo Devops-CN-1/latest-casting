@@ -242,7 +242,7 @@
                 </div>
                 <div class="w-1/6">
 
-                    <label class="block text-center font-semibold bg-[#ff0000]">Delete Cash Party History</label>
+                    <!-- <label class="block text-center font-semibold bg-[#ff0000]">Delete Cash Party History</label> -->
                     <label
                         class="block text-center text-xs leading-none xl:leading-9 font-semibold bg-[#ffffc0]">Mazdori
                         In Gold</label>
