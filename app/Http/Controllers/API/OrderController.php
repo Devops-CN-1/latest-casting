@@ -685,7 +685,7 @@ class OrderController extends Controller
                             'party_id' => $request->party_id,
                             'gold' => $request->op2GoldRecieved,
                             'status' => 'Received',
-                            'remarks' => 'Gold Received to customer',
+                            'remarks' => 'Gold Received',
                             'user_id' => Auth::id()
                         ]);
                     }
