@@ -354,7 +354,7 @@
             }
         });
 
-        // Print / Save as PDF – print ALL table data (all pages) from party-container
+        // Print / Save as PDF – print table in party-container
         $('#print-table-btn').on('click', function () {
             var $container = $('#party-container');
             var $table = $container.find('table');
@@ -362,38 +362,23 @@
                 toastr.warning('Load a list first (List... or List(C) or Leena/Deena).');
                 return;
             }
-            function doPrint(tableHtml) {
-                var printWindow = window.open('', '_blank');
-                if (!printWindow) {
-                    toastr.error('Please allow pop-ups to print.');
-                    return;
-                }
-                printWindow.document.write(
-                    '<!DOCTYPE html><html><head><title>Print Table</title>' +
-                    '<style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #333;padding:8px;text-align:left;} th{background:#e5e5e5;}</style>' +
-                    '</head><body>' + tableHtml + '</body></html>'
-                );
-                printWindow.document.close();
-                printWindow.focus();
-                setTimeout(function () {
-                    printWindow.print();
-                    printWindow.onafterprint = function () { printWindow.close(); };
-                }, 250);
+            var tableHtml = $table.clone().get(0).outerHTML;
+            var printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                toastr.error('Please allow pop-ups to print.');
+                return;
             }
-            if ($.fn.DataTable && $.fn.DataTable.isDataTable($table)) {
-                var dt = $table.DataTable();
-                var oldPageLen = dt.page.len();
-                dt.page.len(-1);
-                dt.draw(false);
-                $table.one('draw.dt', function () {
-                    var tableHtml = $table.clone().get(0).outerHTML;
-                    dt.page.len(oldPageLen);
-                    dt.draw(false);
-                    doPrint(tableHtml);
-                });
-            } else {
-                doPrint($table.clone().get(0).outerHTML);
-            }
+            printWindow.document.write(
+                '<!DOCTYPE html><html><head><title>Print Table</title>' +
+                '<style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #333;padding:8px;text-align:left;} th{background:#e5e5e5;}</style>' +
+                '</head><body>' + tableHtml + '</body></html>'
+            );
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function () {
+                printWindow.print();
+                printWindow.onafterprint = function () { printWindow.close(); };
+            }, 250);
         });
 
         // On clicking list button
