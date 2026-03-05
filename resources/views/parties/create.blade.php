@@ -7,6 +7,9 @@
             <div id="party-container" class="h-60 overflow-y-auto border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white bg-[#808080]">
                 
             </div>
+            <div class="mt-1 flex justify-end">
+                <button type="button" id="print-table-btn" class="px-4 py-1 font-semibold bg-[#c0ffff] border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer print:hidden">Print / Save as PDF</button>
+            </div>
             <!-- form container  -->
             <div class="mt-2">
                 <div class="w-full flex items-center gap-3">
@@ -349,6 +352,33 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 'Authorization': 'Bearer {{ session('auth_token') }}' // If you use API token
             }
+        });
+
+        // Print / Save as PDF – print table in party-container
+        $('#print-table-btn').on('click', function () {
+            var $container = $('#party-container');
+            var $table = $container.find('table');
+            if (!$table.length) {
+                toastr.warning('Load a list first (List... or List(C) or Leena/Deena).');
+                return;
+            }
+            var tableHtml = $table.clone().get(0).outerHTML;
+            var printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                toastr.error('Please allow pop-ups to print.');
+                return;
+            }
+            printWindow.document.write(
+                '<!DOCTYPE html><html><head><title>Print Table</title>' +
+                '<style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #333;padding:8px;text-align:left;} th{background:#e5e5e5;}</style>' +
+                '</head><body>' + tableHtml + '</body></html>'
+            );
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function () {
+                printWindow.print();
+                printWindow.onafterprint = function () { printWindow.close(); };
+            }, 250);
         });
 
         // On clicking list button
