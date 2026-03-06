@@ -249,7 +249,7 @@ class StockController extends Controller
      */
     public function expenseGoldList(){
 
-        $expenseGoldList = ExpenseGold::All();
+        $expenseGoldList = ExpenseGold::orderBy('created_at', 'desc')->get();
         return response()->json([
                 'message' => 'Expense Gold List',
                 'data' => $expenseGoldList
@@ -260,7 +260,7 @@ class StockController extends Controller
 
     public function expenseCashList(){
 
-        $expenseCashList = ExpenseCash::All();
+        $expenseCashList = ExpenseCash::orderBy('created_at', 'desc')->get();
         return response()->json([
                 'message' => 'Expense Cash List',
                 'data' => $expenseCashList
@@ -281,7 +281,7 @@ class StockController extends Controller
     }    
     public function stockCashList(){
 
-        $stockCashList = StockCash::All();
+        $stockCashList = StockCash::orderBy('created_at', 'desc')->get();
         return response()->json([
                 'message' => 'Stock Cash List',
                 'data' => $stockCashList
