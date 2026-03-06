@@ -95,12 +95,12 @@
                                         <!-- <button
                                             class="min-w-24 w-full text-xs py-1 font-semibold bg-[#ffe0c0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Delete
                                             Party</button>
-                                        </button>
+                                        </button>-->
 
                                         <button
                                             class="min-w-24 w-full text-xs py-1 font-semibold bg-[#ffe0c0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Refresh
                                             Record</button>
-                                        </button> -->
+                                        </button> 
 
                                     </div>
                                     <div>
