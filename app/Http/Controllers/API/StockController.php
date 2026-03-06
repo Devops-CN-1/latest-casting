@@ -271,7 +271,7 @@ class StockController extends Controller
 
     public function stockGoldList(){
 
-        $stockGoldList = StockGold::All() ->orderBy('created_at', 'desc');
+        $stockGoldList = StockGold::orderBy('created_at', 'desc')->get();
         return response()->json([
                 'message' => 'Stock Gold List',
                 'data' => $stockGoldList
@@ -281,7 +281,7 @@ class StockController extends Controller
     }    
     public function stockCashList(){
 
-        $stockCashList = StockCash::All() ->orderBy('created_at', 'desc');
+        $stockCashList = StockCash::orderBy('created_at', 'desc')->get();
         return response()->json([
                 'message' => 'Stock Cash List',
                 'data' => $stockCashList
