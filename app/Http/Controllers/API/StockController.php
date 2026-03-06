@@ -248,7 +248,6 @@ class StockController extends Controller
      * Store a newly created resource in storage.
      */
     public function expenseGoldList(){
-        dd('test');
 
         $expenseGoldList = ExpenseGold::orderBy('created_at', 'desc')->get();
         return response()->json([
