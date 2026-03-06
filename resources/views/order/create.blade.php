@@ -708,7 +708,7 @@
                 $('#op2GoldRecieved').val(data.op2GoldRecieved);
                 $('#op2GoldPaid').val(data.op2GoldPaid);
                 $('#op2RemainingCash').val(data.op2RemainingCash);
-                $('#op2RemainingGold').val(data.op2RemainingGold);
+                $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
 
                 // ✅ Option 3 fields
                 $('#op3cash').val(Math.ceil(data.totalKhalis * 8573.388).toFixed(3));
@@ -1300,7 +1300,7 @@ $(document).ready(function() {
         if (e.which === 13 || e.which === 9) {
             let op2TotalGoldwithMazdooriInGold =parseFloat( $('#op2TotalGoldwithMazdooriInGold').val()) || 0;
             let op2GoldRecieved =parseFloat( $('#op2GoldRecieved').val()) || 0;
-            $('#op2RemainingGold').val(op2TotalGoldwithMazdooriInGold - op2GoldRecieved);
+            $('#op2RemainingGold').val((op2TotalGoldwithMazdooriInGold - op2GoldRecieved).toFixed(2));
             $('#op2GoldPaid').focus();
         }
     });   
@@ -1314,7 +1314,7 @@ $(document).ready(function() {
 
             // Perform calculation
             let op2RemainingGold = (op2TotalGoldwithMazdooriInGold + op2GoldPaid) - op2GoldRecieved;
-            $('#op2RemainingGold').val(op2RemainingGold);
+            $('#op2RemainingGold').val(op2RemainingGold.toFixed(2));
 
             let gramRate =  $('#gramRate').val();
             let goldValueInCash = op2RemainingGold * gramRate ;
