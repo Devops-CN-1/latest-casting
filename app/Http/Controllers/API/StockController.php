@@ -371,10 +371,10 @@ class StockController extends Controller
                 return $item;
             });
 
-        // Merge and sort all records
+        // Merge and sort all records (latest first)
         $allRecords = $cashRecords
             ->concat($goldRecords)
-            ->sortBy('created_at')
+            ->sortByDesc('created_at')
             ->values();
 
         // ---------- Calculate Totals ----------
