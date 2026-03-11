@@ -171,7 +171,7 @@
                     </div>
                     <div class="mt-2 w-full flex items-center justify-between">
                         <label class="text-white font-semibold" for="">Last Deal Party</label>
-                        <select class="order-readonly-input w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[#b5b5a8] border-b-white bg-white" id="lastPartyBillNo" tabindex="-1">
+                        <select class=" w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[#b5b5a8] border-b-white bg-white" id="lastPartyBillNo" tabindex="-1">
                             <option value="">-- Select party --</option>
                         </select>
                     </div>
@@ -871,6 +871,52 @@ function updateCurrentTime() {
         if (el) el.textContent = timeStr;
     }
 
+function loadTodayOrderParties() {
+    $.ajax({
+        url: '/api/today-order-parties',
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
+        },
+        success: function(response) {
+            var $sel = $('#lastPartyBillNo');
+            $sel.find('option:not(:first)').remove();
+            if (response.status === 'success' && response.parties && response.parties.length) {
+                response.parties.forEach(function(p) {
+                    $sel.append($('<option></option>').val(p.party_id).text(p.label));
+                });
+            }
+            getLastOrderInformation();
+        },
+        error: function(xhr) {
+            getLastOrderInformation();
+        }
+    });
+}
+
+function getLastOrderInformation(){
+    $.ajax({
+        url: '/api/getLastOrderInformation',
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                let formattedOrderId = String(response.last_order_id).padStart(6, '0');
+                $('#lastPartyBills').val(response.total_orders_for_party);
+                $('#lastPartyBillNo').val(response.party_id);
+                $('#serialNumber').val(formattedOrderId);
+            }
+        },
+        error: function(xhr) {
+            if (xhr.status !== 404) toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
+        }
+    });
+}
+
 $(document).ready(function() {
         updateCurrentTime();
         setInterval(updateCurrentTime, 1000);
@@ -880,52 +926,6 @@ $(document).ready(function() {
         $('#gramRate').val(RatePerGram.toFixed(3));
 
         loadTodayOrderParties();
-
-        function loadTodayOrderParties() {
-            $.ajax({
-                url: '/api/today-order-parties',
-                type: 'GET',
-                dataType: 'json',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
-                },
-                success: function(response) {
-                    var $sel = $('#lastPartyBillNo');
-                    $sel.find('option:not(:first)').remove();
-                    if (response.status === 'success' && response.parties && response.parties.length) {
-                        response.parties.forEach(function(p) {
-                            $sel.append($('<option></option>').val(p.party_id).text(p.label));
-                        });
-                    }
-                    getLastOrderInformation();
-                },
-                error: function(xhr) {
-                    getLastOrderInformation();
-                }
-            });
-        }
-
-        function getLastOrderInformation(){
-            $.ajax({
-                url: '/api/getLastOrderInformation',
-                type: 'GET',
-                dataType: 'json',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        let formattedOrderId = String(response.last_order_id).padStart(6, '0');
-                        $('#lastPartyBills').val(response.total_orders_for_party);
-                        $('#lastPartyBillNo').val(response.party_id);
-                        $('#serialNumber').val(formattedOrderId);
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status !== 404) toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
-                }
-            });
-        }
 
         // When user selects a party from "Last Deal Party" dropdown, load that party's data
         $('#lastPartyBillNo').on('change', function() {
