@@ -781,7 +781,7 @@
 
         // Refresh Record: re-fetch old records with current date/party
         $('#refreshRecord').click(function () {
-            $('#oldRecord').trigger('click');
+            window.location.reload();
         });
 
         $('#enterStock').click(function () {
