@@ -881,6 +881,7 @@ $(document).ready(function() {
 
 
         function getLastOrderInformation(){
+            debugger;
 
             $.ajax({
                 url: '/api/getLastOrderInformation',
