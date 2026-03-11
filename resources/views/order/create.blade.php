@@ -171,7 +171,9 @@
                     </div>
                     <div class="mt-2 w-full flex items-center justify-between">
                         <label class="text-white font-semibold" for="">Last Deal Party</label>
-                        <input class="order-readonly-input w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBillNo" readonly tabindex="-1" type="number">
+                        <select class="order-readonly-input w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[#b5b5a8] border-b-white bg-white" id="lastPartyBillNo" tabindex="-1">
+                            <option value="">-- Select party --</option>
+                        </select>
                     </div>
                     <div class="flex items-center text-sm gap-1 mt-2">
                         <input class="order-readonly-input w-1/4 outline-none shadow-inner border-2 bg-[#ffc0ff] border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="lastPartyBills" value="" readonly tabindex="-1" type="number">
@@ -839,8 +841,8 @@
 
                 $('#serialNumber').val(response.order);
                 $('#lastPartyBills').val(response.total_orders_for_party);
-                $('#lastPartyBillNo').val(response.party.partyID);
                 $('#party_id').val(response.party.partyID);
+                loadTodayOrderParties();
             },
             error: function(xhr) {
                 if (xhr.status === 401) {
@@ -877,35 +879,95 @@ $(document).ready(function() {
         let RatePerGram = tollaRate / 11.664; 
         $('#gramRate').val(RatePerGram.toFixed(3));
 
-        getLastOrderInformation();
+        loadTodayOrderParties();
 
+        function loadTodayOrderParties() {
+            $.ajax({
+                url: '/api/today-order-parties',
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
+                },
+                success: function(response) {
+                    var $sel = $('#lastPartyBillNo');
+                    $sel.find('option:not(:first)').remove();
+                    if (response.status === 'success' && response.parties && response.parties.length) {
+                        response.parties.forEach(function(p) {
+                            $sel.append($('<option></option>').val(p.party_id).text(p.label));
+                        });
+                    }
+                    getLastOrderInformation();
+                },
+                error: function(xhr) {
+                    getLastOrderInformation();
+                }
+            });
+        }
 
         function getLastOrderInformation(){
-            debugger;
-
             $.ajax({
                 url: '/api/getLastOrderInformation',
                 type: 'GET',
                 dataType: 'json',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}"); // Replace with actual token if needed
+                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
                 },
                 success: function(response) {
-
                     if (response.status === 'success') {
                         let formattedOrderId = String(response.last_order_id).padStart(6, '0');
-                        console.log("Last Order ID: " + formattedOrderId);
                         $('#lastPartyBills').val(response.total_orders_for_party);
                         $('#lastPartyBillNo').val(response.party_id);
                         $('#serialNumber').val(formattedOrderId);
                     }
-
                 },
                 error: function(xhr) {
-                    toastr.error(xhr.responseJSON.message, 'Error');
+                    if (xhr.status !== 404) toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
                 }
             });
         }
+
+        // When user selects a party from "Last Deal Party" dropdown, load that party's data
+        $('#lastPartyBillNo').on('change', function() {
+            var partyID = $(this).val();
+            if (!partyID) return;
+            showLoader();
+            $.ajax({
+                url: '/api/parties/' + partyID,
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
+                },
+                success: function(response) {
+                    if (response.response_code === 201) {
+                        toastr.error(response.message, 'Error');
+                    } else if (response.response_code === 200) {
+                        $('#lastPartyBills').val(response.data.totalOrders);
+                        $('#party_id').val(partyID);
+                        if (response.data.party_type === "cash") {
+                            $('#partyName').val("cash party");
+                            $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
+                            $('#remainingMazdoori').val(response.data['cash_summary'].balance);
+                            $('#remarks').val(response.data.lastRemarks);
+                        } else {
+                            $('#partyName').val(response.data['party_regular'].businessName);
+                            $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
+                            $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
+                            $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
+                            $('#remainingMazdoori').val(Math.floor(response.data['cash_summary'].balance));
+                            $('#remarks').val(response.data.lastRemarks);
+                        }
+                        $('#getPartyData').val(partyID);
+                    }
+                    hideLoader();
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
+                    hideLoader();
+                }
+            });
+        });
 
     function updateDateTime() {
             var now = new Date();
@@ -1487,7 +1549,7 @@ $(document).ready(function() {
         $('#mazdoriRate').val('0.00');
         $('#wasteRate').val('0.00');
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
-        $('select').prop('selectedIndex', 0);
+        $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);
 
         enableButtons();
     });

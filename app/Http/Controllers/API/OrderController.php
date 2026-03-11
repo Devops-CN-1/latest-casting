@@ -1041,6 +1041,43 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * Parties that have orders today, latest order first (for "Last Deal Party" dropdown).
+     */
+    public function getTodayOrderParties()
+    {
+        try {
+            $today = now()->toDateString();
+            $parties = Order::whereDate('created_at', $today)
+                ->select('party_id', DB::raw('MAX(created_at) as last_order_at'))
+                ->groupBy('party_id')
+                ->orderByDesc('last_order_at')
+                ->get();
+
+            $list = [];
+            foreach ($parties as $row) {
+                $party = Party::with('partyRegular')->where('partyID', $row->party_id)->first();
+                $label = (string) $row->party_id;
+                if ($party && $party->partyRegular) {
+                    $label .= ' - ' . ($party->partyRegular->businessName ?? '');
+                } elseif ($party && $party->type === 'cash') {
+                    $label .= ' - cash party';
+                }
+                $list[] = ['party_id' => (int) $row->party_id, 'label' => $label];
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'parties' => $list
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     /**
      * Display the specified resource.

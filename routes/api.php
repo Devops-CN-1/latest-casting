@@ -49,6 +49,7 @@ Route::group(['namespace' => 'App\Http\Controllers\API'], function () {
         Route::get('party/old-parchi/{party}','PartyController@oldparchies');
         Route::get('party/orderRecord/{party}','PartyController@orderRecord');
         Route::get('getLastOrderInformation','OrderController@getLastOrderInformation');
+        Route::get('today-order-parties','OrderController@getTodayOrderParties');
         Route::post('add-party','PartyController@store')->name('add-party');
         Route::middleware('super.admin.api')->group(function () {
             Route::post('system-settings/save','SystemSettingController@save')->name('system-settings.save');
