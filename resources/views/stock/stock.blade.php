@@ -97,10 +97,9 @@
                                             Party</button>
                                         </button>-->
 
-                                        <button
+                                        <button type="button" id="refreshRecord"
                                             class="min-w-24 w-full text-xs py-1 font-semibold bg-[#ffe0c0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4]">Refresh
-                                            Record</button>
-                                        </button> 
+                                            Record</button> 
 
                                     </div>
                                     <div>
@@ -778,6 +777,11 @@
                             hideLoader();
                 }
             });
+        });
+
+        // Refresh Record: re-fetch old records with current date/party
+        $('#refreshRecord').click(function () {
+            $('#oldRecord').trigger('click');
         });
 
         $('#enterStock').click(function () {
