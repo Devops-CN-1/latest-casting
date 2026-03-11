@@ -351,6 +351,8 @@ class StockController extends Controller
             ->when($fromDate && $toDate, function($query) use ($fromDate, $toDate) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
             })
+            
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($item) {
                 $item->type = 'gold';
@@ -362,6 +364,7 @@ class StockController extends Controller
             ->when($fromDate && $toDate, function($query) use ($fromDate, $toDate) {
                 $query->whereBetween('created_at', [$fromDate, $toDate]);
             })
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($item) {
                 $item->type = 'cash';
