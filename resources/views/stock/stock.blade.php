@@ -690,8 +690,8 @@
             var partyId = $('#partyId').val();
 
             // ✅ Validate inputs
-            if (dateFrom === '' || dateTo === '' || partyId === '') {
-                toastr.error('Please select From Date, To Date and Party ID', 'Error');
+            if (partyId === '') {
+                toastr.error('Please select Party ID', 'Error');
                 return false;
             }
 
