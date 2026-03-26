@@ -1208,7 +1208,7 @@ $(document).ready(function() {
             }
 
 
-            $('#wasteRate').val(wasteRate);
+            $('#wasteRate').val(wasteRate.toFixed(3));
 
 
             let weightCastig = parseFloat($('#weightCastig').val()) || 0;
