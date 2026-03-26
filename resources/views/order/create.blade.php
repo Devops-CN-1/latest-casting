@@ -696,7 +696,6 @@
                 $('#op1RemainingCash').val(data.op1RemainingCash);
 
                 // ✅ Option 2 fields
-                debugger
                 $('#op2Gold').val(data.totalKhalis);
                 $('#op2MazdooriInGold').val(data.totalMazdooriInGold);
                 let op2TotalGoldwithMazdooriInGoldtotal = (
@@ -1303,7 +1302,7 @@ $(document).ready(function() {
             let wasteCastedValue =parseFloat($('#wasteCasted').val()) || 0;
             let inOutValue = ( wasteCastedValue * 96 ) / (mailCode + 96);
             $('#InOut').val((Math.floor(inOutValue * 100) / 100).toFixed(3));
-
+            debugger;
             let op2Goldvalue = parseFloat($('#op2Gold').val()) || 0;
             let op2MazdooriInGoldvalue = parseFloat($('#op2MazdooriInGold').val()) || 0;
             let op2TotalGoldwithMazdooriInGold = op2Goldvalue + op2MazdooriInGoldvalue ;
