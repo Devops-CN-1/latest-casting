@@ -1306,7 +1306,7 @@ $(document).ready(function() {
             let op2Goldvalue = parseFloat($('#op2Gold').val()) || 0;
             let op2MazdooriInGoldvalue = parseFloat($('#op2MazdooriInGold').val()) || 0;
             let op2TotalGoldwithMazdooriInGold = op2Goldvalue + op2MazdooriInGoldvalue ;
-            $('#op2TotalGoldwithMazdooriInGold').val((Math.ceil(op2TotalGoldwithMazdooriInGold * 100) / 100).toFixed(3));
+            $('#op2TotalGoldwithMazdooriInGold').val(op2TotalGoldwithMazdooriInGold.toFixed(3));
             $('#op1khalasGold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
             $('#op1mazdori').val(totalMazdoori.toFixed(3));
 
