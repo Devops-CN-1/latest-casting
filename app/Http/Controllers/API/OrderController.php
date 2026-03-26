@@ -1042,13 +1042,13 @@ class OrderController extends Controller
     }
 
     /**
-     * Parties that have orders today, latest order first (for "Last Deal Party" dropdown).
+     * Parties that have orders in the last 15 days, latest order first (for "Last Deal Party" dropdown).
      */
     public function getTodayOrderParties()
     {
         try {
-            $today = now()->toDateString();
-            $parties = Order::whereDate('created_at', $today)
+            $from = now()->subDays(15)->startOfDay();
+            $parties = Order::where('created_at', '>=', $from)
                 ->select('party_id', DB::raw('MAX(created_at) as last_order_at'))
                 ->groupBy('party_id')
                 ->orderByDesc('last_order_at')
