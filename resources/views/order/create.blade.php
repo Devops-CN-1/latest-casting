@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <div class="w-full p-5 bg-[#004000]">
+        <div id="order-create-panel" class="w-full p-5 bg-[#004000]">
             <!-- ayat ul kursi -->
             <h1 class="text-xs font-semibold text-center text-[#cbd2a2]">
                 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ
@@ -650,6 +650,11 @@
     }
 
     function fetchOldParchies(id) {
+        if (!id) {
+            enableButtons();
+            hideLoader();
+            return;
+        }
         showLoader();
         $.ajax({
             url: "/api/party/orderRecord/" + id,  // API route
@@ -731,6 +736,7 @@
             },
             error: function(xhr) {
                 console.log("Error:", xhr.responseText);
+                enableButtons();
                 hideLoader();
             }
         });
@@ -1577,12 +1583,14 @@ function disableButtons() {
     $('#saveOrder').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
     $('#JustPrint').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
     $('#Print').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+    $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', true);
 }
 
 function enableButtons() {
     $('#saveOrder').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
     $('#JustPrint').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
     $('#Print').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+    $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', false);
 }
 
 </script>
