@@ -8,7 +8,10 @@
                 
             </div>
             <div class="mt-1 flex justify-end">
+            <button id="leenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#ff0000] cursor-pointer">Leena</button>
+            <button id="deenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#c000c0] cursor-pointer">Deena</button>
                 <button type="button" id="print-table-btn" class="px-4 py-1 font-semibold bg-[#c0ffff] border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer print:hidden">Print / Save as PDF</button>
+            
             </div>
             <!-- form container  -->
             <div class="mt-2">
@@ -113,8 +116,7 @@
                         <a href="{{url('/')}}" class="w-24 px-5 py-1 font-semibold bg-[#ff00ff] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Order</a>
                         <!-- <button class="w-24 px-5 py-1 font-semibold bg-[#c00000] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">Quit</button> -->
                         <button id="list-c-btn" type="button" class="w-24 py-1 px-5 font-semibold bg-[#c0c0c0] border-2 border-l-white border-t-white  border-r-[#b1b0aa] border-b-[#c9c8c4] cursor-pointer">List(C)</button>
-                        <button id="leenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#ff0000] cursor-pointer">Leena</button>
-                        <button id="deenaCashGold" class="w-24 text-center py-1 font-semibold border-2 border-l-white border-t-white border-r-[#b1b0aa] border-b-[#c9c8c4] bg-[#c000c0] cursor-pointer">Deena</button>
+                        
                     </div>
                 </div>
             </div>
