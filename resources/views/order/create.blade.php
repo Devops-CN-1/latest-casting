@@ -934,46 +934,46 @@ $(document).ready(function() {
         loadTodayOrderParties();
 
         // When user selects a party from "Last Deal Party" dropdown, load that party's data
-        $('#lastPartyBillNo').on('change', function() {
-            var partyID = $(this).val();
-            if (!partyID) return;
-            showLoader();
-            $.ajax({
-                url: '/api/parties/' + partyID,
-                type: 'GET',
-                dataType: 'json',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
-                },
-                success: function(response) {
-                    if (response.response_code === 201) {
-                        toastr.error(response.message, 'Error');
-                    } else if (response.response_code === 200) {
-                        $('#lastPartyBills').val(response.data.totalOrders);
-                        $('#party_id').val(partyID);
-                        if (response.data.party_type === "cash") {
-                            $('#partyName').val("cash party");
-                            $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
-                            $('#remainingMazdoori').val(response.data['cash_summary'].balance);
-                            $('#remarks').val(response.data.lastRemarks);
-                        } else {
-                            $('#partyName').val(response.data['party_regular'].businessName);
-                            $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
-                            $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
-                            $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
-                            $('#remainingMazdoori').val(Math.floor(response.data['cash_summary'].balance));
-                            $('#remarks').val(response.data.lastRemarks);
-                        }
-                        $('#getPartyData').val(partyID);
-                    }
-                    hideLoader();
-                },
-                error: function(xhr) {
-                    toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
-                    hideLoader();
-                }
-            });
-        });
+        // $('#lastPartyBillNo').on('change', function() {
+        //     var partyID = $(this).val();
+        //     if (!partyID) return;
+        //     showLoader();
+        //     $.ajax({
+        //         url: '/api/parties/' + partyID,
+        //         type: 'GET',
+        //         dataType: 'json',
+        //         beforeSend: function(xhr) {
+        //             xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
+        //         },
+        //         success: function(response) {
+        //             if (response.response_code === 201) {
+        //                 toastr.error(response.message, 'Error');
+        //             } else if (response.response_code === 200) {
+        //                 $('#lastPartyBills').val(response.data.totalOrders);
+        //                 $('#party_id').val(partyID);
+        //                 if (response.data.party_type === "cash") {
+        //                     $('#partyName').val("cash party");
+        //                     $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
+        //                     $('#remainingMazdoori').val(response.data['cash_summary'].balance);
+        //                     $('#remarks').val(response.data.lastRemarks);
+        //                 } else {
+        //                     $('#partyName').val(response.data['party_regular'].businessName);
+        //                     $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
+        //                     $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
+        //                     $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
+        //                     $('#remainingMazdoori').val(Math.floor(response.data['cash_summary'].balance));
+        //                     $('#remarks').val(response.data.lastRemarks);
+        //                 }
+        //                 $('#getPartyData').val(partyID);
+        //             }
+        //             hideLoader();
+        //         },
+        //         error: function(xhr) {
+        //             toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
+        //             hideLoader();
+        //         }
+        //     });
+        // });
 
     function updateDateTime() {
             var now = new Date();
