@@ -1018,8 +1018,7 @@ $(document).ready(function() {
                     xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}"); // Replace with actual token if needed
                 },
                 success: function(response) {
-
-                    
+                    $('$orderSelect').empty();
 
                     if (response.response_code === 201) {
                         toastr.error(response.message, 'Error');
@@ -1550,6 +1549,7 @@ $(document).ready(function() {
 
     $('#clearButton').on('click', function(e) {
         e.preventDefault();
+        $('$orderSelect').empty();
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
         $('#mazdoriRate').val('0.00');
