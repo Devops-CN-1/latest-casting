@@ -172,7 +172,7 @@
                     <div class="mt-2 w-full flex items-center justify-between">
                         <label class="text-white font-semibold" for="">Last Deal Party</label>
                         <select class=" w-1/2 outline-none shadow-inner bg-[#d8e4f8] border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[#b5b5a8] border-b-white bg-white" id="lastPartyBillNo" tabindex="-1">
-                            <option value="">-- Select party --</option>
+                            <!-- <option value="">-- Select party --</option> -->
                         </select>
                     </div>
                     <div class="flex items-center text-sm gap-1 mt-2">
