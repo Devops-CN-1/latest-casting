@@ -1549,6 +1549,7 @@ $(document).ready(function() {
         });
 
     $('#clearButton').on('click', function(e) {
+        
         e.preventDefault();
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
@@ -1556,6 +1557,7 @@ $(document).ready(function() {
         $('#wasteRate').val('0.00');
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
         $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);
+        $('#orderSelect').empty();
 
         enableButtons();
     });
