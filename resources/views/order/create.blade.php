@@ -1581,14 +1581,14 @@ function print() {
 
 function disableButtons() {
     $('#saveOrder').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
-    $('#JustPrint').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+    // $('#JustPrint').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
     $('#Print').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
     $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', true);
 }
 
 function enableButtons() {
     $('#saveOrder').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-    $('#JustPrint').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+    // $('#JustPrint').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
     $('#Print').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
     $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', false);
 }
