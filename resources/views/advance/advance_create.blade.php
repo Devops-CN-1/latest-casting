@@ -421,6 +421,17 @@
         }
     }
 </style>
+@php
+    $__receiptName = trim($systemSettings->software_name ?? 'Saleem Casting Software');
+    if (preg_match('/^(.+?)\s+(Software)$/iu', $__receiptName, $__m)) {
+        $receiptCompanyLine1 = $__m[1];
+        $receiptCompanyLine2 = $__m[2];
+    } else {
+        $__parts = preg_split('/\s+/', $__receiptName, 2, PREG_SPLIT_NO_EMPTY);
+        $receiptCompanyLine1 = $__parts[0] ?? $__receiptName;
+        $receiptCompanyLine2 = $__parts[1] ?? '';
+    }
+@endphp
 <script>
     function printdata() {
     // Get party information
@@ -510,7 +521,7 @@
             gold: goldNum,
             cash: cashNum,
             rp: rpStatus,
-            remarks: remarks || 'h',
+            remarks: remarks || '',
             datetime: formattedDate
         });
         
@@ -609,22 +620,36 @@ function formatDateTimeForReceipt(date) {
     return day + '/' + month + '/' + year + ' ' + String(displayHours).padStart(2, '0') + ':' + minutes + ' ' + period;
 }
 
+function receiptRpAbbrev(rp) {
+    if (!rp) return 'R';
+    var s = String(rp).toLowerCase();
+    return (s === 'paid') ? 'P' : 'R';
+}
+
+function receiptBalanceSuffix(totalGoldStr, totalCashStr) {
+    var g = parseFloat(totalGoldStr) || 0;
+    var c = parseFloat(totalCashStr) || 0;
+    var primary = (g !== 0) ? g : c;
+    if (primary === 0) return '';
+    return primary > 0 ? ' (lena hai)' : ' (dena hai)';
+}
+
 // Build receipt HTML
 function buildReceiptHTML(data) {
 
      var lastGold = '0';
     var lastCash = '0';
-    var lastGoldRp = 'R';
-    var lastCashRp = 'R';
+    var lastGoldRp = 'Received';
+    var lastCashRp = 'Received';
     
     if (data.lastGoldTransaction) {
         lastGold = data.lastGoldTransaction.gold.toFixed(3);
-        lastGoldRp = data.lastGoldTransaction.rp || 'R';
+        lastGoldRp = data.lastGoldTransaction.rp || 'Received';
     }
     
     if (data.lastCashTransaction) {
-        lastCash = data.lastCashTransaction.cash.toFixed(3);
-        lastCashRp = data.lastCashTransaction.rp || 'R';
+        lastCash = data.lastCashTransaction.cash.toFixed(0);
+        lastCashRp = data.lastCashTransaction.rp || 'Received';
     }
 
     var html = `<!DOCTYPE html>
@@ -677,21 +702,17 @@ function buildReceiptHTML(data) {
 
         .decorative-line {
             text-align: center;
-            font-size: 8pt;
+            font-size: 7pt;
             margin-bottom: 4px;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            line-height: 1;
         }
 
         .company-name {
             font-size: 14pt;
             font-weight: bold;
-            margin: 4px 0;
+            margin: 2px 0;
             letter-spacing: 1px;
-        }
-
-        .company-subtitle {
-            font-size: 10pt;
-            margin-bottom: 8px;
         }
 
         .receipt-info {
@@ -703,14 +724,31 @@ function buildReceiptHTML(data) {
             margin: 2px 0;
         }
 
-        .customer-name {
+        .party-code-line {
+            font-size: 10pt;
+        }
+
+        .party-code-value {
+            font-size: 14pt;
             font-weight: bold;
+        }
+
+        .customer-name {
             margin: 4px 0;
+        }
+
+        .rate-label {
+            font-weight: bold;
         }
 
         .rate-info {
             margin: 6px 0;
             line-height: 1.5;
+        }
+
+        .p-rate-line {
+            margin: 4px 0;
+            font-size: 9pt;
         }
 
         .table-header {
@@ -734,10 +772,6 @@ function buildReceiptHTML(data) {
             line-height: 1.3;
         }
 
-        .table-row:nth-child(even) {
-            background-color: #f5f5f5;
-        }
-
         .col-gold {
             text-align: right;
         }
@@ -758,18 +792,14 @@ function buildReceiptHTML(data) {
             font-size: 8pt;
         }
 
-        .p-rate {
-            margin: 4px 0;
-            font-size: 9pt;
-        }
-
         .total {
             border-top: 1px dashed #000;
             margin-top: 8px;
             padding-top: 6px;
             font-weight: bold;
             font-size: 11pt;
-            text-align: right;
+            font-family: 'Courier New', monospace;
+            text-align: center;
         }
 
         .footer {
@@ -797,25 +827,26 @@ function buildReceiptHTML(data) {
 <body>
     <div class="receipt">
         <div class="header">
-            <div class="decorative-line">◉◉◉◉◉◉◉◉◉◉</div>
-            <div class="company-name">{{ $systemSettings->software_name}}</div>
+            <div class="decorative-line">◉◉◉◉◉◉◉◉◉◉◉</div>
+            <div class="company-name">{{ $receiptCompanyLine1 }}</div>
+            @if(trim($receiptCompanyLine2 ?? ''))
+            <div class="company-name">{{ $receiptCompanyLine2 }}</div>
+            @endif
         </div>
 
         <div class="receipt-info">
-            <div>Party code ${data.partyNo}</div>
+            <div class="party-code-line">Party code <span class="party-code-value">${data.partyNo}</span></div>
             <div>${data.dateTime}</div>
-            <div class="customer-name">Customer Name ${data.partyName.toUpperCase()}</div>
+            <div class="customer-name">Customer Name: ${data.partyName.toUpperCase()}</div>
         </div>
 
         <div class="rate-info">
-            <div>Rate/Tolla ${data.rateTolla}</div>
-            <div>Rate/Gram ${data.rateGram}</div>
+            <div><span class="rate-label">Rate/Tolla</span> ${data.rateTolla}</div>
+            <div><span class="rate-label">Rate/Gram</span> ${data.rateGram}</div>
         </div>
 
-
-
-        <div class="rate-info">
-            P/Rate: ${lastGold} ${lastGoldRp} Cash ${lastCash} ${lastCashRp}
+        <div class="p-rate-line">
+            <span class="rate-label">P/Rate:</span> ${lastGold} ${lastGoldRp} Cash ${lastCash} ${receiptRpAbbrev(lastCashRp)}
         </div>
 
         <div class="table-header">
@@ -835,7 +866,7 @@ function buildReceiptHTML(data) {
     data.tableRows.forEach(function(row, index) {
         var goldStr = row.gold > 0 ? row.gold.toFixed(3) : '0';
         var cashStr = row.cash > 0 ? row.cash.toFixed(0) : '0';
-        var remarks = row.remarks || 'h';
+        var remarks = row.remarks || '';
         var datetime = row.datetime || '';
         
         html += `
@@ -853,7 +884,7 @@ function buildReceiptHTML(data) {
        html += `
 
         <div class="total">
-            Gold ${data.totalGold} Cash ${data.totalCash}
+            Gold ${data.totalGold} Cash ${data.totalCash}${receiptBalanceSuffix(data.totalGold, data.totalCash)}
         </div>
 
         <div class="footer">
