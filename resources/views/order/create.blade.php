@@ -696,6 +696,7 @@
                 $('#op1RemainingCash').val(data.op1RemainingCash);
 
                 // ✅ Option 2 fields
+                debugger
                 $('#op2Gold').val(data.totalKhalis);
                 $('#op2MazdooriInGold').val(data.totalMazdooriInGold);
                 let op2TotalGoldwithMazdooriInGoldtotal = (
