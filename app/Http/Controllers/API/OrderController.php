@@ -66,8 +66,6 @@ class OrderController extends Controller
 
             $user = auth()->user();
 
-            dd($request->op2RemainingCash);
-
             // ✅ Create Order
             $order = Order::create([
                 'party_id' => $request->party_id,
