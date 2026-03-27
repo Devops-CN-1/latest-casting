@@ -709,7 +709,7 @@
 
                 $('#op2TotalGoldwithMazdooriInGold').val(op2TotalGoldwithMazdooriInGoldtotal);
 
-                $('#op2cash').val((data.op2RemainingGold * 8573.388  ).toFixed(3));
+                $('#op2cash').val((data.op2RemainingGold * $('#mazdoriRate').val(data.mazdoriRate)  ).toFixed(3));
 
                 $('#op2CashRecieved').val(data.op2CashRecieved);
                 $('#op2GoldRecieved').val(data.op2GoldRecieved);
@@ -718,12 +718,12 @@
                 $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
 
                 // ✅ Option 3 fields
-                $('#op3cash').val(Math.ceil(data.totalKhalis * 8573.388).toFixed(3));
+                $('#op3cash').val(Math.ceil(data.totalKhalis * $('#mazdoriRate').val(data.mazdoriRate)).toFixed(3));
                 $('#op3mazdooriInCash').val(Math.ceil(data.totalMazdoori).toFixed(3));
                 
                 $('#op3CashRecieved').val(data.op3CashRecieved);
                 $('#op3CashPaid').val(data.op3CashPaid);
-                let totalop3totalCashwithMazdooriInCash = (Math.ceil(data.totalKhalis * 8573.388) + Math.ceil(data.totalMazdoori)).toFixed(3);
+                let totalop3totalCashwithMazdooriInCash = (Math.ceil(data.totalKhalis * $('#mazdoriRate').val(data.mazdoriRate)) + Math.ceil(data.totalMazdoori)).toFixed(3);
              $('#op3totalCashwithMazdooriInCash').val(totalop3totalCashwithMazdooriInCash);
              $('#op3RemainingCash').val(data.op3RemainingCash);
 
