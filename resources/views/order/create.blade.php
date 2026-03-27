@@ -761,6 +761,7 @@
     mazdoorie: $('#mazdoorie').val() || 0,
     InOutCheck: $('#InOutCheck').is(':checked') ? 1 : 0,
     InOut: $('#InOut').val() || 0,
+    gramRate: $('#gramRate').val() || 0,
     remarks: $('#remarks').val() || '',
     selectOption: $('input[name="selectOption"]:checked').val() || '',
 

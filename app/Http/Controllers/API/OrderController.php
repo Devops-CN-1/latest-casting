@@ -84,6 +84,7 @@ class OrderController extends Controller
                 'InOutCheck' => $request->InOutCheck ?? 0,
                 'InOut' => $request->InOut ?? null,
                 'Piece' => $request->Piece ?? 0,
+                'gramRate' => $request->gramRate ?? 0,
                 'remarks' => $request->remarks ?? null,
                 'selectOption' => $request->selectOption ?? 'op1',
                 'totalGold' => $request->totalKhalis ?? 0,

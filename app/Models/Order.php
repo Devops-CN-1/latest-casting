@@ -11,7 +11,7 @@ class Order extends Model
     protected $fillable = [
     'id','party_id', 'created_by', 'weightReady', 'mailCode', 'mazdoriRate', 'wasteRate', 'tollaRate',
     'goldIN', 'goldOut', 'cashIn','InOutCheck', 'cashOut', 'wasteCasted', 'mazdoorie',
-    'InOut', 'Piece', 'remarks', 'selectOption',
+    'InOut', 'Piece', 'remarks', 'selectOption', 'gramRate',
     'totalGold', 'totalMazdoori', 'totalMazdooriInGold', 'totalMazdooriInCash',
     'goldInAfter', 'goldOutAfter', 'cashInAfter', 'cashOutAfter',
 
