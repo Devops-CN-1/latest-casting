@@ -1214,7 +1214,7 @@ $(document).ready(function() {
                 wasteRate = 0.400;
             }
 
-            if(wasteRateCheck.is(':checked')){
+            if($('#wasteRateCheck').is(':checked')){
                 $('#wasteRate').val(0.00);
             }else{
                 $('#wasteRate').val(wasteRate.toFixed(3));
