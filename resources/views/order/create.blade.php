@@ -1218,8 +1218,8 @@ $(document).ready(function() {
             }
 
             if($('#wasteDiscountRate').val() > 0){
-                var DiscountRate = $('#wasteDiscountRate').val();
-                var wasteRate = wasteRate - (wasteRate * DiscountRate / 100);
+                var wasteDiscountRate = $('#wasteDiscountRate').val();
+                var wasteRate = wasteRate - (wasteRate * wasteDiscountRate / 100);
                 $('#wasteRate').val(wasteRate.toFixed(3));
             }
 
