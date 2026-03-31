@@ -1217,18 +1217,20 @@ $(document).ready(function() {
                 wasteRate = 0.400;
             }
 
-            if($('#wasteDiscountRate').val() > 0){
-                var wasteDiscountRate = $('#wasteDiscountRate').val();
-                var wasteRate2 = wasteRate - (wasteRate * wasteDiscountRate / 100);
-                $('#wasteRate').val(wasteRate2.toFixed(3));
-            }
+            
 
 
 
             if($('#wasteRateCheck').is(':checked')){
                 $('#wasteRate').val(0.00);
             }else{
+            if($('#wasteDiscountRate').val() > 0){
+                var wasteDiscountRate = $('#wasteDiscountRate').val();
+                var wasteRate2 = wasteRate - (wasteRate * wasteDiscountRate / 100);
+                $('#wasteRate').val(wasteRate2.toFixed(3));
+            }else{
                 $('#wasteRate').val(wasteRate.toFixed(3));
+            }
             }
 
 
