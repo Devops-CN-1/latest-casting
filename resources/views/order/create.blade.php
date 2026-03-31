@@ -148,10 +148,12 @@
                             <div class="flex items-center">
                                 <input type="checkbox" 
                                     class="w-1/6 h-7 bg-white outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="wasteRateCheck" />
-                                <input type="number" name="wasteRate" id="wasteRate" value="0.00" 
-                                    class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                                <input type="number" name="wasteDiscountRate" id="wasteDiscountRate"  value="0.100" 
+                                
+                                    <input type="number" name="wasteDiscountRate" id="wasteDiscountRate"  value="0.100" 
                                     class="w-5/12 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
+                                    <input type="number" name="wasteRate" id="wasteRate" value="0.00" 
+                                    class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
+                                
                             </div>
                             <div>
                                 <input type="number"  name="tollaRate" id="tollaRate"  value="{{ $systemSettings->gold_rate }}" 
