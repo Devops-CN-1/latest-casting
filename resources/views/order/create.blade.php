@@ -1219,8 +1219,8 @@ $(document).ready(function() {
 
             if($('#wasteDiscountRate').val() > 0){
                 var wasteDiscountRate = $('#wasteDiscountRate').val();
-                var wasteRate = wasteRate - (wasteRate * wasteDiscountRate / 100);
-                $('#wasteRate').val(wasteRate.toFixed(3));
+                var wasteRate2 = wasteRate - (wasteRate * wasteDiscountRate / 100);
+                $('#wasteRate').val(wasteRate2.toFixed(3));
             }
 
 
