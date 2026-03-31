@@ -1217,11 +1217,21 @@ $(document).ready(function() {
                 wasteRate = 0.400;
             }
 
+            if($('#wasteDiscountRate').val() > 0){
+                var DiscountRate = $('#wasteDiscountRate').val();
+                var wasteRate = wasteRate - (wasteRate * DiscountRate / 100);
+                $('#wasteRate').val(wasteRate.toFixed(3));
+            }
+
+
+
             if($('#wasteRateCheck').is(':checked')){
                 $('#wasteRate').val(0.00);
             }else{
                 $('#wasteRate').val(wasteRate.toFixed(3));
             }
+
+
 
 
             
