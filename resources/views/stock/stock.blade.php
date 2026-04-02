@@ -1183,24 +1183,16 @@
         });
 
         $('#stockGoldList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/stock-gold-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#stockGoldListTable')) {
+                    try {
+                        $('#stockGoldListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="stockGoldListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1211,66 +1203,79 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.status ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('stockGoldListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#stockGoldListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/stock-gold-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load stock gold list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'gold' },
+                                { data: 2, name: 'status' },
+                                { data: 3, name: 'created_at' },
+                                { data: 4, name: 'remarks' }
+                            ],
+                            pageLength: 25,
+                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            order: [[3, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
         $('#stockCashList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/stock-cash-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#stockCashListTable')) {
+                    try {
+                        $('#stockCashListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="stockCashListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1281,45 +1286,66 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.cash ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.status ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('stockCashListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#stockCashListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/stock-cash-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load stock cash list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'cash' },
+                                { data: 2, name: 'status' },
+                                { data: 3, name: 'created_at' },
+                                { data: 4, name: 'remarks' }
+                            ],
+                            pageLength: 25,
+                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            order: [[3, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
 
