@@ -921,6 +921,7 @@ function padRight(str, length) {
 }
 
 $(document).ready(function() {
+    $('#party_no').focus();
 
 
 
