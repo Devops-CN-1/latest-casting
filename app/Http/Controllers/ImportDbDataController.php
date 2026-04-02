@@ -473,19 +473,22 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read file
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            $d = array_change_key_case($data, CASE_LOWER);
+            if (!array_key_exists('cash', $d)) {
+                throw new \RuntimeException(
+                    'Missing column cash. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
             ExpenseCash::create([
-                'cash'       => floatval(trim($data['cash'])),
-                'remarks'    => trim($data['Remarks']),
-                'created_at' => trim($data['DateofEntry']),
-                'updated_at' => trim($data['DateofEntry']),
+                'cash'       => floatval(trim($d['cash'])),
+                'remarks'    => trim($d['remarks'] ?? ''),
+                'created_at' => trim($d['dateofentry'] ?? ''),
+                'updated_at' => trim($d['dateofentry'] ?? ''),
             ]);
         }
 
