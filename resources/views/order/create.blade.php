@@ -1591,6 +1591,8 @@ $(document).ready(function() {
         $('#orderSelect').empty();
 
         enableButtons();
+        $('#getPartyData').focus();
+
     });
 
 
