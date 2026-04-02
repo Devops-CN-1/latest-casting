@@ -139,9 +139,9 @@
                     <div class="flex items-center gap-5">
                         <div class="w-3/5 space-y-2">
                             <div class="flex items-center">
-                            <input type="number" name="mazdoridiscountRate" id="mazdoridiscountRate" value="0" 
+                            <input type="number" name="mazdoridiscountRate" order-readonly-input id="mazdoridiscountRate" value="0" 
                             class="w-1/2 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                            <input type="number" name="mazdoriRate" id="mazdoriRate" value="0.00" 
+                            <input type="number" name="mazdoriRate" order-readonly-input id="mazdoriRate" value="0.00" 
                                     class="w-1/2 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
@@ -844,11 +844,9 @@
                 if (response.status === 'success') {
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 } else {
-                     toastr.success('Order not saved!', 'Error');
+                     toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 }
 
                 $('#serialNumber').val(response.order);
@@ -1584,7 +1582,6 @@ $(document).ready(function() {
         $('#orderSelect').empty();
 
         enableButtons();
-        $('#getPartyData').focus();
     });
 
 
