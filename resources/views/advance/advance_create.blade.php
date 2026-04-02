@@ -1023,6 +1023,7 @@ $(document).ready(function() {
     }); 
     $(document).on('click', '#clear_button', function() {
     $('#party-advance-form')[0].reset();
+    $('#party_no').focus();
 
     });
 
