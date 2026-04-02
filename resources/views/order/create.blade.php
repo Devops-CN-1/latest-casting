@@ -1181,7 +1181,7 @@ $(document).ready(function() {
 
                 $('#wasteRate').focus(); // Stay on same field
             } else {
-                $('#weightCastig').focus(); // Move to next input
+                $('#wasteRate').focus(); // Move to next input
             }
         }
     });
