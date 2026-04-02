@@ -921,6 +921,7 @@ function padRight(str, length) {
 }
 
 $(document).ready(function() {
+    $('#party_no').focus();
 
 
 
@@ -1253,7 +1254,8 @@ $(document).ready(function() {
                 $('#cash-daina').val('');
                 getPartiesStatus();
                 // fetchCustomerData('');
-                toastr.success('Party saved successfully!', 'Success');
+                toastr.success('Party details updated successfully!', 'Success');
+                $('#party_no').focus();
             },
             error: function (xhr) {
                 toastr.error(xhr.responseText, 'Error');

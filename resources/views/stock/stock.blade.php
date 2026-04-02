@@ -438,6 +438,7 @@
 
     <script>
 
+
         // Loader functions
         function showLoader() {
             $('#tableLoader').removeClass('hidden');
@@ -777,6 +778,13 @@
                             hideLoader();
                 }
             });
+        });
+
+        $('#partyId').on('keydown', function (e) {
+            if (e.key === 'Enter' || e.which === 13) {
+                e.preventDefault();
+                $('#oldRecord').trigger('click');
+            }
         });
 
         // Refresh Record: re-fetch old records with current date/party
