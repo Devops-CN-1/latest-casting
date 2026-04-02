@@ -139,14 +139,14 @@
                     <div class="flex items-center gap-5">
                         <div class="w-3/5 space-y-2">
                             <div class="flex items-center">
-                            <input type="number" name="mazdoridiscountRate" id="mazdoridiscountRate" value="18" 
-                            class="w-1/2 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                            <input type="number" name="mazdoriRate" id="mazdoriRate" value="0.00" 
-                                    class="w-1/2 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
+                            <input type="number" name="mazdoridiscountRate"  id="mazdoridiscountRate" value="0" 
+                            class=" order-readonly-input w-1/2 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
+                            <input type="number" name="mazdoriRate"  id="mazdoriRate" value="0.00" 
+                                    class=" order-readonly-input w-1/2 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
                             <div class="flex items-center">
-                                <input type="checkbox" 
+                                <input type="checkbox" checked
                                     class="w-1/6 h-7 bg-white outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white" id="wasteRateCheck" />
                                 
                                     <input type="number" name="wasteDiscountRate" id="wasteDiscountRate" value="0.00" 
@@ -844,11 +844,9 @@
                 if (response.status === 'success') {
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 } else {
-                     toastr.success('Order not saved!', 'Error');
+                     toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 }
 
                 $('#serialNumber').val(response.order);
@@ -1106,15 +1104,23 @@ $(document).ready(function() {
     $('#pieceCheck').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
-            $('#mazdoridiscountRate').focus();
-        }
-    });
-    $('#mazdoridiscountRate').on('keydown', function(e) {
-        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
-            e.preventDefault(); // Prevent default tab behavior
             $('#wasteDiscountRate').focus();
         }
     });
+    $('#wasteDiscountRate').on('keydown', function(e) {
+        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
+            e.preventDefault(); // Prevent default tab behavior
+            $('#wasteRate').focus();
+        }
+    });
+
+    $('#wasteRate').on('keydown', function(e) {
+        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
+            e.preventDefault(); // Prevent default tab behavior
+            $('#weightCastig').focus();
+        }
+    });
+    
     
     $('#tollaRate').on('keydown', function(e) {
         if (e.which === 13) { // Enter key
@@ -1224,7 +1230,7 @@ $(document).ready(function() {
 
 
             if($('#wasteRateCheck').is(':checked')){
-                $('#wasteRate').val(0.00);
+            
             }else{
             if($('#wasteDiscountRate').val() > 0){
                 var wasteDiscountRate = $('#wasteDiscountRate').val();
@@ -1580,11 +1586,11 @@ $(document).ready(function() {
         $('#mazdoriRate').val('0.00');
         $('#wasteRate').val('0.00');
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
+        $('#wasteRateCheck').prop('checked', true);
         $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);
         $('#orderSelect').empty();
 
         enableButtons();
-        $('#getPartyData').focus();
     });
 
 
