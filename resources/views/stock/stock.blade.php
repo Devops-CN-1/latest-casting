@@ -438,6 +438,12 @@
 
     <script>
 
+$('#partyId').on('keydown', function(e) {
+            if (e.which === 13 || e.which === 9) {
+                oldRecord();
+            }
+        });
+
         // Loader functions
         function showLoader() {
             $('#tableLoader').removeClass('hidden');
