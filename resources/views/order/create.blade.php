@@ -1222,7 +1222,7 @@ $(document).ready(function() {
 
 
             if($('#wasteRateCheck').is(':checked')){
-                $('#wasteRate').val(0.00);
+            
             }else{
             if($('#wasteDiscountRate').val() > 0){
                 var wasteDiscountRate = $('#wasteDiscountRate').val();
