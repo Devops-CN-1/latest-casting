@@ -718,28 +718,37 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        $statusMap = [
+            'a' => 'Received',
+            'b' => 'Paid',
+        ];
 
-            // Convert empty gold values to 0
-            $gold = isset($data['Gold']) && $data['Gold'] !== '' ? $data['Gold'] : 0;
+        foreach ($dataRows as $data) {
+            $d = array_change_key_case($data, CASE_LOWER);
+            if (!array_key_exists('gold', $d)) {
+                throw new \RuntimeException(
+                    'Missing column Gold. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Map status codes
-            $statusMap = [
-                'a' => 'Received',
-                'b' => 'Paid',
-            ];
-            $status = isset($data['status']) ? ($statusMap[$data['status']] ?? $data['status']) : null;
+            $gold = $this->isCsvNumericEmpty($d['gold']) ? 0.0 : floatval(trim((string) $d['gold']));
+
+            $statusCode = trim((string) ($d['status'] ?? ''));
+            $status = $statusCode !== ''
+                ? ($statusMap[strtolower($statusCode)] ?? $statusCode)
+                : null;
+
+            $dateEntry = trim((string) ($d['dateofentry'] ?? ''));
 
             StockGold::create([
                 'gold'       => $gold,
                 'status'     => $status,
-                'remarks'    => $data['remarks'] ?? null,
-                'created_at' => $data['DateOfEntry'] ?? now(),
-                'updated_at' => $data['DateOfEntry'] ?? now(),
+                'remarks'    => isset($d['remarks']) && $d['remarks'] !== '' ? $d['remarks'] : null,
+                'created_at' => $dateEntry !== '' ? $dateEntry : now(),
+                'updated_at' => $dateEntry !== '' ? $dateEntry : now(),
             ]);
         }
 
