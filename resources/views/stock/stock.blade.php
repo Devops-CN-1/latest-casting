@@ -438,11 +438,6 @@
 
     <script>
 
-$('#partyId').on('keydown', function(e) {
-            if (e.which === 13 || e.which === 9) {
-                oldRecord();
-            }
-        });
 
         // Loader functions
         function showLoader() {
@@ -783,6 +778,13 @@ $('#partyId').on('keydown', function(e) {
                             hideLoader();
                 }
             });
+        });
+
+        $('#partyId').on('keydown', function (e) {
+            if (e.key === 'Enter' || e.which === 13) {
+                e.preventDefault();
+                $('#oldRecord').trigger('click');
+            }
         });
 
         // Refresh Record: re-fetch old records with current date/party
