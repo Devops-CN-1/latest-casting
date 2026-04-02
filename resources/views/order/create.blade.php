@@ -1584,7 +1584,7 @@ $(document).ready(function() {
         $('#orderSelect').empty();
 
         enableButtons();
-        $('#partyId').focus();
+        $('#getPartyData').focus();
     });
 
 
