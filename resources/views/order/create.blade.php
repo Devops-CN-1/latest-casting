@@ -1423,7 +1423,7 @@ $(document).ready(function() {
             // Perform calculation
             let op2remainingCash = (op2cash - op2CashRecieved);
             $('#op2RemainingCash').val((Math.ceil(op2remainingCash * 100) / 100).toFixed(2));
-            $('#saveOrder').focus();
+            $('#Print').focus();
         }
     });
 
