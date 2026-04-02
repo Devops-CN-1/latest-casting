@@ -844,9 +844,11 @@
                 if (response.status === 'success') {
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
+                     $('#getPartyData').focus();
                 } else {
-                     toastr.success('Order saved successfully!', 'Success');
+                     toastr.success('Order not saved!', 'Error');
                      $('#clearButton').trigger('click');
+                     $('#getPartyData').focus();
                 }
 
                 $('#serialNumber').val(response.order);
@@ -1582,6 +1584,7 @@ $(document).ready(function() {
         $('#orderSelect').empty();
 
         enableButtons();
+        $('#getPartyData').focus();
     });
 
 
