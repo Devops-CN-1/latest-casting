@@ -528,12 +528,15 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('Serial', $data)) {
+                throw new \RuntimeException(
+                    'Missing column Serial. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
             // ------------------------------------------
             // 🔵 Convert ALL empty numeric values to 0
