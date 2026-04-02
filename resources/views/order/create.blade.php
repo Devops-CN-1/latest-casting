@@ -1104,15 +1104,23 @@ $(document).ready(function() {
     $('#pieceCheck').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
-            $('#mazdoridiscountRate').focus();
-        }
-    });
-    $('#mazdoridiscountRate').on('keydown', function(e) {
-        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
-            e.preventDefault(); // Prevent default tab behavior
             $('#wasteDiscountRate').focus();
         }
     });
+    $('#wasteDiscountRate').on('keydown', function(e) {
+        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
+            e.preventDefault(); // Prevent default tab behavior
+            $('#wasteRate').focus();
+        }
+    });
+
+    $('#wasteRate').on('keydown', function(e) {
+        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
+            e.preventDefault(); // Prevent default tab behavior
+            $('#weightCastig').focus();
+        }
+    });
+    
     
     $('#tollaRate').on('keydown', function(e) {
         if (e.which === 13) { // Enter key
