@@ -247,15 +247,72 @@ class StockController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function expenseGoldList(){
+    public function expenseGoldList(Request $request)
+    {
+        if ($request->has('draw')) {
+            $draw = (int) $request->input('draw', 1);
+            $start = max(0, (int) $request->input('start', 0));
+            $length = (int) $request->input('length', 25);
+            if ($length <= 0) {
+                $length = 25;
+            }
+            $length = min($length, 500);
 
-        $expenseGoldList = ExpenseGold::orderBy('created_at', 'desc')->get();
-        return response()->json([
-                'message' => 'Expense Gold List',
-                'data' => $expenseGoldList
+            $searchValue = trim((string) $request->input('search.value', ''));
+
+            $recordsTotal = ExpenseGold::query()->count();
+
+            $query = ExpenseGold::query();
+            if ($searchValue !== '') {
+                $like = '%'.$searchValue.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('gold', 'like', $like)
+                        ->orWhere('remarks', 'like', $like);
+                });
+            }
+
+            $recordsFiltered = (clone $query)->count();
+
+            $orderColumnIndex = (int) $request->input('order.0.column', 2);
+            $orderDir = strtolower((string) $request->input('order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $columnMap = [1 => 'gold', 2 => 'created_at', 3 => 'remarks'];
+            $orderCol = $columnMap[$orderColumnIndex] ?? 'created_at';
+            $query->orderBy($orderCol, $orderDir);
+
+            $rows = $query->skip($start)->take($length)->get();
+
+            $data = [];
+            foreach ($rows as $i => $item) {
+                $created = $item->created_at;
+                $data[] = [
+                    (string) ($start + $i + 1),
+                    $item->gold,
+                    $created ? $created->format('d/m/Y, H:i:s') : '',
+                    (string) ($item->remarks ?? ''),
+                ];
+            }
+
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $data,
             ]);
+        }
 
+        $perPage = min(100, max(1, (int) $request->input('per_page', 50)));
+        $paginator = ExpenseGold::orderBy('created_at', 'desc')->paginate($perPage);
 
+        return response()->json([
+            'message' => 'Expense Gold List',
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }    
 
     public function expenseCashList(){

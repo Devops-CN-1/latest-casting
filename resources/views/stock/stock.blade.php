@@ -1034,24 +1034,16 @@
         });
 
         $('#expenseGoldList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/expense-gold-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#expenseGoldListTable')) {
+                    try {
+                        $('#expenseGoldListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="expenseGoldListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1061,44 +1053,65 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="4" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('expenseGoldListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#expenseGoldListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/expense-gold-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load expense gold list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'gold' },
+                                { data: 2, name: 'created_at' },
+                                { data: 3, name: 'remarks' }
+                            ],
+                            pageLength: 25,
+                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            order: [[2, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
         $('#expenseCashList').on('click', function(e) {
