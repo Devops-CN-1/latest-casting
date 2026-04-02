@@ -588,11 +588,18 @@ class ImportDbDataController extends Controller
                 }
             }
 
+            $orderId = intval($data['Serial']);
+            if ($orderId <= 0) {
+                continue;
+            }
+
             // ------------------------------------------
-            // 🟦 Import into Orders table
+            // 🟦 Upsert by legacy Serial → id (safe to re-run import)
             // ------------------------------------------
-            Order::create([
-                'id'                        => intval($data['Serial']),
+            Order::updateOrCreate(
+                ['id' => $orderId],
+                [
+                'id'                        => $orderId,
                 'party_id'                  => intval($data['PtyID']),
                 'created_by'                => 1,
 
@@ -659,7 +666,8 @@ class ImportDbDataController extends Controller
 
                 'created_at'                => $data['DateOfCompletion'],
                 'updated_at'                => $data['DateOfCompletion'],
-            ]);
+                ]
+            );
         }
 
         return 'Orders imported successfully!';
