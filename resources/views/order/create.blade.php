@@ -1039,7 +1039,7 @@ $(document).ready(function() {
                         }else{
                         $('#partyName').val(response.data['party_regular'].businessName);
                         $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
-                        $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
+                        // $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
                         $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
                         $('#remainingMazdoori').val(Math.floor(response.data['cash_summary'].balance));
 
