@@ -87,16 +87,78 @@ class ImportDbDataController extends Controller
         }
     }
 
+    /**
+     * Read CSV with BOM stripping, trimmed headers, and row/column alignment fixes
+     * for Excel exports (leading blank column, UTF-8 BOM on first header).
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function parseCsvRowsAssociative(string $filePath): array
+    {
+        $raw = file_get_contents($filePath);
+        if ($raw === false) {
+            throw new \RuntimeException('Could not read CSV file.');
+        }
+        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+        $lines = preg_split('/\r\n|\r|\n/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if ($lines === [] || $lines === false) {
+            return [];
+        }
+        $rows = array_map('str_getcsv', $lines);
+        $header = array_shift($rows);
+        $header = array_map('trim', $header);
+        if (isset($header[0])) {
+            $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]);
+        }
+        while ($header !== [] && $header[0] === '') {
+            array_shift($header);
+        }
+        while ($header !== [] && end($header) === '') {
+            array_pop($header);
+        }
+        $hc = count($header);
+        if ($hc === 0) {
+            throw new \RuntimeException('CSV has no usable header row.');
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $row = array_map('trim', $row);
+            if ($row === [] || (count($row) === 1 && $row[0] === '')) {
+                continue;
+            }
+            while (count($row) > $hc && ($row[0] === '' || $row[0] === null)) {
+                array_shift($row);
+            }
+            if (count($row) > $hc) {
+                $row = array_slice($row, 0, $hc);
+            } elseif (count($row) < $hc) {
+                $row = array_pad($row, $hc, '');
+            }
+            $data = array_combine($header, $row);
+            if ($data === false) {
+                continue;
+            }
+            $out[] = $data;
+        }
+
+        return $out;
+    }
+
     public function partyregular($filePath = null)
     {
         $filePath = $filePath ?? base_path('dbo.PTY_Regular.csv');
         if (!file_exists($filePath)) {
             throw new \RuntimeException('CSV file not found.');
         }
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Check for a blank first column in the header row, UTF-8 BOM issues, or wrong delimiter. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
             PartyRegular::updateOrCreate(
                 ['partyID' => $data['PtyID']],
                 [
