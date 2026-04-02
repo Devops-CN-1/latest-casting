@@ -310,22 +310,25 @@ class ImportDbDataController extends Controller
             'b' => 'Paid',
         ];
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Map status
-            $status = $statusMap[strtolower(trim($data['status']))] ?? 'Unknown';
+            $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
 
             AccountGold::create([
                 'party_id'   => intval(trim($data['PtyID'])),
-                'gold'       => floatval(trim($data['gold'])),
+                'gold'       => floatval(trim($data['gold'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'created_at' => trim($data['DateOfEntry'] ?? ''),
+                'updated_at' => trim($data['DateOfEntry'] ?? ''),
             ]);
         }
 
