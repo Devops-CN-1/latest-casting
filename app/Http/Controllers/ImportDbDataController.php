@@ -267,27 +267,30 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read CSV
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
         $statusMap = [
             'c' => 'Received',
             'd' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
-              $status = $statusMap[strtolower(trim($data['status']))] ?? 'Unknown';
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Insert into database
+            $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
+
             AccountCash::create([
-                'party_id'   => intval(trim($data['PtyID'])),     // map PtyID → party_id
-                'cash'       => floatval(trim($data['cash'])),    // numeric
+                'party_id'   => intval(trim($data['PtyID'])),
+                'cash'       => floatval(trim($data['cash'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'created_at' => trim($data['DateOfEntry'] ?? ''),
+                'updated_at' => trim($data['DateOfEntry'] ?? ''),
             ]);
         }
 
