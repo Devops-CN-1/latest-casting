@@ -1423,7 +1423,7 @@ $(document).ready(function() {
             // Perform calculation
             let op2remainingCash = (op2cash - op2CashRecieved);
             $('#op2RemainingCash').val((Math.ceil(op2remainingCash * 100) / 100).toFixed(2));
-            $('#saveOrder').focus();
+            $('#Print').focus();
         }
     });
 
@@ -1552,21 +1552,21 @@ $(document).ready(function() {
         $('#op2RemainingCash').on('keydown', function(e) {
             if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
                 e.preventDefault(); // Prevent default tab behavior
-                $('#saveOrder').focus();
+                $('#Print').focus();
             }
         });
 
         $('#op1RemainingGold').on('keydown', function(e) {
             if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
                 e.preventDefault(); // Prevent default tab behavior
-                $('#saveOrder').focus();
+                $('#Print').focus();
             }
         });
 
         $('#op3RemainingCash').on('keydown', function(e) {
             if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
                 e.preventDefault(); // Prevent default tab behavior
-                $('#saveOrder').focus();
+                $('#Print').focus();
             }
         });
 
