@@ -437,6 +437,9 @@
     <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 
     <script>
+        document.ready(function() {
+            $('#partyId').focus();
+        });
 
 
         // Loader functions
