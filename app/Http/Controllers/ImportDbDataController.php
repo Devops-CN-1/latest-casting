@@ -104,7 +104,11 @@ class ImportDbDataController extends Controller
         if ($lines === [] || $lines === false) {
             return [];
         }
-        $rows = array_map('str_getcsv', $lines);
+        $firstLine = $lines[0];
+        $commaCols = str_getcsv($firstLine, ',');
+        $tabCols = str_getcsv($firstLine, "\t");
+        $delimiter = count($tabCols) > count($commaCols) ? "\t" : ',';
+        $rows = array_map(fn (string $line) => str_getcsv($line, $delimiter), $lines);
         $header = array_shift($rows);
         $header = array_map('trim', $header);
         if (isset($header[0])) {
@@ -184,11 +188,15 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns, UTF-8 without a stray blank header column. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
             // Clean and cast numeric values
             $goldIn           = floatval(trim($data['Gold_IN']));
