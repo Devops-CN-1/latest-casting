@@ -149,6 +149,31 @@ class ImportDbDataController extends Controller
         return $out;
     }
 
+    /**
+     * SQL/Excel exports often write the literal "NULL" in cells; MySQL rejects that for decimal columns.
+     */
+    protected function isCsvNumericEmpty(mixed $value): bool
+    {
+        if ($value === null || $value === '') {
+            return true;
+        }
+        if (!is_string($value)) {
+            return false;
+        }
+        $t = trim($value);
+        if ($t === '') {
+            return true;
+        }
+        if (strcasecmp($t, 'null') === 0) {
+            return true;
+        }
+        if (strcasecmp($t, 'n/a') === 0 || strcasecmp($t, '#n/a') === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function partyregular($filePath = null)
     {
         $filePath = $filePath ?? base_path('dbo.PTY_Regular.csv');
@@ -553,11 +578,12 @@ class ImportDbDataController extends Controller
                 'Opt2CashRecieved','Opt2CashPaid','Opt2RemainingCash',
                 'Opt3CashRecieved','Opt3CashPaid','Opt3RemainingCash',
                 'TotalWeight','TotalWasteCasted','Khalis','Advance',
-                'TotalKhalis','RemainingMazdori','WapsiGold','CastingWeight'
+                'TotalKhalis','RemainingMazdori','WapsiGold','CastingWeight',
+                'InOutCheck','InOut','SelectOption',
             ];
 
             foreach ($numericFields as $field) {
-                if (!isset($data[$field]) || $data[$field] === '') {
+                if (!isset($data[$field]) || $this->isCsvNumericEmpty($data[$field])) {
                     $data[$field] = 0;
                 }
             }
