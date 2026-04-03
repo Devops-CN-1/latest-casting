@@ -29,14 +29,14 @@
             print-color-adjust: exact;
         }
 
-        /* Content sits in printable area: below top artwork, left of SHAHID sidebar (~5 cm) */
+        /* Data band: 2 cm khali left + right; beech mein content (21 cm − 4 cm = 17 cm usable width) */
         .print-sheet {
             width: 210mm;
             min-height: 135mm;
             padding-top: 2.5cm;
-            padding-right: 5.2cm;
+            padding-right: 2cm;
             padding-bottom: 1.4cm;
-            padding-left: 0.6cm;
+            padding-left: 2cm;
         }
 
         .overlay-table {
