@@ -298,6 +298,18 @@
         $('#tableLoader').addClass('hidden');
     }
 
+    /** Gold / cash in Leena & Deena tables: 2 decimal places (avoids float display glitches). */
+    function fmtGold2(val) {
+        if (val === null || val === undefined || val === '') return '';
+        var n = Number(val);
+        return isNaN(n) ? String(val) : n.toFixed(2);
+    }
+    function fmtCash2(val) {
+        if (val === null || val === undefined || val === '') return '';
+        var n = Number(val);
+        return isNaN(n) ? String(val) : n.toFixed(2);
+    }
+
     toastr.options = {
         "closeButton": true,
         "progressBar": true,
@@ -502,8 +514,8 @@
                                 <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                                <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                                <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                                <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                               </tr>
                             `;
@@ -565,8 +577,8 @@
                                 <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                                <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                                <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                                <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                                <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                                 <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                               </tr>
                             `;
