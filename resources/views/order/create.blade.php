@@ -1037,7 +1037,7 @@ $(document).ready(function() {
                             $('#party_id').val(partyID);
                             $('#remarks').val(response.data.lastRemarks);
                         }else{
-                        $('#partyName').val(response.data['party_regular'].businessName);
+                        $('#partyName').val(response.data['party_regular'].partyName);
                         $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
                         // $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
                         $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
