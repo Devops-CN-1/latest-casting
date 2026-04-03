@@ -1,224 +1,315 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ur" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt Table</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Order Print</title>
+    <style>
+        /* Pre-printed slip: 21 cm × 13.5 cm (landscape). Data overlay only — no borders on paper. */
+        @page {
+            size: 210mm 135mm;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 210mm;
+            min-height: 135mm;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            font-size: 10px;
+            line-height: 1.25;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Content sits in printable area: below top artwork, left of SHAHID sidebar (~5 cm) */
+        .print-sheet {
+            width: 210mm;
+            min-height: 135mm;
+            padding-top: 2.5cm;
+            padding-right: 5.2cm;
+            padding-bottom: 1.4cm;
+            padding-left: 0.6cm;
+        }
+
+        .overlay-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .overlay-table td {
+            padding: 2px 4px;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        .label {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .val {
+            white-space: nowrap;
+        }
+
+        .val-ltr {
+            direction: ltr;
+            text-align: left;
+            unicode-bidi: embed;
+        }
+
+        /* Screen preview: light guides only */
+        @media screen {
+            body {
+                background: #e8e8e8;
+            }
+
+            .print-sheet {
+                background: #fff;
+                margin: 12px auto;
+                box-shadow: 0 0 0 1px #ccc;
+            }
+
+            .overlay-table td {
+                outline: 1px dashed rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        /* On paper: no lines (form already printed) */
+        @media print {
+            html,
+            body {
+                background: transparent !important;
+            }
+
+            .overlay-table,
+            .overlay-table td,
+            .overlay-table tr {
+                border: none !important;
+                outline: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+
+            .print-sheet {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        .section-gap {
+            margin-top: 6px;
+        }
+
+        table.grid-3 td {
+            width: 33.33%;
+            padding: 3px 5px;
+        }
+
+        .text-xs {
+            font-size: 10px;
+        }
+
+        .text-sm {
+            font-size: 11px;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
 </head>
 
-<body class="">
+<body>
+    @php
+        $parts = explode(' ', $data['currentDateTime']);
+        $date = $parts[0] ?? '';
+        if (isset($parts[1])) {
+            $time = $parts[1];
+            if (isset($parts[2])) {
+                $time .= ' ' . $parts[2];
+            }
+        } else {
+            $time = '';
+        }
+    @endphp
 
-    <div class="mt-26 px-24">
-        <table class="w-full border border-black text-xs table-fixed">
+    <div class="print-sheet">
+        <table class="overlay-table text-xs">
             <tbody>
-
-                <!-- Row 1 -->
-                <tr class="w-full border-b border-black">
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">سیریل نمبر</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$data['serialNumber']}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">آرڈر نمبر</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$data['lastPartyBills']}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">تاریخ</td>
-                    @php
-                        // Split date and time
-                        $parts = explode(' ', $data['currentDateTime']);  
-                        $date = $parts[0] ?? ''; // 07/May/2025
-                        // Handle time - could be in format "14:30:45" (24-hour) or "11:17:08 PM" (12-hour)
-                        if (isset($parts[1])) {
-                            $time = $parts[1];
-                            // If there's a third part (AM/PM), add it
-                            if (isset($parts[2])) {
-                                $time .= ' ' . $parts[2];
-                            }
-                        } else {
-                            $time = '';
-                        }
-                    @endphp
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$date}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right">وقت</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap" dir="ltr">{{$time}}</td>
+                <tr>
+                    <td class="label text-right">سیریل نمبر</td>
+                    <td class="val text-left">{{ $data['serialNumber'] }}</td>
+                    <td class="label text-right">آرڈر نمبر</td>
+                    <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
+                    <td class="label text-right">تاریخ</td>
+                    <td class="val text-left">{{ $date }}</td>
+                    <td class="label text-right">وقت</td>
+                    <td class="val val-ltr">{{ $time }}</td>
                 </tr>
-
-                <!-- Row 2 -->
-                <tr class="w-full border-b border-black">
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">ریٹ فی تولہ</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$data['tollaRate']}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">ریٹ فی گرام</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$data['gramRate']}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">ویسٹ فیس دس گرام</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">{{$data['wasteDiscountRate']}}</td>
-                    <td class="w-1/8 p-2 font-bold text-right whitespace-nowrap">مزدوری فی گرام</td>
-                    <td class="w-1/8 p-2 text-left whitespace-nowrap">0</td>
+                <tr>
+                    <td class="label text-right">ریٹ فی تولہ</td>
+                    <td class="val text-left">{{ $data['tollaRate'] }}</td>
+                    <td class="label text-right">ریٹ فی گرام</td>
+                    <td class="val text-left">{{ $data['gramRate'] }}</td>
+                    <td class="label text-right">ویسٹ فیس دس گرام</td>
+                    <td class="val text-left">{{ $data['wasteDiscountRate'] }}</td>
+                    <td class="label text-right">مزدوری فی گرام</td>
+                    <td class="val text-left">0</td>
                 </tr>
-
-                <!-- Row 3 -->
-                <tr class="w-full border-b border-black">
-                    <td class="w-1/6 p-2 font-bold text-right">نام و ایڈریس</td>
-                    <td colspan="3" class="w-1/6 p-2 text-left whitespace-nowrap">{{$data['partyName']}}</td>
-                    <td class="w-1/6 p-2 font-bold text-right">پارٹی نمبر</td>
-                    <td class="w-1/6 p-2 text-left whitespace-nowrap">{{$data['party_id']}}</td>
-                    <td class="w-1/6 p-2 font-bold text-right">کیش کوڈ</td>
-                    <td class="w-1/6 p-2 text-left whitespace-nowrap">
+                <tr>
+                    <td class="label text-right">نام و ایڈریس</td>
+                    <td colspan="3" class="val text-left">{{ $data['partyName'] }}</td>
+                    <td class="label text-right">پارٹی نمبر</td>
+                    <td class="val text-left">{{ $data['party_id'] }}</td>
+                    <td class="label text-right">کیش کوڈ</td>
+                    <td class="val text-left">
                         ({{ $data['InOutCheck'] == 1 ? 'IN' : 'OUT' }})
-                        {{$data['mailCode']}} 
-                        <span class="font-bold text-left">رتی</span>
+                        {{ $data['mailCode'] }}
+                        <span class="label">رتی</span>
                     </td>
                 </tr>
-
-            </tbody>
-        </table>
-    </div>
-
-    <div class="mt-5 px-26">
-        <table class="table-fixed w-full text-sm border border-gray-300">
-            <tbody>
-                <!-- <tr>
-                    <td class="border border-gray-300 w-1/3 p-2"></td>
-                    <td class="border border-gray-300 w-1/3 p-2"></td>
-                    <td class="border border-gray-300 w-1/3 p-2"></td>
-                </tr> -->
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>وزن کاسٹنگ</span>
-                            <span>{{$data['weightCastig']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>سابقا خالص</span>
-                            <span dir="ltr">{{$data['advance']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>واپسی کاسٹنگ</span>
-                            <span>{{$data['wapsiGold']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>کل خالص</span>
-                            <span dir="ltr">{{$data['totalKhalis']}}</span>
-                        </div>
-                    </td>
-
-                    <td class="border border-gray-300 w-1/3 p-2">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>نیٹ وزن</span>
-                            <span>{{$data['netWeight']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>خالص مزدوری</span>
-                            <span>{{$data['mazdoorie']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>مزدوری</span>
-                            <span>{{$data['mazdoorie']}}</span>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>ویسٹ</span>
-                            <span>{{$data['wasteCasted']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>کل خالص</span>
-                            <span dir="ltr">{{$data['totalKhalis']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>سابقا مزدوری</span>
-                            <span>{{$data['remainingMazdoori']}}</span>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>کل وزن</span>
-                            <span>{{$data['totalWeight']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>وصول خالص</span>
-                            <span>{{$data['GoldRecieved']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>کل مزدوری</span>
-                            <span>{{$data['totalMazdoori']}}</span>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>میل نکلا</span>
-                            <span>{{$data['totalWeightCasted']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>بقایا خالص</span>
-                            <span dir="ltr">{{$data['RemainingGold']}}</span>
-                        </div>
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>پَٹھور</span>
-                        </div>
-                    </td>
-                </tr>
-
-
-                <tr class="border border-gray-300">
-                    <td class="border border-gray-300 w-1/3 p-2">
-                        <div class="flex justify-between">
-                            <span>خالص</span>
-                            <span>{{$data['khalis']}}</span>
-                        </div>
-                    </td>
-
-                    <td class="border border-gray-300 w-1/3 p-2 text-right">
-                    </td>
-                    <td class="border border-gray-300 w-1/3 p-2">
-                    </td>
-                </tr>
-
             </tbody>
         </table>
 
+        <div class="section-gap">
+            <table class="overlay-table text-sm grid-3">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>وزن کاسٹنگ</span>
+                                <span>{{ $data['weightCastig'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>سابقا خالص</span>
+                                <span class="val-ltr">{{ $data['advance'] }}</span>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>واپسی کاسٹنگ</span>
+                                <span>{{ $data['wapsiGold'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>کل خالص</span>
+                                <span class="val-ltr">{{ $data['totalKhalis'] }}</span>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>نیٹ وزن</span>
+                                <span>{{ $data['netWeight'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>خالص مزدوری</span>
+                                <span>{{ $data['mazdoorie'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>مزدوری</span>
+                                <span>{{ $data['mazdoorie'] }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>ویسٹ</span>
+                                <span>{{ $data['wasteCasted'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>کل خالص</span>
+                                <span class="val-ltr">{{ $data['totalKhalis'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>سابقا مزدوری</span>
+                                <span>{{ $data['remainingMazdoori'] }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>کل وزن</span>
+                                <span>{{ $data['totalWeight'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>وصول خالص</span>
+                                <span>{{ $data['GoldRecieved'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>کل مزدوری</span>
+                                <span>{{ $data['totalMazdoori'] }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>میل نکلا</span>
+                                <span>{{ $data['totalWeightCasted'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>بقایا خالص</span>
+                                <span class="val-ltr">{{ $data['RemainingGold'] }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>پَٹھور</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>خالص</span>
+                                <span>{{ $data['khalis'] }}</span>
+                            </div>
+                        </td>
+                        <td class="text-right"></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </body>
 
 </html>
