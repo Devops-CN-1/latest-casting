@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto h-full">
-        <div class="w-full p-2 bg-[#ece9d8]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="stock-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="stock-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="stock-create-panel" class="w-full p-2 bg-[#ece9d8]">
             <!-- table container  -->
             <div
                 class="h-60 overflow-y-auto border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white bg-[#808080]">
@@ -261,6 +264,9 @@
             </div>
 
         </div>
+        </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loader Overlay -->
@@ -437,7 +443,48 @@
     <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 
     <script>
+        var stockCreateResizeTimer;
+        function fitStockCreateToViewport() {
+            var vp = document.getElementById('stock-create-viewport');
+            var inner = document.getElementById('stock-create-scale-inner');
+            if (!vp || !inner) return;
+            var header = document.querySelector('body > header');
+            var hh = header ? header.offsetHeight : 0;
+            var avail = Math.max(200, window.innerHeight - hh);
+            vp.style.height = avail + 'px';
+            vp.style.maxHeight = avail + 'px';
+
+            inner.style.transform = '';
+            inner.style.width = '100%';
+
+            var h = inner.offsetHeight;
+            var w = inner.scrollWidth || inner.offsetWidth;
+            var vpW = Math.max(1, vp.clientWidth);
+            var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+            if (s < 0.999) {
+                inner.style.transformOrigin = 'top left';
+                inner.style.transform = 'scale(' + s + ')';
+                inner.style.width = (100 / s) + '%';
+            } else {
+                inner.style.transform = '';
+                inner.style.width = '100%';
+            }
+        }
+
+        function scheduleFitStockCreate() {
+            clearTimeout(stockCreateResizeTimer);
+            stockCreateResizeTimer = setTimeout(function () {
+                requestAnimationFrame(fitStockCreateToViewport);
+            }, 50);
+        }
+
+        $(window).on('resize', scheduleFitStockCreate);
+        $(window).on('load', scheduleFitStockCreate);
+
         $(document).ready(function() {
+            scheduleFitStockCreate();
+            $('#stock-create-panel img').on('load', scheduleFitStockCreate);
             $('#partyId').focus();
         });
 
@@ -500,6 +547,7 @@
                     
                     // If no data rows, don't initialize DataTables
                     if (!hasDataRows) {
+                        scheduleFitStockCreate();
                         return;
                     }
                     
@@ -529,6 +577,9 @@
                                 "info": true,
                                 "ordering": true,
                                 "autoWidth": false,
+                                "drawCallback": function () {
+                                    scheduleFitStockCreate();
+                                },
                                 "language": {
                                     "search": "Search:",
                                     "lengthMenu": "Show _MENU_ entries",
@@ -545,6 +596,7 @@
                         console.warn('Column count mismatch for ' + tableId + ': Header=' + headerCols + ', Data=' + dataCols);
                     }
                 }
+                scheduleFitStockCreate();
             }, 200);
         }
 
@@ -690,6 +742,7 @@
                             }, 50);
                         } else {
                             $('#stockTable').html('<p class="text-red-500">No data found.</p>');
+                            scheduleFitStockCreate();
                         }
                         hideLoader();
                     },
@@ -764,6 +817,7 @@
                             }, 50);
                         } else {
                             $('#stockTable').html('<p class="text-red-500">No data found.</p>');
+                            scheduleFitStockCreate();
                         }
 
                         let totals = response.totals;
@@ -1108,6 +1162,7 @@
                             autoWidth: false,
                             drawCallback: function() {
                                 hideLoader();
+                                scheduleFitStockCreate();
                             },
                             language: {
                                 search: 'Search:',
@@ -1259,6 +1314,7 @@
                             autoWidth: false,
                             drawCallback: function() {
                                 hideLoader();
+                                scheduleFitStockCreate();
                             },
                             language: {
                                 search: 'Search:',
@@ -1342,6 +1398,7 @@
                             autoWidth: false,
                             drawCallback: function() {
                                 hideLoader();
+                                scheduleFitStockCreate();
                             },
                             language: {
                                 search: 'Search:',
