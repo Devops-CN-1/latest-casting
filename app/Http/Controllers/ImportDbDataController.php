@@ -325,6 +325,10 @@ class ImportDbDataController extends Controller
             $typeRaw = trim($data['type'] ?? '');
             $type = ($typeRaw === '1') ? 'cash' : 'regular';
 
+            // lastOrderDate is a MySQL DATE column; CSV often has m/d/Y H:i (e.g. 3/30/2026 18:59)
+            $lastOrderAt = $this->importTimestampFromRow($data, ['LastOrderDate', 'lastOrderDate']);
+            $lastOrderDate = $lastOrderAt !== null ? substr($lastOrderAt, 0, 10) : null;
+
             Party::updateOrCreate(
                 ['partyID' => $data['PtyID']],
                 [
@@ -335,7 +339,7 @@ class ImportDbDataController extends Controller
                     'cashOut'            => $cashOut,
                     'totalWasteCasted'   => $totalWasteCasted,
                     'totalMazdoori'      => $totalMazdoori,
-                    'lastOrderDate'      => $data['LastOrderDate'],
+                    'lastOrderDate'      => $lastOrderDate,
                     'IsActive'           => 1,
                     'created_by'           => 1,
                 ]
