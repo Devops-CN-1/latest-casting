@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
-        <div id="order-create-panel" class="w-full p-5 bg-[#004000]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="order-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="order-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="container mx-auto w-full">
+        <div id="order-create-panel" class="w-full p-2 bg-[#004000]">
             <!-- ayat ul kursi -->
             <h1 class="text-xs font-semibold text-center text-[#cbd2a2]">
                 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ
@@ -131,8 +134,8 @@
                             <span class="mt-2 block">کُل مزدوری</span>
                         </div>
                     </div>
-                    <div class="mt-2 flex justify-center items-center">
-                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="">
+                    <div class="mt-1 flex justify-center items-center">
+                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="" class="max-h-20 w-auto object-contain">
                     </div>
                 </div>
                 <div class="w-[30%]">
@@ -151,7 +154,7 @@
                                 
                                     <input type="number" name="wasteDiscountRate" id="wasteDiscountRate" value="0.00" 
                                     class="w-5/12 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                                    <input type="number" name="wasteRate" id="wasteRate" value="value="0.100" " 
+                                    <input type="number" name="wasteRate" id="wasteRate" value="0.100" 
                                     class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
@@ -329,6 +332,9 @@
                         <a href="{{url('advance')}}" class="bg-orange-400 text-black py-1 w-20">Advance</a>
                     </div>
                 </div>
+            </div>
+        </div>
+        </div>
             </div>
         </div>
     </div>
@@ -927,9 +933,50 @@ function getLastOrderInformation(){
     });
 }
 
+var orderCreateResizeTimer;
+function fitOrderCreateToViewport() {
+    var vp = document.getElementById('order-create-viewport');
+    var inner = document.getElementById('order-create-scale-inner');
+    if (!vp || !inner) return;
+    var header = document.querySelector('body > header');
+    var hh = header ? header.offsetHeight : 0;
+    var avail = Math.max(200, window.innerHeight - hh);
+    vp.style.height = avail + 'px';
+    vp.style.maxHeight = avail + 'px';
+
+    inner.style.transform = '';
+    inner.style.width = '100%';
+
+    var h = inner.offsetHeight;
+    var w = inner.scrollWidth || inner.offsetWidth;
+    var vpW = Math.max(1, vp.clientWidth);
+    var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+    if (s < 0.999) {
+        inner.style.transformOrigin = 'top left';
+        inner.style.transform = 'scale(' + s + ')';
+        inner.style.width = (100 / s) + '%';
+    } else {
+        inner.style.transform = '';
+        inner.style.width = '100%';
+    }
+}
+
+function scheduleFitOrderCreate() {
+    clearTimeout(orderCreateResizeTimer);
+    orderCreateResizeTimer = setTimeout(function() {
+        requestAnimationFrame(fitOrderCreateToViewport);
+    }, 50);
+}
+
+$(window).on('resize', scheduleFitOrderCreate);
+$(window).on('load', scheduleFitOrderCreate);
+
 $(document).ready(function() {
         updateCurrentTime();
         setInterval(updateCurrentTime, 1000);
+        scheduleFitOrderCreate();
+        $('#order-create-panel img').on('load', scheduleFitOrderCreate);
         $('#getPartyData').focus();
         var tollaRate = $('#tollaRate').val();
         let RatePerGram = tollaRate / 11.664; 
