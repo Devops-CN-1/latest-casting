@@ -4,7 +4,7 @@
     <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
         <div id="order-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
             <div id="order-create-scale-inner" class="absolute top-0 left-0 w-full">
-        <div class="container mx-auto w-full">
+        <div class="w-full max-w-none mx-0 px-0">
         <div id="order-create-panel" class="w-full p-2 bg-[#004000]">
             <!-- ayat ul kursi -->
             <h1 class="text-xs font-semibold text-center text-[#cbd2a2]">
