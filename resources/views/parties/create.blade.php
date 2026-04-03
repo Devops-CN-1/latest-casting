@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto">
-        <div class="w-full pt-2 bg-[#ece9d8]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="party-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="party-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="party-create-panel" class="w-full pt-2 p-2 bg-[#ece9d8]">
             <!-- table container  -->
             <div id="party-container" class="h-60 overflow-y-auto border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white bg-[#808080]">
                 
@@ -121,7 +124,21 @@
                 </div>
             </div>
 
-            <!-- Modal -->
+            <!-- images container  -->
+            <div class="mt-2 flex">
+                <!-- Image 1 Section -->
+                <img src="{{asset('assets/images/makkahImage.jpg')}}" alt="Makkah Image" class="w-1/4 max-h-24 object-contain">
+
+                <!-- Image 2 Section -->
+                <img src="{{asset('assets/images/maddinaImage.jpg')}}" alt="Maddina Image" class="w-1/4 max-h-24 object-contain">
+            </div>
+        </div>
+        </div>
+            </div>
+        </div>
+    </div>
+
+            <!-- Modal (outside scaled panel so overlay stays full-screen) -->
             <div id="stockModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-96">
                     <h2 class="text-xl font-bold mb-4">Enter Password</h2>
@@ -136,17 +153,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- images container  -->
-            <div class="mt-2 flex">
-                <!-- Image 1 Section -->
-                <img src="{{asset('assets/images/makkahImage.jpg')}}" alt="Makkah Image" class="w-1/4">
-
-                <!-- Image 2 Section -->
-                <img src="{{asset('assets/images/maddinaImage.jpg')}}" alt="Maddina Image" class="w-1/4">
-            </div>
-        </div>
-    </div>
 
     <!-- Loader Overlay -->
     <div id="tableLoader" class="fixed inset-0 bg-transparent z-50 hidden flex items-center justify-center">
@@ -276,8 +282,8 @@
             color-scheme: light !important;
         }
 
-        /* Ensure all text in the main container is black */
-        .container *:not([class*="text-"]):not([style*="color"]) {
+        /* Ensure all text in the main panel is black */
+        #party-create-panel *:not([class*="text-"]):not([style*="color"]) {
             color: #000000 !important;
         }
     </style>
@@ -309,6 +315,45 @@
         var n = Number(val);
         return isNaN(n) ? String(val) : n.toFixed(2);
     }
+
+    var partyCreateResizeTimer;
+    function fitPartyCreateToViewport() {
+        var vp = document.getElementById('party-create-viewport');
+        var inner = document.getElementById('party-create-scale-inner');
+        if (!vp || !inner) return;
+        var header = document.querySelector('body > header');
+        var hh = header ? header.offsetHeight : 0;
+        var avail = Math.max(200, window.innerHeight - hh);
+        vp.style.height = avail + 'px';
+        vp.style.maxHeight = avail + 'px';
+
+        inner.style.transform = '';
+        inner.style.width = '100%';
+
+        var h = inner.offsetHeight;
+        var w = inner.scrollWidth || inner.offsetWidth;
+        var vpW = Math.max(1, vp.clientWidth);
+        var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+        if (s < 0.999) {
+            inner.style.transformOrigin = 'top left';
+            inner.style.transform = 'scale(' + s + ')';
+            inner.style.width = (100 / s) + '%';
+        } else {
+            inner.style.transform = '';
+            inner.style.width = '100%';
+        }
+    }
+
+    function scheduleFitPartyCreate() {
+        clearTimeout(partyCreateResizeTimer);
+        partyCreateResizeTimer = setTimeout(function () {
+            requestAnimationFrame(fitPartyCreateToViewport);
+        }, 50);
+    }
+
+    $(window).on('resize', scheduleFitPartyCreate);
+    $(window).on('load', scheduleFitPartyCreate);
 
     toastr.options = {
         "closeButton": true,
@@ -360,6 +405,9 @@
 
 
     $(document).ready(function () {
+        scheduleFitPartyCreate();
+        $('#party-create-panel img').on('load', scheduleFitPartyCreate);
+
         // Setup CSRF token for all AJAX requests
         $.ajaxSetup({
             headers: {
@@ -467,6 +515,9 @@
                     "paging": true,
                     "info": true,
                     "ordering": true,
+                    "drawCallback": function () {
+                        scheduleFitPartyCreate();
+                    },
                     "language": {
                         "search": "Search:",
                         "lengthMenu": "Show _MENU_ entries",
@@ -532,6 +583,7 @@
                     var hasData = response.data && response.data.length > 0;
                     setTimeout(function() {
                         initPartyDataTable('leenaCashGoldTable', hasData);
+                        scheduleFitPartyCreate();
                         hideLoader();
                     }, 50);
                 },
@@ -595,6 +647,7 @@
                     var hasData = response.data && response.data.length > 0;
                     setTimeout(function() {
                         initPartyDataTable('deenaCashGoldTable', hasData);
+                        scheduleFitPartyCreate();
                         hideLoader();
                     }, 50);
                 },
@@ -689,6 +742,9 @@
                             "paging": true,
                             "info": true,
                             "ordering": true,
+                            "drawCallback": function () {
+                                scheduleFitPartyCreate();
+                            },
                             "language": {
                                 "search": "Search:",
                                 "lengthMenu": "Show _MENU_ entries",
@@ -699,6 +755,7 @@
                             }
                         });
                     }
+                    scheduleFitPartyCreate();
 
                     hideLoader();
                 },
