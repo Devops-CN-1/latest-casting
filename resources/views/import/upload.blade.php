@@ -14,6 +14,17 @@
         </div>
     @endif
 
+    @if ($errors->any())
+        <div class="mb-4 p-4 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
+            <p class="font-medium mb-1">Could not upload:</p>
+            <ul class="list-disc list-inside text-sm space-y-0.5">
+                @foreach ($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @if(session('success'))
         <div class="mb-4 p-4 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
             {{ session('success') }}
@@ -28,7 +39,7 @@
             <input type="file" 
                    name="csv_file" 
                    id="csv_file" 
-                   accept=".csv,text/csv" 
+                   accept=".csv,.txt,text/csv,text/plain" 
                    required
                    class="block w-full text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-medium file:bg-purple-50 file:text-purple-700 dark:file:bg-purple-900/30 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900/50">
         </div>

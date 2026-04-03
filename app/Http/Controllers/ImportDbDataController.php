@@ -59,9 +59,24 @@ class ImportDbDataController extends Controller
 
     public function upload(Request $request, string $table)
     {
-        $request->validate(['csv_file' => 'required|file|mimes:csv,txt|max:10240']);
+        $request->validate([
+            'csv_file' => [
+                'required',
+                'file',
+                'max:51200',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (! $value instanceof \Illuminate\Http\UploadedFile) {
+                        return;
+                    }
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (! in_array($ext, ['csv', 'txt'], true)) {
+                        $fail('The file must use extension .csv or .txt.');
+                    }
+                },
+            ],
+        ]);
+
         $file = $request->file('csv_file');
-        $filePath = $file->getRealPath();
 
         $methodMap = [
             'party-regular'        => 'partyregular',
@@ -82,6 +97,11 @@ class ImportDbDataController extends Controller
             return redirect()->route('import.index')->with('error', 'Invalid table.');
         }
         try {
+            $filePath = $file->getRealPath();
+            if ($filePath === false || $filePath === '') {
+                throw new \RuntimeException('Could not read the uploaded file. Try saving as CSV UTF-8 from Excel.');
+            }
+            set_time_limit(300);
             $message = $this->{$methodMap[$table]}($filePath);
             return redirect()->route('import.form', ['table' => $table])->with('success', $message);
         } catch (\Throwable $e) {
@@ -101,6 +121,12 @@ class ImportDbDataController extends Controller
         if ($raw === false) {
             throw new \RuntimeException('Could not read CSV file.');
         }
+        // UTF-16 LE/BE (Excel "Unicode Text" and some exports)
+        if (str_starts_with($raw, "\xFF\xFE")) {
+            $raw = mb_convert_encoding(substr($raw, 2), 'UTF-8', 'UTF-16LE');
+        } elseif (str_starts_with($raw, "\xFE\xFF")) {
+            $raw = mb_convert_encoding(substr($raw, 2), 'UTF-8', 'UTF-16BE');
+        }
         $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
         $lines = preg_split('/\r\n|\r|\n/', $raw, -1, PREG_SPLIT_NO_EMPTY);
         if ($lines === [] || $lines === false) {
@@ -109,7 +135,17 @@ class ImportDbDataController extends Controller
         $firstLine = $lines[0];
         $commaCols = str_getcsv($firstLine, ',');
         $tabCols = str_getcsv($firstLine, "\t");
-        $delimiter = count($tabCols) > count($commaCols) ? "\t" : ',';
+        $semiCols = str_getcsv($firstLine, ';');
+        $counts = [
+            ',' => count($commaCols),
+            "\t" => count($tabCols),
+            ';' => count($semiCols),
+        ];
+        arsort($counts);
+        $delimiter = array_key_first($counts);
+        if ($counts[$delimiter] < 2) {
+            $delimiter = ',';
+        }
         $rows = array_map(fn (string $line) => str_getcsv($line, $delimiter), $lines);
         $header = array_shift($rows);
         $header = array_map('trim', $header);
@@ -799,6 +835,13 @@ class ImportDbDataController extends Controller
 
         $dataRows = $this->parseCsvRowsAssociative($filePath);
 
+        if ($dataRows === []) {
+            throw new \RuntimeException(
+                'No data rows after the header. Check the file is UTF-8 (Excel: Save As → CSV UTF-8), '
+                . 'and that the first row is headers including Cash, status, DateOfEntry.'
+            );
+        }
+
         $statusMap = [
             'a' => 'Received',
             'b' => 'Paid',
@@ -833,7 +876,7 @@ class ImportDbDataController extends Controller
             ]);
         }
 
-        return 'Stock Cash CSV imported successfully!';
+        return 'Stock Cash CSV imported successfully (' . count($dataRows) . ' rows).';
     }
 
     public function importStockGold($filePath = null)
