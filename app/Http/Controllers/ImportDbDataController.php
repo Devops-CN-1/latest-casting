@@ -588,11 +588,15 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read CSV
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        // Status mappings
+        if ($dataRows === []) {
+            throw new \RuntimeException(
+                'No data rows after the header. Save as UTF-8 CSV (Excel: CSV UTF-8) or tab-separated .txt, '
+                . 'with a header row including PtyID.'
+            );
+        }
+
         $statusGold = [
             'a' => 'Received',
             'b' => 'Paid',
@@ -603,12 +607,16 @@ class ImportDbDataController extends Controller
             'd' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $data) {
+            if (! array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma-, tab-, or semicolon-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $data = array_combine($header, $row);
-
-            $goldStatusCode = strtolower(trim($data['GoldStatus']));
-            $cashStatusCode = strtolower(trim($data['CashStatus']));
+            $goldStatusCode = strtolower(trim((string) ($data['GoldStatus'] ?? '')));
+            $cashStatusCode = strtolower(trim((string) ($data['CashStatus'] ?? '')));
 
             $goldStatus = $statusGold[$goldStatusCode] ?? null;
             $cashStatus = $statusCash[$cashStatusCode] ?? null;
@@ -616,24 +624,24 @@ class ImportDbDataController extends Controller
             $amTs = $this->importTimestampFromRow($data, ['DateofEntry', 'DateOfEntry', 'dateofentry']) ?? now();
 
             $this->importCreate(AccountMain::class, [
-                'partyID'            => intval(trim($data['PtyID'])),
-                'recievedGoldLast'   => floatval(trim($data['RGoldLast'])),
-                'paidGoldLast'       => floatval(trim($data['PGoldLast'])),
-                'recievedCashLast'   => floatval(trim($data['RCashLast'])),
-                'paidCashLast'       => floatval(trim($data['PCashLast'])),
-                'goldRate'           => floatval(trim($data['GoldRate'])),
-                'gold'               => floatval(trim($data['Gold'])),
+                'partyID'            => intval(trim((string) $data['PtyID'])),
+                'recievedGoldLast'   => floatval(trim((string) ($data['RGoldLast'] ?? '0'))),
+                'paidGoldLast'       => floatval(trim((string) ($data['PGoldLast'] ?? '0'))),
+                'recievedCashLast'   => floatval(trim((string) ($data['RCashLast'] ?? '0'))),
+                'paidCashLast'       => floatval(trim((string) ($data['PCashLast'] ?? '0'))),
+                'goldRate'           => floatval(trim((string) ($data['GoldRate'] ?? '0'))),
+                'gold'               => floatval(trim((string) ($data['Gold'] ?? '0'))),
                 'goldStatus'         => $goldStatus,
-                'cash'               => floatval(trim($data['Cash'])),
+                'cash'               => floatval(trim((string) ($data['Cash'] ?? '0'))),
                 'cashStatus'         => $cashStatus,
-                'hawala'             => trim($data['Hawala']),
-                'addGold'            => floatval(trim($data['AddGold'])),
+                'hawala'             => trim((string) ($data['Hawala'] ?? '')),
+                'addGold'            => floatval(trim((string) ($data['AddGold'] ?? '0'))),
                 'created_at'         => $amTs,
                 'updated_at'         => $amTs,
             ]);
         }
 
-        return 'Account Main imported successfully!';
+        return 'Account Main imported successfully (' . count($dataRows) . ' rows).';
     }
 
     public function expensecash($filePath = null)
