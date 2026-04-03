@@ -1631,7 +1631,7 @@ $(document).ready(function() {
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
         $('#mazdoriRate').val('0.00');
-        $('#wasteRate').val('0.00');
+        $('#wasteRate').val('0.155');
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
         $('#wasteRateCheck').prop('checked', true);
         $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);
