@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Print</title>
     <style>
-        /* Pre-printed slip: 21 cm × 13.5 cm (landscape). */
-        /* Print margins MUST live on @page — padding inside a 210mm-wide box gets scaled away when the browser fits the page. */
+        /* Pre-printed slip: 21 cm × 13.5 cm (landscape). Data overlay only — no borders on paper. */
         @page {
             size: 210mm 135mm;
-            margin: 2cm 2cm 1.4cm 2cm; /* top right bottom left — shop name / sides / footer */
+            margin: 0;
         }
 
         * {
@@ -21,6 +20,8 @@
         body {
             margin: 0;
             padding: 0;
+            width: 210mm;
+            min-height: 135mm;
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             font-size: 10px;
             line-height: 1.25;
@@ -28,37 +29,14 @@
             print-color-adjust: exact;
         }
 
+        /* Data band: 2 cm khali left + right; beech mein content (21 cm − 4 cm = 17 cm usable width) */
         .print-sheet {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Screen: slip size + same 2 cm insets as @page (preview) */
-        @media screen {
-
-            html,
-            body {
-                width: 210mm;
-                min-height: 135mm;
-            }
-
-            body {
-                background: #e8e8e8;
-            }
-
-            .print-sheet {
-                width: 210mm;
-                min-height: 135mm;
-                padding: 2cm 2cm 1.4cm 2cm;
-                background: #fff;
-                margin: 12px auto;
-                box-shadow: 0 0 0 1px #ccc;
-            }
-
-            .overlay-table td {
-                outline: 1px dashed rgba(0, 0, 0, 0.12);
-            }
+            width: 210mm;
+            min-height: 135mm;
+            padding-top: 2.5cm;
+            padding-right: 2cm;
+            padding-bottom: 1.4cm;
+            padding-left: 2cm;
         }
 
         .overlay-table {
@@ -88,24 +66,28 @@
             unicode-bidi: embed;
         }
 
+        /* Screen preview: light guides only */
+        @media screen {
+            body {
+                background: #e8e8e8;
+            }
+
+            .print-sheet {
+                background: #fff;
+                margin: 12px auto;
+                box-shadow: 0 0 0 1px #ccc;
+            }
+
+            .overlay-table td {
+                outline: 1px dashed rgba(0, 0, 0, 0.12);
+            }
+        }
+
         /* On paper: no lines (form already printed) */
         @media print {
             html,
             body {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-height: 0 !important;
-                height: auto !important;
                 background: transparent !important;
-            }
-
-            .print-sheet {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-height: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                box-shadow: none !important;
             }
 
             .overlay-table,
@@ -115,6 +97,11 @@
                 outline: none !important;
                 background: transparent !important;
                 box-shadow: none !important;
+            }
+
+            .print-sheet {
+                margin: 0;
+                box-shadow: none;
             }
         }
 
