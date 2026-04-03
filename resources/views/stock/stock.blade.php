@@ -451,6 +451,19 @@
             $('#tableLoader').addClass('hidden');
         }
 
+        /** Gold amounts in tables: 2 decimal places (avoids float artifacts like 19.319999999999997). */
+        function fmtGold2(val) {
+            if (val === null || val === undefined || val === '') return '';
+            var n = Number(val);
+            return isNaN(n) ? String(val) : n.toFixed(2);
+        }
+        /** Cash amounts in tables: 2 decimal places. */
+        function fmtCash2(val) {
+            if (val === null || val === undefined || val === '') return '';
+            var n = Number(val);
+            return isNaN(n) ? String(val) : n.toFixed(2);
+        }
+
         // DataTables initialization helper function
         function initDataTable(tableId, hasData) {
             // If no data, don't initialize DataTables
@@ -652,14 +665,14 @@
                                 table += `
                                     <tr class="hover:bg-gray-100">
                                         <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.castingWeight || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.mazdoriRate || 0} : ${item.mailCode || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.wasteCasted || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.khalis || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.remainingMazdoori || 0} : ${item.totalMazdoori || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.totalMazdooriInGold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.advance || 0} : ${item.totalGold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.op2RemainingGold || 0}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.castingWeight ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.mazdoriRate ?? 0)} : ${item.mailCode ?? ''}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.wasteCasted ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.khalis ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.remainingMazdoori ?? 0)} : ${fmtGold2(item.totalMazdoori ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.totalMazdooriInGold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.advance ?? 0)} : ${fmtGold2(item.totalGold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.op2RemainingGold ?? 0)}</td>
                                         <td class="border border-gray-300 px-4 py-2">----</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.remarks}</td>
@@ -732,8 +745,8 @@
                                 table += `
                                     <tr class="hover:bg-gray-100">
                                         <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.gold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.cash || 0}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash ?? 0)}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.status || 0}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.remarks || 0}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
@@ -759,7 +772,7 @@
                             $('#cashLaina').val(0);
             
                         } else {
-                            $('#cashLaina').val(totals.cash_balance);
+                            $('#cashLaina').val(Number(totals.cash_balance).toFixed(2));
                             $('#cashDaina').val(0);
                            
                         }
@@ -1081,7 +1094,7 @@
                             },
                             columns: [
                                 { data: 0, name: 'serial', orderable: false, searchable: false },
-                                { data: 1, name: 'gold' },
+                                { data: 1, name: 'gold', render: function(d) { return fmtGold2(d); } },
                                 { data: 2, name: 'created_at' },
                                 { data: 3, name: 'remarks' }
                             ],
@@ -1150,7 +1163,7 @@
                       html += `
                         <tr class="hover:bg-gray-100">
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.cash ?? ''}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
                         </tr>
@@ -1231,7 +1244,7 @@
                             },
                             columns: [
                                 { data: 0, name: 'serial', orderable: false, searchable: false },
-                                { data: 1, name: 'gold' },
+                                { data: 1, name: 'gold', render: function(d) { return fmtGold2(d); } },
                                 { data: 2, name: 'status' },
                                 { data: 3, name: 'created_at' },
                                 { data: 4, name: 'remarks' }
@@ -1314,7 +1327,7 @@
                             },
                             columns: [
                                 { data: 0, name: 'serial', orderable: false, searchable: false },
-                                { data: 1, name: 'cash' },
+                                { data: 1, name: 'cash', render: function(d) { return fmtCash2(d); } },
                                 { data: 2, name: 'status' },
                                 { data: 3, name: 'created_at' },
                                 { data: 4, name: 'remarks' }
@@ -1389,8 +1402,8 @@
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.cash_balance ?? '')}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1461,8 +1474,8 @@
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.cash_balance ?? '')}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1536,12 +1549,12 @@
                         <tr class="hover:bg-gray-100">
                             <td class="border border-gray-300 px-4 py-2">${item.party_id}</td>
                             <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.gold_received ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.gold_paid ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${(item.gold_balance ?? '')}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_received ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_paid ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_received)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_paid)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_received)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_paid)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                             <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1671,7 +1684,7 @@
                                     <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                                     <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
                                     <td class="border border-gray-300 px-4 py-2">${item.party_name || '--'}</td>
-                                    <td class="border border-gray-300 px-4 py-2">${parseFloat(item.total_waste_casted || 0).toFixed(3)}</td>
+                                    <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.total_waste_casted ?? 0)}</td>
                                 </tr>
                             `;
                         });
