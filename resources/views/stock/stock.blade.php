@@ -508,8 +508,8 @@
                         try {
                             // Initialize DataTable with search and filtering
                             $table.DataTable({
-                                "pageLength": 10,
-                                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                "pageLength": 100,
+                                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                                 "order": [[0, "asc"]],
                                 "searching": true,
                                 "paging": true,
@@ -1085,8 +1085,8 @@
                                 { data: 2, name: 'created_at' },
                                 { data: 3, name: 'remarks' }
                             ],
-                            pageLength: 25,
-                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                             order: [[2, 'desc']],
                             searching: true,
                             paging: true,
@@ -1236,8 +1236,8 @@
                                 { data: 3, name: 'created_at' },
                                 { data: 4, name: 'remarks' }
                             ],
-                            pageLength: 25,
-                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                             order: [[3, 'desc']],
                             searching: true,
                             paging: true,
@@ -1319,8 +1319,8 @@
                                 { data: 3, name: 'created_at' },
                                 { data: 4, name: 'remarks' }
                             ],
-                            pageLength: 25,
-                            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                             order: [[3, 'desc']],
                             searching: true,
                             paging: true,
