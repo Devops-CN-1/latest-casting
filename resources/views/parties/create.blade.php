@@ -460,8 +460,8 @@
             var $table = $('#' + tableId);
             if ($table.length) {
                 $table.DataTable({
-                    "pageLength": 10,
-                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "pageLength": 100,
+                    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                     "order": [[0, "asc"]],
                     "searching": true,
                     "paging": true,
@@ -682,8 +682,8 @@
                     var $table = $('#partiesTable');
                     if ($table.length && $.fn.DataTable) {
                         $table.DataTable({
-                            "pageLength": 10,
-                            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                            "pageLength": 100,
+                            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                             "order": [[0, "asc"]],
                             "searching": true,
                             "paging": true,
