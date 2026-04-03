@@ -289,6 +289,51 @@ class ImportDbDataController extends Controller
     }
 
     /**
+     * First cell matching any header alias (case / spacing insensitive).
+     *
+     * @param  list<string>  $columnAliases
+     */
+    protected function csvValueByAliases(array $data, array $columnAliases): mixed
+    {
+        $norm = [];
+        foreach ($data as $k => $v) {
+            $nk = strtolower(preg_replace('/[\s_\-]/', '', (string) $k));
+            if (! array_key_exists($nk, $norm)) {
+                $norm[$nk] = $v;
+            }
+        }
+        foreach ($columnAliases as $alias) {
+            $key = strtolower(preg_replace('/[\s_\-]/', '', $alias));
+            if (array_key_exists($key, $norm)) {
+                return $norm[$key];
+            }
+        }
+
+        return null;
+    }
+
+    /** CSV / legacy DB often stores 1,2,3 instead of enum op1,op2,op3. */
+    protected function mapOrderSelectOption(mixed $raw): string
+    {
+        $s = strtolower(trim((string) $raw));
+        if ($s === '' || $s === 'null') {
+            return 'op1';
+        }
+
+        return match ($s) {
+            'op1', '1' => 'op1',
+            'op2', '2' => 'op2',
+            'op3', '3' => 'op3',
+            default => ctype_digit($s) ? match ((int) $s) {
+                1 => 'op1',
+                2 => 'op2',
+                3 => 'op3',
+                default => 'op1',
+            } : 'op1',
+        };
+    }
+
+    /**
      * @param  class-string<Model>  $modelClass
      */
     protected function importCreate(string $modelClass, array $attributes): Model
@@ -712,8 +757,10 @@ class ImportDbDataController extends Controller
 
         $dataRows = $this->parseCsvRowsAssociative($filePath);
 
+        $ordersImported = 0;
+
         foreach ($dataRows as $data) {
-            if (!array_key_exists('Serial', $data)) {
+            if ($this->csvValueByAliases($data, ['Serial', 'serial']) === null) {
                 throw new \RuntimeException(
                     'Missing column Serial. Use comma- or tab-separated columns. Found: '
                     . implode(', ', array_keys($data))
@@ -733,10 +780,11 @@ class ImportDbDataController extends Controller
                 'Opt1RemainingGold','Opt1RemainingCash',
                 'Opt2GoldRecieved','Opt2GoldPaid','Opt2RemainingGold',
                 'Opt2CashRecieved','Opt2CashPaid','Opt2RemainingCash',
+                'opt2Cash',
                 'Opt3CashRecieved','Opt3CashPaid','Opt3RemainingCash',
                 'TotalWeight','TotalWasteCasted','Khalis','Advance',
                 'TotalKhalis','RemainingMazdori','WapsiGold','CastingWeight',
-                'InOutCheck','InOut','SelectOption',
+                'InOutCheck','InOut',
             ];
 
             foreach ($numericFields as $field) {
@@ -745,22 +793,41 @@ class ImportDbDataController extends Controller
                 }
             }
 
-            $orderId = intval($data['Serial']);
+            $orderId = intval(trim((string) $this->csvValueByAliases($data, ['Serial', 'serial'])));
             if ($orderId <= 0) {
                 continue;
             }
 
-            $orderTs = $this->importTimestampFromRow($data, ['DateOfCompletion', 'DateOfEntry', 'DateofEntry']) ?? now();
+            $ordersImported++;
+
+            // DateOfCompletion → orders.created_at / updated_at (m/d/Y H:i from SQL/Excel exports)
+            $orderTs = $this->importTimestampFromRow($data, [
+                'DateOfCompletion', 'dateofcompletion', 'DateofCompletion', 'DateOfEntry', 'DateofEntry',
+            ]);
+            if ($orderTs !== null && str_starts_with($orderTs, '1900-')) {
+                $orderTs = null;
+            }
+            $orderTs = $orderTs ?? now();
+
+            $selectOption = $this->mapOrderSelectOption($this->csvValueByAliases($data, ['SelectOption', 'selectOption', 'selectoption']));
+
+            $op2CashRecievedRaw = $this->csvValueByAliases($data, ['Opt2CashRecieved', 'opt2Cash', 'opt2cash']);
+            if ($op2CashRecievedRaw === null || $this->isCsvNumericEmpty($op2CashRecievedRaw)) {
+                $op2CashRecievedRaw = 0;
+            }
+            $op2CashRecieved = floatval(trim((string) $op2CashRecievedRaw));
+
+            $partyId = intval(trim((string) ($this->csvValueByAliases($data, ['PtyID', 'ptyid']) ?? '0')));
 
             // ------------------------------------------
             // 🟦 Upsert by legacy Serial → id (safe to re-run import)
             // ------------------------------------------
-            Model::unguarded(function () use ($orderId, $data, $orderTs) {
+            Model::unguarded(function () use ($orderId, $data, $orderTs, $selectOption, $op2CashRecieved, $partyId) {
                 Order::updateOrCreate(
                     ['id' => $orderId],
                     [
                 'id'                        => $orderId,
-                'party_id'                  => intval($data['PtyID']),
+                'party_id'                  => $partyId,
                 'created_by'                => 1,
 
                 'weightReady'               => $data['Weight_Ready'],
@@ -782,7 +849,7 @@ class ImportDbDataController extends Controller
                 'Piece'                     => $data['Piece'],
 
                 'remarks'                   => $data['Remarks'],
-                'selectOption'              => $data['SelectOption'],
+                'selectOption'              => $selectOption,
 
                 'totalGold'                 => $data['TotalGold'],
                 'totalMazdoori'             => $data['TotalMaz'],
@@ -806,7 +873,7 @@ class ImportDbDataController extends Controller
                 'op2GoldRecieved'           => $data['Opt2GoldRecieved'],
                 'op2GoldPaid'               => $data['Opt2GoldPaid'],
                 'op2RemainingGold'          => $data['Opt2RemainingGold'],
-                'op2CashRecieved'           => $data['Opt2CashRecieved'],
+                'op2CashRecieved'           => $op2CashRecieved,
                 'op2CashPaid'               => $data['Opt2CashPaid'],
                 'op2RemainingCash'          => $data['Opt2RemainingCash'],
 
@@ -831,7 +898,7 @@ class ImportDbDataController extends Controller
             });
         }
 
-        return 'Orders imported successfully!';
+        return 'Orders imported successfully (' . $ordersImported . ' orders).';
     }
 
     public function importStockCash($filePath = null)
