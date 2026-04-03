@@ -29,12 +29,12 @@
             print-color-adjust: exact;
         }
 
-        /* Data band: 2 cm khali left + right; beech mein content (21 cm − 4 cm = 17 cm usable width) */
+        /* Top + right: 0 (shop strip / header); left + bottom reserved */
         .print-sheet {
             width: 210mm;
             min-height: 135mm;
-            padding-top: 2.5cm;
-            padding-right: 2cm;
+            padding-top: 0;
+            padding-right: 0;
             padding-bottom: 1.4cm;
             padding-left: 2cm;
         }
