@@ -17,6 +17,8 @@ use App\Models\ExpenseGold;
 use App\Models\StockCash;
 use App\Models\StockGold;
 use App\Models\Order;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class ImportDbDataController extends Controller
 {
@@ -174,6 +176,94 @@ class ImportDbDataController extends Controller
         return false;
     }
 
+    /**
+     * Parse common SQL/Excel export datetime strings (e.g. "6/28/2021 13:18") for MySQL timestamps.
+     */
+    protected function parseCsvDateTime(?string $value): ?Carbon
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+        $t = trim($value);
+        if (strcasecmp($t, 'null') === 0) {
+            return null;
+        }
+
+        $formats = [
+            'n/j/Y G:i',
+            'n/j/Y G:i:s',
+            'n/j/Y H:i:s',
+            'm/d/Y H:i',
+            'm/d/Y H:i:s',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'd/m/Y H:i',
+            'd/m/Y H:i:s',
+        ];
+
+        foreach ($formats as $fmt) {
+            try {
+                $c = Carbon::createFromFormat($fmt, $t);
+            } catch (\Throwable) {
+                continue;
+            }
+            if ($c instanceof Carbon) {
+                return $c;
+            }
+        }
+
+        try {
+            return Carbon::parse($t);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Resolve DateOfEntry-style columns case-insensitively and return Y-m-d H:i:s for created_at/updated_at.
+     *
+     * @param  list<string>  $columnAliases  e.g. ['DateOfEntry', 'DateofEntry']
+     */
+    protected function importTimestampFromRow(array $data, array $columnAliases): ?string
+    {
+        $norm = [];
+        foreach ($data as $k => $v) {
+            $nk = strtolower(preg_replace('/[\s_\-]/', '', (string) $k));
+            if (!array_key_exists($nk, $norm)) {
+                $norm[$nk] = $v;
+            }
+        }
+
+        foreach ($columnAliases as $alias) {
+            $key = strtolower(preg_replace('/[\s_\-]/', '', $alias));
+            if (!isset($norm[$key])) {
+                continue;
+            }
+            $raw = trim((string) $norm[$key]);
+            if ($raw === '' || strcasecmp($raw, 'null') === 0) {
+                continue;
+            }
+            $parsed = $this->parseCsvDateTime($raw);
+            if ($parsed !== null) {
+                return $parsed->format('Y-m-d H:i:s');
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function importCreate(string $modelClass, array $attributes): Model
+    {
+        $model = new $modelClass();
+        $model->forceFill($attributes);
+        $model->save();
+
+        return $model;
+    }
+
     public function partyregular($filePath = null)
     {
         $filePath = $filePath ?? base_path('dbo.PTY_Regular.csv');
@@ -272,14 +362,19 @@ class ImportDbDataController extends Controller
                 );
             }
 
-            PartyCash::updateOrCreate(
-                ['partyID' => intval(trim($data['PtyID']))],
-                [
-                    'status' => intval(trim($data['status'] ?? '0')),
-                    'created_at' => trim($data['timeOfaction'] ?? ''),
-                    'updated_at' => trim($data['timeOfaction'] ?? ''),
-                ]
-            );
+            $pcTs = $this->importTimestampFromRow($data, ['timeOfaction', 'timeOfAction', 'DateOfEntry', 'DateofEntry'])
+                ?? now();
+
+            Model::unguarded(function () use ($data, $pcTs) {
+                PartyCash::updateOrCreate(
+                    ['partyID' => intval(trim($data['PtyID']))],
+                    [
+                        'status' => intval(trim($data['status'] ?? '0')),
+                        'created_at' => $pcTs,
+                        'updated_at' => $pcTs,
+                    ]
+                );
+            });
         }
 
         return 'PartyCash CSV imported successfully!';
@@ -309,13 +404,15 @@ class ImportDbDataController extends Controller
 
             $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
 
-            AccountCash::create([
+            $acTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountCash::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
                 'cash'       => floatval(trim($data['cash'] ?? '0')),
                 'status'     => $status,
                 'remarks'    => trim($data['remarks'] ?? ''),
-                'created_at' => trim($data['DateOfEntry'] ?? ''),
-                'updated_at' => trim($data['DateOfEntry'] ?? ''),
+                'created_at' => $acTs,
+                'updated_at' => $acTs,
             ]);
         }
 
@@ -347,13 +444,15 @@ class ImportDbDataController extends Controller
 
             $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
 
-            AccountGold::create([
+            $agTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountGold::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
                 'gold'       => floatval(trim($data['gold'] ?? '0')),
                 'status'     => $status,
                 'remarks'    => trim($data['remarks'] ?? ''),
-                'created_at' => trim($data['DateOfEntry'] ?? ''),
-                'updated_at' => trim($data['DateOfEntry'] ?? ''),
+                'created_at' => $agTs,
+                'updated_at' => $agTs,
             ]);
         }
 
@@ -385,14 +484,16 @@ class ImportDbDataController extends Controller
             $statusCode = strtolower(trim($data['status'] ?? ''));
             $status = $statusMap[$statusCode] ?? 'Unknown';
 
-            AccountHistoryCash::create([
+            $ahcTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountHistoryCash::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
                 'cash'       => floatval(trim($data['cash'] ?? '0')),
                 'status'     => $status,
                 'remarks'    => trim($data['remarks'] ?? ''),
                 'user_id'    => 1,
-                'created_at' => trim($data['DateOfEntry'] ?? ''),
-                'updated_at' => trim($data['DateOfEntry'] ?? ''),
+                'created_at' => $ahcTs,
+                'updated_at' => $ahcTs,
             ]);
         }
 
@@ -424,14 +525,16 @@ class ImportDbDataController extends Controller
             $statusCode = strtolower(trim($data['status'] ?? ''));
             $status = $statusMap[$statusCode] ?? 'Unknown';
 
-            AccountHistoryGold::create([
+            $ahgTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountHistoryGold::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
                 'gold'       => floatval(trim($data['gold'] ?? '0')),
                 'status'     => $status,
                 'remarks'    => trim($data['remarks'] ?? ''),
                 'user_id'    => 1,
-                'created_at' => trim($data['DateOfEntry'] ?? ''),
-                'updated_at' => trim($data['DateOfEntry'] ?? ''),
+                'created_at' => $ahgTs,
+                'updated_at' => $ahgTs,
             ]);
         }
 
@@ -470,7 +573,9 @@ class ImportDbDataController extends Controller
             $goldStatus = $statusGold[$goldStatusCode] ?? null;
             $cashStatus = $statusCash[$cashStatusCode] ?? null;
 
-            AccountMain::create([
+            $amTs = $this->importTimestampFromRow($data, ['DateofEntry', 'DateOfEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountMain::class, [
                 'partyID'            => intval(trim($data['PtyID'])),
                 'recievedGoldLast'   => floatval(trim($data['RGoldLast'])),
                 'paidGoldLast'       => floatval(trim($data['PGoldLast'])),
@@ -483,8 +588,8 @@ class ImportDbDataController extends Controller
                 'cashStatus'         => $cashStatus,
                 'hawala'             => trim($data['Hawala']),
                 'addGold'            => floatval(trim($data['AddGold'])),
-                'created_at'         => trim($data['DateofEntry']),
-                'updated_at'         => trim($data['DateofEntry']),
+                'created_at'         => $amTs,
+                'updated_at'         => $amTs,
             ]);
         }
 
@@ -509,11 +614,13 @@ class ImportDbDataController extends Controller
                 );
             }
 
-            ExpenseCash::create([
+            $ecTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(ExpenseCash::class, [
                 'cash'       => floatval(trim($d['cash'])),
                 'remarks'    => trim($d['remarks'] ?? ''),
-                'created_at' => trim($d['dateofentry'] ?? ''),
-                'updated_at' => trim($d['dateofentry'] ?? ''),
+                'created_at' => $ecTs,
+                'updated_at' => $ecTs,
             ]);
         }
 
@@ -535,11 +642,13 @@ class ImportDbDataController extends Controller
 
             $data = array_combine($header, $row);
 
-            ExpenseGold::create([
+            $egTs = $this->importTimestampFromRow($data, ['DateofEntry', 'DateOfEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(ExpenseGold::class, [
                 'gold'       => floatval(trim($data['gold'])),
                 'remarks'    => trim($data['Remarks']),
-                'created_at' => trim($data['DateofEntry']),
-                'updated_at' => trim($data['DateofEntry']),
+                'created_at' => $egTs,
+                'updated_at' => $egTs,
             ]);
         }
 
@@ -593,12 +702,15 @@ class ImportDbDataController extends Controller
                 continue;
             }
 
+            $orderTs = $this->importTimestampFromRow($data, ['DateOfCompletion', 'DateOfEntry', 'DateofEntry']) ?? now();
+
             // ------------------------------------------
             // 🟦 Upsert by legacy Serial → id (safe to re-run import)
             // ------------------------------------------
-            Order::updateOrCreate(
-                ['id' => $orderId],
-                [
+            Model::unguarded(function () use ($orderId, $data, $orderTs) {
+                Order::updateOrCreate(
+                    ['id' => $orderId],
+                    [
                 'id'                        => $orderId,
                 'party_id'                  => intval($data['PtyID']),
                 'created_by'                => 1,
@@ -664,10 +776,11 @@ class ImportDbDataController extends Controller
                 'wapsiGold'                 => $data['WapsiGold'],
                 'castingWeight'             => $data['CastingWeight'],
 
-                'created_at'                => $data['DateOfCompletion'],
-                'updated_at'                => $data['DateOfCompletion'],
-                ]
-            );
+                'created_at'                => $orderTs,
+                'updated_at'                => $orderTs,
+                    ]
+                );
+            });
         }
 
         return 'Orders imported successfully!';
@@ -705,14 +818,14 @@ class ImportDbDataController extends Controller
                 ? ($statusMap[strtolower($statusCode)] ?? $statusCode)
                 : null;
 
-            $dateEntry = trim((string) ($d['dateofentry'] ?? ''));
+            $scTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
 
-            StockCash::create([
+            $this->importCreate(StockCash::class, [
                 'cash'       => $cash,
                 'status'     => $status,
                 'remarks'    => isset($d['remarks']) && $d['remarks'] !== '' ? $d['remarks'] : null,
-                'created_at' => $dateEntry !== '' ? $dateEntry : now(),
-                'updated_at' => $dateEntry !== '' ? $dateEntry : now(),
+                'created_at' => $scTs,
+                'updated_at' => $scTs,
             ]);
         }
 
@@ -749,14 +862,14 @@ class ImportDbDataController extends Controller
                 ? ($statusMap[strtolower($statusCode)] ?? $statusCode)
                 : null;
 
-            $dateEntry = trim((string) ($d['dateofentry'] ?? ''));
+            $sgTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
 
-            StockGold::create([
+            $this->importCreate(StockGold::class, [
                 'gold'       => $gold,
                 'status'     => $status,
                 'remarks'    => isset($d['remarks']) && $d['remarks'] !== '' ? $d['remarks'] : null,
-                'created_at' => $dateEntry !== '' ? $dateEntry : now(),
-                'updated_at' => $dateEntry !== '' ? $dateEntry : now(),
+                'created_at' => $sgTs,
+                'updated_at' => $sgTs,
             ]);
         }
 
