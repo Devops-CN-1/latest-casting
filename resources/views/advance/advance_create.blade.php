@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
-        <div class="w-full pt-2 px-5 bg-[#ece9d8]">
+    <div class="w-full max-w-none mx-0 px-0">
+        <div class="w-full pt-2 p-2 bg-[#ece9d8]">
             <!-- top container start -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10">
                 <!-- left side  -->
