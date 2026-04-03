@@ -1251,7 +1251,17 @@ $(document).ready(function() {
         if (e.which === 13) { e.preventDefault(); $('#hawala').focus(); }
     });
     $('#party-advance-form').on('keydown', '#hawala', function (e) {
-        if (e.which === 13) { e.preventDefault(); $('#save-party-advance').focus(); }
+        
+        if (e.which === 13) {
+            if($('#hawala').val() === ''){
+                toastr.error('Please enter hawala!', 'Error');
+                $('#hawala').focus();
+                return false;
+            }
+            
+            
+            e.preventDefault(); $('#save-party-advance').focus(); 
+        }
     });
     $('#save-party-advance').on('keydown', function (e) {
         if (e.which === 13) { e.preventDefault(); $(this).click(); }
