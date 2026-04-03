@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full max-w-none mx-0 px-0">
-        <div class="w-full pt-2 p-2 bg-[#ece9d8]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="advance-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="advance-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="advance-create-panel" class="w-full pt-2 p-2 bg-[#ece9d8]">
             <!-- top container start -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-10">
                 <!-- left side  -->
@@ -212,6 +215,9 @@
 
             </div>
 
+        </div>
+        </div>
+            </div>
         </div>
     </div>
 <!-- DataTables CSS (local for offline) -->
@@ -920,7 +926,48 @@ function padRight(str, length) {
     return str;
 }
 
+var advanceCreateResizeTimer;
+function fitAdvanceCreateToViewport() {
+    var vp = document.getElementById('advance-create-viewport');
+    var inner = document.getElementById('advance-create-scale-inner');
+    if (!vp || !inner) return;
+    var header = document.querySelector('body > header');
+    var hh = header ? header.offsetHeight : 0;
+    var avail = Math.max(200, window.innerHeight - hh);
+    vp.style.height = avail + 'px';
+    vp.style.maxHeight = avail + 'px';
+
+    inner.style.transform = '';
+    inner.style.width = '100%';
+
+    var h = inner.offsetHeight;
+    var w = inner.scrollWidth || inner.offsetWidth;
+    var vpW = Math.max(1, vp.clientWidth);
+    var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+    if (s < 0.999) {
+        inner.style.transformOrigin = 'top left';
+        inner.style.transform = 'scale(' + s + ')';
+        inner.style.width = (100 / s) + '%';
+    } else {
+        inner.style.transform = '';
+        inner.style.width = '100%';
+    }
+}
+
+function scheduleFitAdvanceCreate() {
+    clearTimeout(advanceCreateResizeTimer);
+    advanceCreateResizeTimer = setTimeout(function() {
+        requestAnimationFrame(fitAdvanceCreateToViewport);
+    }, 50);
+}
+
+$(window).on('resize', scheduleFitAdvanceCreate);
+$(window).on('load', scheduleFitAdvanceCreate);
+
 $(document).ready(function() {
+    scheduleFitAdvanceCreate();
+    $('#advance-create-panel img').on('load', scheduleFitAdvanceCreate);
     $('#party_no').focus();
 
 
@@ -1123,6 +1170,9 @@ $(document).ready(function() {
                             "paging": true,
                             "info": true,
                             "ordering": true,
+                            "drawCallback": function () {
+                                scheduleFitAdvanceCreate();
+                            },
                             "language": {
                                 "search": "Search:",
                                 "lengthMenu": "Show _MENU_ entries",
@@ -1133,6 +1183,7 @@ $(document).ready(function() {
                             }
                         });
                     }
+                    scheduleFitAdvanceCreate();
 
                     $('#partyId').val(partyNo);
                     $('#party_no').val(partyNo);
