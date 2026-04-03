@@ -29,11 +29,11 @@
             print-color-adjust: exact;
         }
 
-        /* Top + right: 0 (shop strip / header); left + bottom reserved */
+        /* Top 2.5 cm (header); right 0; left + bottom reserved */
         .print-sheet {
             width: 210mm;
             min-height: 135mm;
-            padding-top: 0;
+            padding-top: 2.5cm;
             padding-right: 0;
             padding-bottom: 1.4cm;
             padding-left: 2cm;
