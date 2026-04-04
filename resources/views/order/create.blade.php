@@ -1335,8 +1335,7 @@ $(document).ready(function() {
 
                 
                 $('#anderCheckValue').val(ander.toFixed(3));
-                var fortotalWeightander = totalWeight * ander;
-                var khalis = (Math.ceil(fortotalWeightander * 100) / 100).toFixed(3);
+                var khalis = ( totalWeight * ander );
                 let resultroundedvalue = (Math.ceil(khalis * 100) / 100).toFixed(3);
                 $('#khalis').val(resultroundedvalue);
                 let mailNikla  = totalWeight - khalis;
@@ -1366,7 +1365,11 @@ $(document).ready(function() {
 
 
 
-            
+            let totalKhalis = khalis + advance;
+
+
+
+            $('#totalKhalis').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
@@ -1375,17 +1378,7 @@ $(document).ready(function() {
             var totalwaitforcountkhails = $('#totalWeight').val();
             var mailniklaforcountkhails = $('#totalWeightCasted').val();
 
-            var forKhalis = totalwaitforcountkhails - mailniklaforcountkhails;
-
-            $('#khalis').val((Math.ceil(forKhalis * 100) / 100).toFixed(3));
-
-            let totalKhalis = khalis + advance;
-
-
-
-            $('#totalKhalis').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
-
-            // $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
+            $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
