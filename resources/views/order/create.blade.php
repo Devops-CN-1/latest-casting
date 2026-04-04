@@ -1375,10 +1375,10 @@ $(document).ready(function() {
             $('#totalWeight').val(totalWeight.toFixed(3));
             $('#totalMazdoori').val(totalMazdoori);
 
-            var totalwaitforcountkhails = $('#totalWeight').val();
-            var mailniklaforcountkhails = $('#totalWeightCasted').val();
-
-            $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
+            var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
+            var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
+            var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
+            $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
