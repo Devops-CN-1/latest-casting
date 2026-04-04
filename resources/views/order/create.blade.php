@@ -356,6 +356,18 @@
             user-select: none;
         }
 
+        /* Remove up/down spin buttons on number inputs (Chrome, Edge, Safari) */
+        #order-create-viewport input[type="number"]::-webkit-outer-spin-button,
+        #order-create-viewport input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #order-create-viewport input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
         .loader-spinner {
             width: 60px;
             height: 60px;
