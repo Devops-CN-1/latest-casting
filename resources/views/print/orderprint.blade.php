@@ -174,7 +174,7 @@
                     <td class="label text-right">ریٹ فی گرام</td>
                     <td class="val text-left">{{ $data['gramRate'] }}</td>
                     <td class="label text-right">ویسٹ فیس دس گرام</td>
-                    <td class="val text-left">{{ $data['wasteDiscountRate'] }}</td>
+                    <td class="val text-left">{{ $data['wasteRate'] }}</td>
                     <td class="label text-right">مزدوری فی گرام</td>
                     <td class="val text-left">0</td>
                 </tr>
