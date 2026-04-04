@@ -1217,12 +1217,12 @@ $(document).ready(function() {
 
                 // For gold difference (show with 2 decimals, rounded)
                 if (goldDiff < 0) {
-                    $("#gold-laina").val((0).toFixed(2));
-                    $("#gold-daina").val(Number(goldDiff).toFixed(2));
+                    $("#gold-laina").val((0).toFixed(3));
+                    $("#gold-daina").val(Number(goldDiff).toFixed(3));
                     
                 } else {
-                    $("#gold-laina").val(Number(Math.abs(goldDiff)).toFixed(2));
-                    $("#gold-daina").val((0).toFixed(2));
+                    $("#gold-laina").val(Number(Math.abs(goldDiff)).toFixed(3));
+                    $("#gold-daina").val((0).toFixed(3));
                 }
             }else{
                 toastr.error('party not found', 'Error');
