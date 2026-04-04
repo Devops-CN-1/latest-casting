@@ -134,18 +134,23 @@
 
 <body>
     @php
-        /* Date: 29/03/2026 (d/m/Y). Time: 8:54:10 PM (g:i:s A) — per print slip */
+        /* تاریخ cell = date only (d/m/Y). وقت cell = time only (g:i:s A). */
         $raw = trim((string) ($data['currentDateTime'] ?? ''));
-        $date = '';
-        $time = '';
+        $dateOnly = '';
+        $timeOnly = '';
         if ($raw !== '' && strtoupper($raw) !== 'N/A') {
             try {
                 $dt = \Carbon\Carbon::parse($raw);
-                $date = $dt->format('d/m/Y');
-                $time = $dt->format('g:i:s A');
+                $dateOnly = $dt->format('d/m/Y');
+                $timeOnly = $dt->format('g:i:s A');
             } catch (\Throwable $e) {
-                $date = $raw;
-                $time = '';
+                if (preg_match('/^(.+?)\s+(\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM))$/i', $raw, $m)) {
+                    $dateOnly = trim($m[1]);
+                    $timeOnly = trim($m[2]);
+                } else {
+                    $dateOnly = $raw;
+                    $timeOnly = '';
+                }
             }
         }
     @endphp
@@ -159,9 +164,9 @@
                     <td class="label text-right">آرڈر نمبر</td>
                     <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
                     <td class="label text-right">تاریخ</td>
-                    <td class="val text-left">{{ $date }}</td>
+                    <td class="val text-left">{{ $dateOnly }}</td>
                     <td class="label text-right">وقت</td>
-                    <td class="val val-ltr">{{ $time }}</td>
+                    <td class="val val-ltr">{{ $timeOnly }}</td>
                 </tr>
                 <tr>
                     <td class="label text-right">ریٹ فی تولہ</td>
