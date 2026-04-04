@@ -1378,7 +1378,11 @@ $(document).ready(function() {
             var totalwaitforcountkhails = $('#totalWeight').val();
             var mailniklaforcountkhails = $('#totalWeightCasted').val();
 
-            $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
+            var forKhalis = totalwaitforcountkhails - mailniklaforcountkhails;
+
+            $('#khalis').val((Math.ceil(forKhalis * 100) / 100).toFixed(3));
+
+            // $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
