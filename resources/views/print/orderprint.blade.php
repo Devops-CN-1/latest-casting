@@ -275,6 +275,13 @@
                         </td>
                         <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>مزدوری کا سونا</span>
+                                <span>{{ $data['mazdooriRate'] }}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>وصول خالص</span>
                                 <span>{{ $data['GoldRecieved'] }}</span>
                             </div>

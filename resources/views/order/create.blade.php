@@ -529,6 +529,13 @@
             GoldRecieved = 0;
             RemainingGold = 0;
         }
+        var mazdooriGold = 0;
+
+        if('op2MazdooriInGold').val() !== 0){
+            mazdooriGold = $('#op2MazdooriInGold').val() || 0;
+        }
+
+        
 
         let payload = {
             serialNumber :formattedSerial,
