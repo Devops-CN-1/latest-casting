@@ -1335,7 +1335,8 @@ $(document).ready(function() {
 
                 
                 $('#anderCheckValue').val(ander.toFixed(3));
-                var khalis = ( totalWeight * ander );
+                var fortotalWeightander = totalWeight * ander;
+                var khalis = (Math.ceil(fortotalWeightander * 100) / 100).toFixed(3);
                 let resultroundedvalue = (Math.ceil(khalis * 100) / 100).toFixed(3);
                 $('#khalis').val(resultroundedvalue);
                 let mailNikla  = totalWeight - khalis;
