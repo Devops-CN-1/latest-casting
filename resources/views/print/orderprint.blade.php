@@ -134,15 +134,19 @@
 
 <body>
     @php
-        $parts = explode(' ', $data['currentDateTime']);
-        $date = $parts[0] ?? '';
-        if (isset($parts[1])) {
-            $time = $parts[1];
-            if (isset($parts[2])) {
-                $time .= ' ' . $parts[2];
+        /* Date: 29/03/2026 (d/m/Y). Time: 8:54:10 PM (g:i:s A) — per print slip */
+        $raw = trim((string) ($data['currentDateTime'] ?? ''));
+        $date = '';
+        $time = '';
+        if ($raw !== '' && strtoupper($raw) !== 'N/A') {
+            try {
+                $dt = \Carbon\Carbon::parse($raw);
+                $date = $dt->format('d/m/Y');
+                $time = $dt->format('g:i:s A');
+            } catch (\Throwable $e) {
+                $date = $raw;
+                $time = '';
             }
-        } else {
-            $time = '';
         }
     @endphp
 

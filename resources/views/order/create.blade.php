@@ -1028,16 +1028,18 @@ $(document).ready(function() {
 
     function updateDateTime() {
             var now = new Date();
-            var day = String(now.getDate()).padStart(2, '0'); // Day with leading zero
+            var day = String(now.getDate()).padStart(2, '0');
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var month = months[now.getMonth()]; // Month name
-            var year = now.getFullYear(); // Full year
-            var hours = String(now.getHours()).padStart(2, '0'); // Hours with leading zero
-            var minutes = String(now.getMinutes()).padStart(2, '0'); // Minutes with leading zero
-            var seconds = String(now.getSeconds()).padStart(2, '0'); // Seconds with leading zero
-            
-            // var dateTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds; // Format: 07/May/2025 14:30:45
-            var dateTime = day + '/' + month + '/' + year ;
+            var month = months[now.getMonth()];
+            var year = now.getFullYear();
+            var h24 = now.getHours();
+            var h12 = h24 % 12;
+            if (h12 === 0) h12 = 12;
+            var ampm = h24 >= 12 ? 'PM' : 'AM';
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            // Carbon-parseable; print view formats as d/m/Y and g:i:s A
+            var dateTime = day + '/' + month + '/' + year + ' ' + h12 + ':' + minutes + ':' + seconds + ' ' + ampm;
             $('#currentDateTime').val(dateTime);
         }
 
