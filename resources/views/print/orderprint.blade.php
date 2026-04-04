@@ -273,13 +273,7 @@
                                 <span>{{ $data['totalWeight'] }}</span>
                             </div>
                         </td>
-                        <td>
-                            <div style="display:flex;justify-content:space-between;gap:6px;">
-                                <span>مزدوری کا سونا</span>
-                                <span>{{ $data['mazdooriGold'] }}</span>
-                            </div>
-                        </td>
-
+                        
                         <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>وصول خالص</span>
@@ -306,6 +300,13 @@
                                 <span class="val-ltr">{{ $data['RemainingGold'] }}</span>
                             </div>
                         </td>
+                        <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>مزدوری کا سونا</span>
+                                <span>{{ $data['mazdooriGold'] }}</span>
+                            </div>
+                        </td>
+
                         <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>پَٹھور</span>
