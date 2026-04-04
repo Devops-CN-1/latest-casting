@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
-        <div id="order-create-panel" class="w-full p-5 bg-[#004000]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="order-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="order-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="order-create-panel" class="w-full p-2 bg-[#004000]">
             <!-- ayat ul kursi -->
             <h1 class="text-xs font-semibold text-center text-[#cbd2a2]">
                 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ
@@ -131,8 +134,8 @@
                             <span class="mt-2 block">کُل مزدوری</span>
                         </div>
                     </div>
-                    <div class="mt-2 flex justify-center items-center">
-                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="">
+                    <div class="mt-1 flex justify-center items-center">
+                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="" class="max-h-20 w-auto object-contain">
                     </div>
                 </div>
                 <div class="w-[30%]">
@@ -151,7 +154,7 @@
                                 
                                     <input type="number" name="wasteDiscountRate" id="wasteDiscountRate" value="0.00" 
                                     class="w-5/12 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                                    <input type="number" name="wasteRate" id="wasteRate" value="value="0.100" " 
+                                    <input type="number" name="wasteRate" id="wasteRate" value="{{ $orderCreateWasteRate ?? '0.155' }}" 
                                     class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
@@ -331,6 +334,9 @@
                 </div>
             </div>
         </div>
+        </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loader Overlay -->
@@ -348,6 +354,18 @@
             cursor: default;
             -webkit-user-select: none;
             user-select: none;
+        }
+
+        /* Remove up/down spin buttons on number inputs (Chrome, Edge, Safari) */
+        #order-create-viewport input[type="number"]::-webkit-outer-spin-button,
+        #order-create-viewport input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #order-create-viewport input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         .loader-spinner {
@@ -483,6 +501,8 @@
 
 <script>
 
+    var orderCreatePersistedWasteRate = @json($orderCreateWasteRate ?? '0.155');
+
     // Loader functions
     function showLoader() {
         $('#tableLoader').removeClass('hidden');
@@ -523,6 +543,13 @@
             GoldRecieved = 0;
             RemainingGold = 0;
         }
+        var mazdooriGold = 0;
+
+        if($('#op2MazdooriInGold').val() !== 0){
+            mazdooriGold = $('#op2MazdooriInGold').val() || 0;
+        }
+
+        
 
         let payload = {
             serialNumber :formattedSerial,
@@ -552,6 +579,7 @@
             totalWeightCasted: $('#totalWeightCasted').val() || 0,
             khalis: $('#khalis').val() || 0,
             advance: $('#advance').val() || 0,
+            mazdooriGold: mazdooriGold,
             totalKhalis: $('#totalKhalis').val() || 0,
             remainingMazdoori: $('#remainingMazdoori').val() || 0,
             wapsiGold: $('#wapsiGold').val() || 0,
@@ -927,9 +955,50 @@ function getLastOrderInformation(){
     });
 }
 
+var orderCreateResizeTimer;
+function fitOrderCreateToViewport() {
+    var vp = document.getElementById('order-create-viewport');
+    var inner = document.getElementById('order-create-scale-inner');
+    if (!vp || !inner) return;
+    var header = document.querySelector('body > header');
+    var hh = header ? header.offsetHeight : 0;
+    var avail = Math.max(200, window.innerHeight - hh);
+    vp.style.height = avail + 'px';
+    vp.style.maxHeight = avail + 'px';
+
+    inner.style.transform = '';
+    inner.style.width = '100%';
+
+    var h = inner.offsetHeight;
+    var w = inner.scrollWidth || inner.offsetWidth;
+    var vpW = Math.max(1, vp.clientWidth);
+    var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+    if (s < 0.999) {
+        inner.style.transformOrigin = 'top left';
+        inner.style.transform = 'scale(' + s + ')';
+        inner.style.width = (100 / s) + '%';
+    } else {
+        inner.style.transform = '';
+        inner.style.width = '100%';
+    }
+}
+
+function scheduleFitOrderCreate() {
+    clearTimeout(orderCreateResizeTimer);
+    orderCreateResizeTimer = setTimeout(function() {
+        requestAnimationFrame(fitOrderCreateToViewport);
+    }, 50);
+}
+
+$(window).on('resize', scheduleFitOrderCreate);
+$(window).on('load', scheduleFitOrderCreate);
+
 $(document).ready(function() {
         updateCurrentTime();
         setInterval(updateCurrentTime, 1000);
+        scheduleFitOrderCreate();
+        $('#order-create-panel img').on('load', scheduleFitOrderCreate);
         $('#getPartyData').focus();
         var tollaRate = $('#tollaRate').val();
         let RatePerGram = tollaRate / 11.664; 
@@ -981,16 +1050,18 @@ $(document).ready(function() {
 
     function updateDateTime() {
             var now = new Date();
-            var day = String(now.getDate()).padStart(2, '0'); // Day with leading zero
+            var day = String(now.getDate()).padStart(2, '0');
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var month = months[now.getMonth()]; // Month name
-            var year = now.getFullYear(); // Full year
-            var hours = String(now.getHours()).padStart(2, '0'); // Hours with leading zero
-            var minutes = String(now.getMinutes()).padStart(2, '0'); // Minutes with leading zero
-            var seconds = String(now.getSeconds()).padStart(2, '0'); // Seconds with leading zero
-            
-            // var dateTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds; // Format: 07/May/2025 14:30:45
-            var dateTime = day + '/' + month + '/' + year ;
+            var month = months[now.getMonth()];
+            var year = now.getFullYear();
+            var h24 = now.getHours();
+            var h12 = h24 % 12;
+            if (h12 === 0) h12 = 12;
+            var ampm = h24 >= 12 ? 'PM' : 'AM';
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            // Carbon-parseable; print view formats as d/m/Y and g:i:s A
+            var dateTime = day + '/' + month + '/' + year + ' ' + h12 + ':' + minutes + ':' + seconds + ' ' + ampm;
             $('#currentDateTime').val(dateTime);
         }
 
@@ -1037,7 +1108,7 @@ $(document).ready(function() {
                             $('#party_id').val(partyID);
                             $('#remarks').val(response.data.lastRemarks);
                         }else{
-                        $('#partyName').val(response.data['party_regular'].businessName);
+                        $('#partyName').val(response.data['party_regular'].partyName);
                         $('#mazdoriRate').val(response.data['party_regular'].wasteDiscount);
                         // $('#wasteRate').val(response.data['party_regular'].wasteDiscount);
                         $('#advance').val(parseFloat(response.data['gold_summary'].balance).toFixed(3));
@@ -1115,9 +1186,49 @@ $(document).ready(function() {
     });
 
     $('#wasteRate').on('keydown', function(e) {
-        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
-            e.preventDefault(); // Prevent default tab behavior
+        if (e.which !== 13 && e.which !== 9) {
+            return;
+        }
+        e.preventDefault();
+        var $wr = $(this);
+        var raw = String($wr.val() ?? '').trim();
+        var val = parseFloat(raw);
+        if (raw === '' || isNaN(val)) {
+            toastr.error('Please enter Waste Rate!', 'Error');
+            $wr.focus();
+            return;
+        }
+        var formatted = val.toFixed(3);
+        $wr.val(formatted);
+
+        function goNext() {
             $('#weightCastig').focus();
+        }
+
+        if (e.which === 13) {
+            $.ajax({
+                url: "{{ route('order.create.save-waste-rate') }}",
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    waste_rate: formatted
+                },
+                success: function(res) {
+                    if (res && res.waste_rate) {
+                        orderCreatePersistedWasteRate = res.waste_rate;
+                        $wr.val(res.waste_rate);
+                    } else {
+                        orderCreatePersistedWasteRate = formatted;
+                    }
+                    goNext();
+                },
+                error: function() {
+                    toastr.error('Could not save waste rate to session.', 'Error');
+                    $wr.focus();
+                }
+            });
+        } else {
+            goNext();
         }
     });
     
@@ -1326,10 +1437,10 @@ $(document).ready(function() {
             $('#totalWeight').val(totalWeight.toFixed(3));
             $('#totalMazdoori').val(totalMazdoori);
 
-            var totalwaitforcountkhails = $('#totalWeight').val();
-            var mailniklaforcountkhails = $('#totalWeightCasted').val();
-
-            $('#khalis').val((totalwaitforcountkhails - mailniklaforcountkhails).toFixed(3));
+            var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
+            var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
+            var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
+            $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
@@ -1584,7 +1695,7 @@ $(document).ready(function() {
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
         $('#mazdoriRate').val('0.00');
-        $('#wasteRate').val('0.00');
+        $('#wasteRate').val(orderCreatePersistedWasteRate);
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
         $('#wasteRateCheck').prop('checked', true);
         $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);

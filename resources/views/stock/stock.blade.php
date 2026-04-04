@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto h-full">
-        <div class="w-full p-2 bg-[#ece9d8]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="stock-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="stock-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="stock-create-panel" class="w-full p-2 bg-[#ece9d8]">
             <!-- table container  -->
             <div
                 class="h-60 overflow-y-auto border-2 border-l-[#b1b0aa] border-t-[#c9c8c4] border-r-white border-b-white bg-[#808080]">
@@ -261,6 +264,9 @@
             </div>
 
         </div>
+        </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loader Overlay -->
@@ -437,7 +443,48 @@
     <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 
     <script>
+        var stockCreateResizeTimer;
+        function fitStockCreateToViewport() {
+            var vp = document.getElementById('stock-create-viewport');
+            var inner = document.getElementById('stock-create-scale-inner');
+            if (!vp || !inner) return;
+            var header = document.querySelector('body > header');
+            var hh = header ? header.offsetHeight : 0;
+            var avail = Math.max(200, window.innerHeight - hh);
+            vp.style.height = avail + 'px';
+            vp.style.maxHeight = avail + 'px';
+
+            inner.style.transform = '';
+            inner.style.width = '100%';
+
+            var h = inner.offsetHeight;
+            var w = inner.scrollWidth || inner.offsetWidth;
+            var vpW = Math.max(1, vp.clientWidth);
+            var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+            if (s < 0.999) {
+                inner.style.transformOrigin = 'top left';
+                inner.style.transform = 'scale(' + s + ')';
+                inner.style.width = (100 / s) + '%';
+            } else {
+                inner.style.transform = '';
+                inner.style.width = '100%';
+            }
+        }
+
+        function scheduleFitStockCreate() {
+            clearTimeout(stockCreateResizeTimer);
+            stockCreateResizeTimer = setTimeout(function () {
+                requestAnimationFrame(fitStockCreateToViewport);
+            }, 50);
+        }
+
+        $(window).on('resize', scheduleFitStockCreate);
+        $(window).on('load', scheduleFitStockCreate);
+
         $(document).ready(function() {
+            scheduleFitStockCreate();
+            $('#stock-create-panel img').on('load', scheduleFitStockCreate);
             $('#partyId').focus();
         });
 
@@ -449,6 +496,19 @@
 
         function hideLoader() {
             $('#tableLoader').addClass('hidden');
+        }
+
+        /** Gold amounts in tables: 2 decimal places (avoids float artifacts like 19.319999999999997). */
+        function fmtGold2(val) {
+            if (val === null || val === undefined || val === '') return '';
+            var n = Number(val);
+            return isNaN(n) ? String(val) : n.toFixed(2);
+        }
+        /** Cash amounts in tables: 2 decimal places. */
+        function fmtCash2(val) {
+            if (val === null || val === undefined || val === '') return '';
+            var n = Number(val);
+            return isNaN(n) ? String(val) : n.toFixed(2);
         }
 
         // DataTables initialization helper function
@@ -487,6 +547,7 @@
                     
                     // If no data rows, don't initialize DataTables
                     if (!hasDataRows) {
+                        scheduleFitStockCreate();
                         return;
                     }
                     
@@ -508,14 +569,17 @@
                         try {
                             // Initialize DataTable with search and filtering
                             $table.DataTable({
-                                "pageLength": 10,
-                                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                "pageLength": 100,
+                                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                                 "order": [[0, "asc"]],
                                 "searching": true,
                                 "paging": true,
                                 "info": true,
                                 "ordering": true,
                                 "autoWidth": false,
+                                "drawCallback": function () {
+                                    scheduleFitStockCreate();
+                                },
                                 "language": {
                                     "search": "Search:",
                                     "lengthMenu": "Show _MENU_ entries",
@@ -532,6 +596,7 @@
                         console.warn('Column count mismatch for ' + tableId + ': Header=' + headerCols + ', Data=' + dataCols);
                     }
                 }
+                scheduleFitStockCreate();
             }, 200);
         }
 
@@ -652,14 +717,14 @@
                                 table += `
                                     <tr class="hover:bg-gray-100">
                                         <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.castingWeight || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.mazdoriRate || 0} : ${item.mailCode || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.wasteCasted || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.khalis || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.remainingMazdoori || 0} : ${item.totalMazdoori || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.totalMazdooriInGold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.advance || 0} : ${item.totalGold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.op2RemainingGold || 0}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.castingWeight ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.mazdoriRate ?? 0)} : ${item.mailCode ?? ''}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.wasteCasted ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.khalis ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.remainingMazdoori ?? 0)} : ${fmtGold2(item.totalMazdoori ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.totalMazdooriInGold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.advance ?? 0)} : ${fmtGold2(item.totalGold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.op2RemainingGold ?? 0)}</td>
                                         <td class="border border-gray-300 px-4 py-2">----</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.remarks}</td>
@@ -677,6 +742,7 @@
                             }, 50);
                         } else {
                             $('#stockTable').html('<p class="text-red-500">No data found.</p>');
+                            scheduleFitStockCreate();
                         }
                         hideLoader();
                     },
@@ -732,8 +798,8 @@
                                 table += `
                                     <tr class="hover:bg-gray-100">
                                         <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.gold || 0}</td>
-                                        <td class="border border-gray-300 px-4 py-2">${item.cash || 0}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold ?? 0)}</td>
+                                        <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash ?? 0)}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.status || 0}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.remarks || 0}</td>
                                         <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
@@ -751,6 +817,7 @@
                             }, 50);
                         } else {
                             $('#stockTable').html('<p class="text-red-500">No data found.</p>');
+                            scheduleFitStockCreate();
                         }
 
                         let totals = response.totals;
@@ -759,7 +826,7 @@
                             $('#cashLaina').val(0);
             
                         } else {
-                            $('#cashLaina').val(totals.cash_balance);
+                            $('#cashLaina').val(Number(totals.cash_balance).toFixed(2));
                             $('#cashDaina').val(0);
                            
                         }
@@ -1034,24 +1101,16 @@
         });
 
         $('#expenseGoldList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/expense-gold-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#expenseGoldListTable')) {
+                    try {
+                        $('#expenseGoldListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="expenseGoldListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1061,44 +1120,66 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="4" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('expenseGoldListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#expenseGoldListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/expense-gold-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load expense gold list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'gold', render: function(d) { return fmtGold2(d); } },
+                                { data: 2, name: 'created_at' },
+                                { data: 3, name: 'remarks' }
+                            ],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                            order: [[2, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                                scheduleFitStockCreate();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
         $('#expenseCashList').on('click', function(e) {
@@ -1137,7 +1218,7 @@
                       html += `
                         <tr class="hover:bg-gray-100">
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.cash ?? ''}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
                         </tr>
@@ -1170,24 +1251,16 @@
         });
 
         $('#stockGoldList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/stock-gold-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#stockGoldListTable')) {
+                    try {
+                        $('#stockGoldListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="stockGoldListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1198,66 +1271,80 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.status ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('stockGoldListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#stockGoldListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/stock-gold-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load stock gold list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'gold', render: function(d) { return fmtGold2(d); } },
+                                { data: 2, name: 'status' },
+                                { data: 3, name: 'created_at' },
+                                { data: 4, name: 'remarks' }
+                            ],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                            order: [[3, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                                scheduleFitStockCreate();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
         $('#stockCashList').on('click', function(e) {
-               
                 showLoader();
-                $.ajax({
-                    url: '/api/stock-cash-list',
-                    type: 'get',
-                    headers: {
-                        'Authorization': 'Bearer {{ session('auth_token') }}', // or get token dynamically
-                        'Accept': 'application/json'
-                    },
-                success: function(response) {
-                  const table = $('#stockTable'); // <table id="stockTable"></table>
-                  table.empty(); // Clear previous data
+                const $container = $('#stockTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable && $.fn.DataTable.isDataTable('#stockCashListTable')) {
+                    try {
+                        $('#stockCashListTable').DataTable().destroy();
+                    } catch (err) { /* ignore */ }
+                }
+                $container.empty();
 
-                  // If you want pretty dates:
-                  const fmt = (iso) => new Date(iso).toLocaleString();
-
-                  // Build full table (thead + tbody) with Tailwind classes
-                  let html = `
+                const html = `
                     <table id="stockCashListTable" class="min-w-full border-collapse border border-gray-300">
                     <thead>
                       <tr class="bg-gray-200 text-gray-700">
@@ -1268,45 +1355,67 @@
                         <th class="border border-gray-300 px-4 py-2 text-left">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
-                  `;
+                    <tbody></tbody>
+                    </table>`;
+                $container.html(html);
 
-                  if (response.data && response.data.length) {
-                    $.each(response.data, function(index, item) {
-                      html += `
-                        <tr class="hover:bg-gray-100">
-                          <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.cash ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.status ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.created_at ? fmt(item.created_at) : ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.remarks ?? '').toString()}</td>
-                        </tr>
-                      `;
-                    });
-                  } else {
-                    html += `
-                      <tr>
-                        <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">No records found.</td>
-                      </tr>
-                    `;
-                  }
-
-                  html += `</tbody></table>`;
-
-                  table.html(html);
-                  
-                  // Initialize DataTable after DOM update (only if data exists)
-                  var hasData = response.data && response.data.length > 0;
-                  setTimeout(function() {
-                      initDataTable('stockCashListTable', hasData);
-                      hideLoader();
-                  }, 50);
-                },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON, 'Error');
+                setTimeout(function() {
+                    var $tbl = $('#stockCashListTable');
+                    if ($tbl.length === 0 || !$.fn.DataTable) {
                         hideLoader();
+                        return;
                     }
-                });
+                    try {
+                        $tbl.DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: '/api/stock-cash-list',
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer {{ session('auth_token') }}',
+                                    'Accept': 'application/json'
+                                },
+                                error: function() {
+                                    hideLoader();
+                                    toastr.error('Failed to load stock cash list.', 'Error');
+                                }
+                            },
+                            columns: [
+                                { data: 0, name: 'serial', orderable: false, searchable: false },
+                                { data: 1, name: 'cash', render: function(d) { return fmtCash2(d); } },
+                                { data: 2, name: 'status' },
+                                { data: 3, name: 'created_at' },
+                                { data: 4, name: 'remarks' }
+                            ],
+                            pageLength: 100,
+                            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                            order: [[3, 'desc']],
+                            searching: true,
+                            paging: true,
+                            info: true,
+                            ordering: true,
+                            autoWidth: false,
+                            drawCallback: function() {
+                                hideLoader();
+                                scheduleFitStockCreate();
+                            },
+                            language: {
+                                search: 'Search:',
+                                lengthMenu: 'Show _MENU_ entries',
+                                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                                infoEmpty: 'Showing 0 to 0 of 0 entries',
+                                infoFiltered: '(filtered from _MAX_ total entries)',
+                                zeroRecords: 'No matching records found',
+                                processing: 'Loading…'
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        hideLoader();
+                        toastr.error('Could not initialize table.', 'Error');
+                    }
+                }, 50);
         });
 
 
@@ -1350,8 +1459,8 @@
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.cash_balance ?? '')}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1422,8 +1531,8 @@
                           <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_id ?? ''}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${item.gold_balance ?? ''}</td>
-                          <td class="border border-gray-300 px-4 py-2">${(item.cash_balance ?? '')}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                          <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                           <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1497,12 +1606,12 @@
                         <tr class="hover:bg-gray-100">
                             <td class="border border-gray-300 px-4 py-2">${item.party_id}</td>
                             <td class="border border-gray-300 px-4 py-2">${item.party_name ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.gold_received ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.gold_paid ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${(item.gold_balance ?? '')}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_received ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_paid ?? ''}</td>
-                            <td class="border border-gray-300 px-4 py-2">${item.cash_balance ?? ''}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_received)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_paid)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.gold_balance)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_received)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_paid)}</td>
+                            <td class="border border-gray-300 px-4 py-2">${fmtCash2(item.cash_balance)}</td>
                             <td class="border border-gray-300 px-4 py-2">${item.phone_number ?? ''}</td>
                         </tr>
                       `;
@@ -1632,7 +1741,7 @@
                                     <td class="border border-gray-300 px-4 py-2">${index + 1}</td>
                                     <td class="border border-gray-300 px-4 py-2">${item.party_id || '--'}</td>
                                     <td class="border border-gray-300 px-4 py-2">${item.party_name || '--'}</td>
-                                    <td class="border border-gray-300 px-4 py-2">${parseFloat(item.total_waste_casted || 0).toFixed(3)}</td>
+                                    <td class="border border-gray-300 px-4 py-2">${fmtGold2(item.total_waste_casted ?? 0)}</td>
                                 </tr>
                             `;
                         });

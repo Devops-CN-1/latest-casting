@@ -17,6 +17,8 @@ use App\Models\ExpenseGold;
 use App\Models\StockCash;
 use App\Models\StockGold;
 use App\Models\Order;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class ImportDbDataController extends Controller
 {
@@ -57,9 +59,24 @@ class ImportDbDataController extends Controller
 
     public function upload(Request $request, string $table)
     {
-        $request->validate(['csv_file' => 'required|file|mimes:csv,txt|max:10240']);
+        $request->validate([
+            'csv_file' => [
+                'required',
+                'file',
+                'max:51200',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (! $value instanceof \Illuminate\Http\UploadedFile) {
+                        return;
+                    }
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (! in_array($ext, ['csv', 'txt'], true)) {
+                        $fail('The file must use extension .csv or .txt.');
+                    }
+                },
+            ],
+        ]);
+
         $file = $request->file('csv_file');
-        $filePath = $file->getRealPath();
 
         $methodMap = [
             'party-regular'        => 'partyregular',
@@ -80,11 +97,252 @@ class ImportDbDataController extends Controller
             return redirect()->route('import.index')->with('error', 'Invalid table.');
         }
         try {
+            $filePath = $file->getRealPath();
+            if ($filePath === false || $filePath === '') {
+                throw new \RuntimeException('Could not read the uploaded file. Try saving as CSV UTF-8 from Excel.');
+            }
+            set_time_limit(300);
             $message = $this->{$methodMap[$table]}($filePath);
             return redirect()->route('import.form', ['table' => $table])->with('success', $message);
         } catch (\Throwable $e) {
             return redirect()->route('import.form', ['table' => $table])->with('error', 'Import failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Read CSV with BOM stripping, trimmed headers, and row/column alignment fixes
+     * for Excel exports (leading blank column, UTF-8 BOM on first header).
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function parseCsvRowsAssociative(string $filePath): array
+    {
+        $raw = file_get_contents($filePath);
+        if ($raw === false) {
+            throw new \RuntimeException('Could not read CSV file.');
+        }
+        // UTF-16 LE/BE (Excel "Unicode Text" and some exports)
+        if (str_starts_with($raw, "\xFF\xFE")) {
+            $raw = mb_convert_encoding(substr($raw, 2), 'UTF-8', 'UTF-16LE');
+        } elseif (str_starts_with($raw, "\xFE\xFF")) {
+            $raw = mb_convert_encoding(substr($raw, 2), 'UTF-8', 'UTF-16BE');
+        }
+        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+        $lines = preg_split('/\r\n|\r|\n/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if ($lines === [] || $lines === false) {
+            return [];
+        }
+        $firstLine = $lines[0];
+        $commaCols = str_getcsv($firstLine, ',');
+        $tabCols = str_getcsv($firstLine, "\t");
+        $semiCols = str_getcsv($firstLine, ';');
+        $counts = [
+            ',' => count($commaCols),
+            "\t" => count($tabCols),
+            ';' => count($semiCols),
+        ];
+        arsort($counts);
+        $delimiter = array_key_first($counts);
+        if ($counts[$delimiter] < 2) {
+            $delimiter = ',';
+        }
+        $rows = array_map(fn (string $line) => str_getcsv($line, $delimiter), $lines);
+        $header = array_shift($rows);
+        $header = array_map('trim', $header);
+        if (isset($header[0])) {
+            $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]);
+        }
+        while ($header !== [] && $header[0] === '') {
+            array_shift($header);
+        }
+        while ($header !== [] && end($header) === '') {
+            array_pop($header);
+        }
+        $hc = count($header);
+        if ($hc === 0) {
+            throw new \RuntimeException('CSV has no usable header row.');
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $row = array_map('trim', $row);
+            if ($row === [] || (count($row) === 1 && $row[0] === '')) {
+                continue;
+            }
+            while (count($row) > $hc && ($row[0] === '' || $row[0] === null)) {
+                array_shift($row);
+            }
+            if (count($row) > $hc) {
+                $row = array_slice($row, 0, $hc);
+            } elseif (count($row) < $hc) {
+                $row = array_pad($row, $hc, '');
+            }
+            $data = array_combine($header, $row);
+            if ($data === false) {
+                continue;
+            }
+            $out[] = $data;
+        }
+
+        return $out;
+    }
+
+    /**
+     * SQL/Excel exports often write the literal "NULL" in cells; MySQL rejects that for decimal columns.
+     */
+    protected function isCsvNumericEmpty(mixed $value): bool
+    {
+        if ($value === null || $value === '') {
+            return true;
+        }
+        if (!is_string($value)) {
+            return false;
+        }
+        $t = trim($value);
+        if ($t === '') {
+            return true;
+        }
+        if (strcasecmp($t, 'null') === 0) {
+            return true;
+        }
+        if (strcasecmp($t, 'n/a') === 0 || strcasecmp($t, '#n/a') === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse common SQL/Excel export datetime strings (e.g. "6/28/2021 13:18") for MySQL timestamps.
+     */
+    protected function parseCsvDateTime(?string $value): ?Carbon
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+        $t = trim($value);
+        if (strcasecmp($t, 'null') === 0) {
+            return null;
+        }
+
+        $formats = [
+            'n/j/Y G:i',
+            'n/j/Y G:i:s',
+            'n/j/Y H:i:s',
+            'm/d/Y H:i',
+            'm/d/Y H:i:s',
+            'Y-m-d H:i:s',
+            'Y-m-d H:i',
+            'd/m/Y H:i',
+            'd/m/Y H:i:s',
+        ];
+
+        foreach ($formats as $fmt) {
+            try {
+                $c = Carbon::createFromFormat($fmt, $t);
+            } catch (\Throwable) {
+                continue;
+            }
+            if ($c instanceof Carbon) {
+                return $c;
+            }
+        }
+
+        try {
+            return Carbon::parse($t);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Resolve DateOfEntry-style columns case-insensitively and return Y-m-d H:i:s for created_at/updated_at.
+     *
+     * @param  list<string>  $columnAliases  e.g. ['DateOfEntry', 'DateofEntry']
+     */
+    protected function importTimestampFromRow(array $data, array $columnAliases): ?string
+    {
+        $norm = [];
+        foreach ($data as $k => $v) {
+            $nk = strtolower(preg_replace('/[\s_\-]/', '', (string) $k));
+            if (!array_key_exists($nk, $norm)) {
+                $norm[$nk] = $v;
+            }
+        }
+
+        foreach ($columnAliases as $alias) {
+            $key = strtolower(preg_replace('/[\s_\-]/', '', $alias));
+            if (!isset($norm[$key])) {
+                continue;
+            }
+            $raw = trim((string) $norm[$key]);
+            if ($raw === '' || strcasecmp($raw, 'null') === 0) {
+                continue;
+            }
+            $parsed = $this->parseCsvDateTime($raw);
+            if ($parsed !== null) {
+                return $parsed->format('Y-m-d H:i:s');
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * First cell matching any header alias (case / spacing insensitive).
+     *
+     * @param  list<string>  $columnAliases
+     */
+    protected function csvValueByAliases(array $data, array $columnAliases): mixed
+    {
+        $norm = [];
+        foreach ($data as $k => $v) {
+            $nk = strtolower(preg_replace('/[\s_\-]/', '', (string) $k));
+            if (! array_key_exists($nk, $norm)) {
+                $norm[$nk] = $v;
+            }
+        }
+        foreach ($columnAliases as $alias) {
+            $key = strtolower(preg_replace('/[\s_\-]/', '', $alias));
+            if (array_key_exists($key, $norm)) {
+                return $norm[$key];
+            }
+        }
+
+        return null;
+    }
+
+    /** CSV / legacy DB often stores 1,2,3 instead of enum op1,op2,op3. */
+    protected function mapOrderSelectOption(mixed $raw): string
+    {
+        $s = strtolower(trim((string) $raw));
+        if ($s === '' || $s === 'null') {
+            return 'op1';
+        }
+
+        return match ($s) {
+            'op1', '1' => 'op1',
+            'op2', '2' => 'op2',
+            'op3', '3' => 'op3',
+            default => ctype_digit($s) ? match ((int) $s) {
+                1 => 'op1',
+                2 => 'op2',
+                3 => 'op3',
+                default => 'op1',
+            } : 'op1',
+        };
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function importCreate(string $modelClass, array $attributes): Model
+    {
+        $model = new $modelClass();
+        $model->forceFill($attributes);
+        $model->save();
+
+        return $model;
     }
 
     public function partyregular($filePath = null)
@@ -93,10 +351,14 @@ class ImportDbDataController extends Controller
         if (!file_exists($filePath)) {
             throw new \RuntimeException('CSV file not found.');
         }
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Check for a blank first column in the header row, UTF-8 BOM issues, or wrong delimiter. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
             PartyRegular::updateOrCreate(
                 ['partyID' => $data['PtyID']],
                 [
@@ -122,11 +384,15 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns, UTF-8 without a stray blank header column. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
             // Clean and cast numeric values
             $goldIn           = floatval(trim($data['Gold_IN']));
@@ -140,6 +406,10 @@ class ImportDbDataController extends Controller
             $typeRaw = trim($data['type'] ?? '');
             $type = ($typeRaw === '1') ? 'cash' : 'regular';
 
+            // lastOrderDate is a MySQL DATE column; CSV often has m/d/Y H:i (e.g. 3/30/2026 18:59)
+            $lastOrderAt = $this->importTimestampFromRow($data, ['LastOrderDate', 'lastOrderDate']);
+            $lastOrderDate = $lastOrderAt !== null ? substr($lastOrderAt, 0, 10) : null;
+
             Party::updateOrCreate(
                 ['partyID' => $data['PtyID']],
                 [
@@ -150,7 +420,7 @@ class ImportDbDataController extends Controller
                     'cashOut'            => $cashOut,
                     'totalWasteCasted'   => $totalWasteCasted,
                     'totalMazdoori'      => $totalMazdoori,
-                    'lastOrderDate'      => $data['LastOrderDate'],
+                    'lastOrderDate'      => $lastOrderDate,
                     'IsActive'           => 1,
                     'created_by'           => 1,
                 ]
@@ -167,22 +437,29 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
+            $pcTs = $this->importTimestampFromRow($data, ['timeOfaction', 'timeOfAction', 'DateOfEntry', 'DateofEntry'])
+                ?? now();
 
-
-             PartyCash::updateOrCreate(
-                ['partyID' => intval(trim($data['PtyID']))], // store PtyID as partyID
-                [
-                    'status' => intval(trim($data['status'])),
-                    'created_at' => trim($data['timeOfaction']),
-                    'updated_at' => trim($data['timeOfaction']),
-                ]
-            );
+            Model::unguarded(function () use ($data, $pcTs) {
+                PartyCash::updateOrCreate(
+                    ['partyID' => intval(trim($data['PtyID']))],
+                    [
+                        'status' => intval(trim($data['status'] ?? '0')),
+                        'created_at' => $pcTs,
+                        'updated_at' => $pcTs,
+                    ]
+                );
+            });
         }
 
         return 'PartyCash CSV imported successfully!';
@@ -195,27 +472,32 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read CSV
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
         $statusMap = [
             'c' => 'Received',
             'd' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
-              $status = $statusMap[strtolower(trim($data['status']))] ?? 'Unknown';
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Insert into database
-            AccountCash::create([
-                'party_id'   => intval(trim($data['PtyID'])),     // map PtyID → party_id
-                'cash'       => floatval(trim($data['cash'])),    // numeric
+            $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
+
+            $acTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountCash::class, [
+                'party_id'   => intval(trim($data['PtyID'])),
+                'cash'       => floatval(trim($data['cash'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'created_at' => $acTs,
+                'updated_at' => $acTs,
             ]);
         }
 
@@ -235,22 +517,27 @@ class ImportDbDataController extends Controller
             'b' => 'Paid',
         ];
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Map status
-            $status = $statusMap[strtolower(trim($data['status']))] ?? 'Unknown';
+            $status = $statusMap[strtolower(trim($data['status'] ?? ''))] ?? 'Unknown';
 
-            AccountGold::create([
+            $agTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountGold::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
-                'gold'       => floatval(trim($data['gold'])),
+                'gold'       => floatval(trim($data['gold'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'created_at' => $agTs,
+                'updated_at' => $agTs,
             ]);
         }
 
@@ -264,31 +551,34 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // CSV to array
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        // Status mapping
         $statusMap = [
             'c' => 'Received',
             'd' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $data = array_combine($header, $row);
-
-            $statusCode = strtolower(trim($data['status']));
+            $statusCode = strtolower(trim($data['status'] ?? ''));
             $status = $statusMap[$statusCode] ?? 'Unknown';
 
-            AccountHistoryCash::create([
+            $ahcTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountHistoryCash::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
-                'cash'       => floatval(trim($data['cash'])),
+                'cash'       => floatval(trim($data['cash'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'user_id'    => 1, // change if needed
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'user_id'    => 1,
+                'created_at' => $ahcTs,
+                'updated_at' => $ahcTs,
             ]);
         }
 
@@ -302,31 +592,34 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read CSV
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        // Status mapping
         $statusMap = [
             'a' => 'Received',
             'b' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $data) {
+            if (!array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $data = array_combine($header, $row);
-
-            $statusCode = strtolower(trim($data['status']));
+            $statusCode = strtolower(trim($data['status'] ?? ''));
             $status = $statusMap[$statusCode] ?? 'Unknown';
 
-            AccountHistoryGold::create([
+            $ahgTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountHistoryGold::class, [
                 'party_id'   => intval(trim($data['PtyID'])),
-                'gold'       => floatval(trim($data['gold'])),
+                'gold'       => floatval(trim($data['gold'] ?? '0')),
                 'status'     => $status,
-                'remarks'    => trim($data['remarks']),
-                'user_id'    => 1, // or Auth::id() if logged in
-                'created_at' => trim($data['DateOfEntry']),
-                'updated_at' => trim($data['DateOfEntry']),
+                'remarks'    => trim($data['remarks'] ?? ''),
+                'user_id'    => 1,
+                'created_at' => $ahgTs,
+                'updated_at' => $ahgTs,
             ]);
         }
 
@@ -340,11 +633,15 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read CSV
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        // Status mappings
+        if ($dataRows === []) {
+            throw new \RuntimeException(
+                'No data rows after the header. Save as UTF-8 CSV (Excel: CSV UTF-8) or tab-separated .txt, '
+                . 'with a header row including PtyID.'
+            );
+        }
+
         $statusGold = [
             'a' => 'Received',
             'b' => 'Paid',
@@ -355,35 +652,41 @@ class ImportDbDataController extends Controller
             'd' => 'Paid',
         ];
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $data) {
+            if (! array_key_exists('PtyID', $data)) {
+                throw new \RuntimeException(
+                    'Missing column PtyID. Use comma-, tab-, or semicolon-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $data = array_combine($header, $row);
-
-            $goldStatusCode = strtolower(trim($data['GoldStatus']));
-            $cashStatusCode = strtolower(trim($data['CashStatus']));
+            $goldStatusCode = strtolower(trim((string) ($data['GoldStatus'] ?? '')));
+            $cashStatusCode = strtolower(trim((string) ($data['CashStatus'] ?? '')));
 
             $goldStatus = $statusGold[$goldStatusCode] ?? null;
             $cashStatus = $statusCash[$cashStatusCode] ?? null;
 
-            AccountMain::create([
-                'partyID'            => intval(trim($data['PtyID'])),
-                'recievedGoldLast'   => floatval(trim($data['RGoldLast'])),
-                'paidGoldLast'       => floatval(trim($data['PGoldLast'])),
-                'recievedCashLast'   => floatval(trim($data['RCashLast'])),
-                'paidCashLast'       => floatval(trim($data['PCashLast'])),
-                'goldRate'           => floatval(trim($data['GoldRate'])),
-                'gold'               => floatval(trim($data['Gold'])),
+            $amTs = $this->importTimestampFromRow($data, ['DateofEntry', 'DateOfEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(AccountMain::class, [
+                'partyID'            => intval(trim((string) $data['PtyID'])),
+                'recievedGoldLast'   => floatval(trim((string) ($data['RGoldLast'] ?? '0'))),
+                'paidGoldLast'       => floatval(trim((string) ($data['PGoldLast'] ?? '0'))),
+                'recievedCashLast'   => floatval(trim((string) ($data['RCashLast'] ?? '0'))),
+                'paidCashLast'       => floatval(trim((string) ($data['PCashLast'] ?? '0'))),
+                'goldRate'           => floatval(trim((string) ($data['GoldRate'] ?? '0'))),
+                'gold'               => floatval(trim((string) ($data['Gold'] ?? '0'))),
                 'goldStatus'         => $goldStatus,
-                'cash'               => floatval(trim($data['Cash'])),
+                'cash'               => floatval(trim((string) ($data['Cash'] ?? '0'))),
                 'cashStatus'         => $cashStatus,
-                'hawala'             => trim($data['Hawala']),
-                'addGold'            => floatval(trim($data['AddGold'])),
-                'created_at'         => trim($data['DateofEntry']),
-                'updated_at'         => trim($data['DateofEntry']),
+                'hawala'             => trim((string) ($data['Hawala'] ?? '')),
+                'addGold'            => floatval(trim((string) ($data['AddGold'] ?? '0'))),
+                'created_at'         => $amTs,
+                'updated_at'         => $amTs,
             ]);
         }
 
-        return 'Account Main imported successfully!';
+        return 'Account Main imported successfully (' . count($dataRows) . ' rows).';
     }
 
     public function expensecash($filePath = null)
@@ -393,19 +696,24 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        // Read file
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $data) {
+            $d = array_change_key_case($data, CASE_LOWER);
+            if (!array_key_exists('cash', $d)) {
+                throw new \RuntimeException(
+                    'Missing column cash. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $data = array_combine($header, $row);
+            $ecTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
 
-            ExpenseCash::create([
-                'cash'       => floatval(trim($data['cash'])),
-                'remarks'    => trim($data['Remarks']),
-                'created_at' => trim($data['DateofEntry']),
-                'updated_at' => trim($data['DateofEntry']),
+            $this->importCreate(ExpenseCash::class, [
+                'cash'       => floatval(trim($d['cash'])),
+                'remarks'    => trim($d['remarks'] ?? ''),
+                'created_at' => $ecTs,
+                'updated_at' => $ecTs,
             ]);
         }
 
@@ -427,11 +735,13 @@ class ImportDbDataController extends Controller
 
             $data = array_combine($header, $row);
 
-            ExpenseGold::create([
+            $egTs = $this->importTimestampFromRow($data, ['DateofEntry', 'DateOfEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(ExpenseGold::class, [
                 'gold'       => floatval(trim($data['gold'])),
                 'remarks'    => trim($data['Remarks']),
-                'created_at' => trim($data['DateofEntry']),
-                'updated_at' => trim($data['DateofEntry']),
+                'created_at' => $egTs,
+                'updated_at' => $egTs,
             ]);
         }
 
@@ -445,12 +755,17 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows);
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
+        $ordersImported = 0;
 
-            $data = array_combine($header, $row);
+        foreach ($dataRows as $data) {
+            if ($this->csvValueByAliases($data, ['Serial', 'serial']) === null) {
+                throw new \RuntimeException(
+                    'Missing column Serial. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
             // ------------------------------------------
             // 🔵 Convert ALL empty numeric values to 0
@@ -465,23 +780,54 @@ class ImportDbDataController extends Controller
                 'Opt1RemainingGold','Opt1RemainingCash',
                 'Opt2GoldRecieved','Opt2GoldPaid','Opt2RemainingGold',
                 'Opt2CashRecieved','Opt2CashPaid','Opt2RemainingCash',
+                'opt2Cash',
                 'Opt3CashRecieved','Opt3CashPaid','Opt3RemainingCash',
                 'TotalWeight','TotalWasteCasted','Khalis','Advance',
-                'TotalKhalis','RemainingMazdori','WapsiGold','CastingWeight'
+                'TotalKhalis','RemainingMazdori','WapsiGold','CastingWeight',
+                'InOutCheck','InOut',
             ];
 
             foreach ($numericFields as $field) {
-                if (!isset($data[$field]) || $data[$field] === '') {
+                if (!isset($data[$field]) || $this->isCsvNumericEmpty($data[$field])) {
                     $data[$field] = 0;
                 }
             }
 
+            $orderId = intval(trim((string) $this->csvValueByAliases($data, ['Serial', 'serial'])));
+            if ($orderId <= 0) {
+                continue;
+            }
+
+            $ordersImported++;
+
+            // DateOfCompletion → orders.created_at / updated_at (m/d/Y H:i from SQL/Excel exports)
+            $orderTs = $this->importTimestampFromRow($data, [
+                'DateOfCompletion', 'dateofcompletion', 'DateofCompletion', 'DateOfEntry', 'DateofEntry',
+            ]);
+            if ($orderTs !== null && str_starts_with($orderTs, '1900-')) {
+                $orderTs = null;
+            }
+            $orderTs = $orderTs ?? now();
+
+            $selectOption = $this->mapOrderSelectOption($this->csvValueByAliases($data, ['SelectOption', 'selectOption', 'selectoption']));
+
+            $op2CashRecievedRaw = $this->csvValueByAliases($data, ['Opt2CashRecieved', 'opt2Cash', 'opt2cash']);
+            if ($op2CashRecievedRaw === null || $this->isCsvNumericEmpty($op2CashRecievedRaw)) {
+                $op2CashRecievedRaw = 0;
+            }
+            $op2CashRecieved = floatval(trim((string) $op2CashRecievedRaw));
+
+            $partyId = intval(trim((string) ($this->csvValueByAliases($data, ['PtyID', 'ptyid']) ?? '0')));
+
             // ------------------------------------------
-            // 🟦 Import into Orders table
+            // 🟦 Upsert by legacy Serial → id (safe to re-run import)
             // ------------------------------------------
-            Order::create([
-                'id'                        => intval($data['Serial']),
-                'party_id'                  => intval($data['PtyID']),
+            Model::unguarded(function () use ($orderId, $data, $orderTs, $selectOption, $op2CashRecieved, $partyId) {
+                Order::updateOrCreate(
+                    ['id' => $orderId],
+                    [
+                'id'                        => $orderId,
+                'party_id'                  => $partyId,
                 'created_by'                => 1,
 
                 'weightReady'               => $data['Weight_Ready'],
@@ -503,7 +849,7 @@ class ImportDbDataController extends Controller
                 'Piece'                     => $data['Piece'],
 
                 'remarks'                   => $data['Remarks'],
-                'selectOption'              => $data['SelectOption'],
+                'selectOption'              => $selectOption,
 
                 'totalGold'                 => $data['TotalGold'],
                 'totalMazdoori'             => $data['TotalMaz'],
@@ -527,7 +873,7 @@ class ImportDbDataController extends Controller
                 'op2GoldRecieved'           => $data['Opt2GoldRecieved'],
                 'op2GoldPaid'               => $data['Opt2GoldPaid'],
                 'op2RemainingGold'          => $data['Opt2RemainingGold'],
-                'op2CashRecieved'           => $data['Opt2CashRecieved'],
+                'op2CashRecieved'           => $op2CashRecieved,
                 'op2CashPaid'               => $data['Opt2CashPaid'],
                 'op2RemainingCash'          => $data['Opt2RemainingCash'],
 
@@ -545,12 +891,14 @@ class ImportDbDataController extends Controller
                 'wapsiGold'                 => $data['WapsiGold'],
                 'castingWeight'             => $data['CastingWeight'],
 
-                'created_at'                => $data['DateOfCompletion'],
-                'updated_at'                => $data['DateOfCompletion'],
-            ]);
+                'created_at'                => $orderTs,
+                'updated_at'                => $orderTs,
+                    ]
+                );
+            });
         }
 
-        return 'Orders imported successfully!';
+        return 'Orders imported successfully (' . $ordersImported . ' orders).';
     }
 
     public function importStockCash($filePath = null)
@@ -560,35 +908,50 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        if ($dataRows === []) {
+            throw new \RuntimeException(
+                'No data rows after the header. Check the file is UTF-8 (Excel: Save As → CSV UTF-8), '
+                . 'and that the first row is headers including Cash, status, DateOfEntry.'
+            );
+        }
 
-            // Convert empty cash values to 0
-            $cash = isset($data['Cash']) && $data['Cash'] !== '' ? $data['Cash'] : 0;
+        $statusMap = [
+            'a' => 'Received',
+            'b' => 'Paid',
+            'c' => 'Received',
+            'd' => 'Paid',
+        ];
 
-            // Map status codes
-            $statusMap = [
-                'a' => 'Received',
-                'b' => 'Paid',
-                'c' => 'Received', // or keep 'c' if special meaning
-                'd' => 'Paid',     // or keep 'd' if special meaning
-            ];
+        foreach ($dataRows as $data) {
+            $d = array_change_key_case($data, CASE_LOWER);
+            if (!array_key_exists('cash', $d)) {
+                throw new \RuntimeException(
+                    'Missing column Cash. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            $status = isset($data['status']) ? ($statusMap[$data['status']] ?? $data['status']) : null;
+            $cash = $this->isCsvNumericEmpty($d['cash']) ? 0.0 : floatval(trim((string) $d['cash']));
 
-            StockCash::create([
+            $statusCode = trim((string) ($d['status'] ?? ''));
+            $status = $statusCode !== ''
+                ? ($statusMap[strtolower($statusCode)] ?? $statusCode)
+                : null;
+
+            $scTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(StockCash::class, [
                 'cash'       => $cash,
                 'status'     => $status,
-                'remarks'    => $data['remarks'] ?? null,
-                'created_at' => $data['DateOfEntry'] ?? now(),
-                'updated_at' => $data['DateOfEntry'] ?? now(),
+                'remarks'    => isset($d['remarks']) && $d['remarks'] !== '' ? $d['remarks'] : null,
+                'created_at' => $scTs,
+                'updated_at' => $scTs,
             ]);
         }
 
-        return 'Stock Cash CSV imported successfully!';
+        return 'Stock Cash CSV imported successfully (' . count($dataRows) . ' rows).';
     }
 
     public function importStockGold($filePath = null)
@@ -598,28 +961,37 @@ class ImportDbDataController extends Controller
             throw new \RuntimeException('CSV file not found.');
         }
 
-        $rows = array_map('str_getcsv', file($filePath));
-        $header = array_shift($rows); // remove header row
+        $dataRows = $this->parseCsvRowsAssociative($filePath);
 
-        foreach ($rows as $row) {
-            $data = array_combine($header, $row);
+        $statusMap = [
+            'a' => 'Received',
+            'b' => 'Paid',
+        ];
 
-            // Convert empty gold values to 0
-            $gold = isset($data['Gold']) && $data['Gold'] !== '' ? $data['Gold'] : 0;
+        foreach ($dataRows as $data) {
+            $d = array_change_key_case($data, CASE_LOWER);
+            if (!array_key_exists('gold', $d)) {
+                throw new \RuntimeException(
+                    'Missing column Gold. Use comma- or tab-separated columns. Found: '
+                    . implode(', ', array_keys($data))
+                );
+            }
 
-            // Map status codes
-            $statusMap = [
-                'a' => 'Received',
-                'b' => 'Paid',
-            ];
-            $status = isset($data['status']) ? ($statusMap[$data['status']] ?? $data['status']) : null;
+            $gold = $this->isCsvNumericEmpty($d['gold']) ? 0.0 : floatval(trim((string) $d['gold']));
 
-            StockGold::create([
+            $statusCode = trim((string) ($d['status'] ?? ''));
+            $status = $statusCode !== ''
+                ? ($statusMap[strtolower($statusCode)] ?? $statusCode)
+                : null;
+
+            $sgTs = $this->importTimestampFromRow($data, ['DateOfEntry', 'DateofEntry', 'dateofentry']) ?? now();
+
+            $this->importCreate(StockGold::class, [
                 'gold'       => $gold,
                 'status'     => $status,
-                'remarks'    => $data['remarks'] ?? null,
-                'created_at' => $data['DateOfEntry'] ?? now(),
-                'updated_at' => $data['DateOfEntry'] ?? now(),
+                'remarks'    => isset($d['remarks']) && $d['remarks'] !== '' ? $d['remarks'] : null,
+                'created_at' => $sgTs,
+                'updated_at' => $sgTs,
             ]);
         }
 

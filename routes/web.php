@@ -25,6 +25,8 @@ Route::middleware(['web', 'check.auth.token'])->group(function () {
     Route::post('logout', [AuthenticationController::class, 'logOut'])->name('logout');
 
     Route::get('/', [OrderController::class, 'create']);
+    Route::post('order-create/save-waste-rate', [OrderController::class, 'saveOrderCreateWasteRate'])
+        ->name('order.create.save-waste-rate');
 
     // Super admin only: system settings, backup, import, user management
     Route::middleware(['super.admin'])->group(function () {
