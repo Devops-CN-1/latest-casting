@@ -307,11 +307,11 @@
                             </div>
                         </td>
 
-                        <td>
+                        <!-- <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>پَٹھور</span>
                             </div>
-                        </td>
+                        </td> -->
                     </tr>
                     <tr>
                         <td>
