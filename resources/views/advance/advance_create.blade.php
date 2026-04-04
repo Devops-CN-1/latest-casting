@@ -1153,7 +1153,7 @@ $(document).ready(function() {
                         $("#party_name").val("Cash Party");
                     } else {
                         var pr = response.data.party_regular;
-                        $("#party_name").val(pr ? (pr.businessName || pr.partyName || "—") : "—");
+                        $("#party_name").val(pr ? (pr.partyName || pr.partyName || "—") : "—");
                     }
 
                     table += `</tbody></table>`;
