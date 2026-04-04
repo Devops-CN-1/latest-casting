@@ -110,7 +110,7 @@
         }
 
         table.grid-3 td {
-            width: 33.33%;
+            width: 30%;
             padding: 3px 5px;
         }
 
