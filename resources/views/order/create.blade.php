@@ -564,6 +564,7 @@
             totalWeight: $('#totalWeight').val() || 0,
             totalWeightCasted: $('#totalWeightCasted').val() || 0,
             khalis: $('#khalis').val() || 0,
+            mazdooriGold: mazdooriGold,
             advance: $('#advance').val() || 0,
             totalKhalis: $('#totalKhalis').val() || 0,
             remainingMazdoori: $('#remainingMazdoori').val() || 0,
