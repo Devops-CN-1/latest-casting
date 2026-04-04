@@ -154,7 +154,7 @@
                                 
                                     <input type="number" name="wasteDiscountRate" id="wasteDiscountRate" value="0.00" 
                                     class="w-5/12 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                                    <input type="number" name="wasteRate" id="wasteRate" value="0.155" 
+                                    <input type="number" name="wasteRate" id="wasteRate" value="{{ $orderCreateWasteRate ?? '0.155' }}" 
                                     class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
@@ -500,6 +500,8 @@
 
 
 <script>
+
+    var orderCreatePersistedWasteRate = @json($orderCreateWasteRate ?? '0.155');
 
     // Loader functions
     function showLoader() {
@@ -1184,9 +1186,49 @@ $(document).ready(function() {
     });
 
     $('#wasteRate').on('keydown', function(e) {
-        if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
-            e.preventDefault(); // Prevent default tab behavior
+        if (e.which !== 13 && e.which !== 9) {
+            return;
+        }
+        e.preventDefault();
+        var $wr = $(this);
+        var raw = String($wr.val() ?? '').trim();
+        var val = parseFloat(raw);
+        if (raw === '' || isNaN(val)) {
+            toastr.error('Please enter Waste Rate!', 'Error');
+            $wr.focus();
+            return;
+        }
+        var formatted = val.toFixed(3);
+        $wr.val(formatted);
+
+        function goNext() {
             $('#weightCastig').focus();
+        }
+
+        if (e.which === 13) {
+            $.ajax({
+                url: "{{ route('order.create.save-waste-rate') }}",
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    waste_rate: formatted
+                },
+                success: function(res) {
+                    if (res && res.waste_rate) {
+                        orderCreatePersistedWasteRate = res.waste_rate;
+                        $wr.val(res.waste_rate);
+                    } else {
+                        orderCreatePersistedWasteRate = formatted;
+                    }
+                    goNext();
+                },
+                error: function() {
+                    toastr.error('Could not save waste rate to session.', 'Error');
+                    $wr.focus();
+                }
+            });
+        } else {
+            goNext();
         }
     });
     
@@ -1653,7 +1695,7 @@ $(document).ready(function() {
         $('input[type="text"], input[type="number"], input[type="email"], input[type="password"]').not('#lastPartyBills, #lastPartyBillNo, #serialNumber, #mazdoridiscountRate,#wasteDiscountRate,#tollaRate,#gramRate').val('');
         $('textarea').val('');
         $('#mazdoriRate').val('0.00');
-        $('#wasteRate').val('0.155');
+        $('#wasteRate').val(orderCreatePersistedWasteRate);
         $('input[type="checkbox"], input[type="radio"]').prop('checked', false);
         $('#wasteRateCheck').prop('checked', true);
         $('select').not('#lastPartyBillNo').prop('selectedIndex', 0);
