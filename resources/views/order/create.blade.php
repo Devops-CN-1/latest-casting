@@ -699,6 +699,9 @@
 
                 // Basic fields
                 $('#party_id').val(data.party_id);
+                if(data['party_regular']){
+                    $('#partyName').val(data['party_regular'].partyName);
+                }
                 $('#weightCastig').val(data.castingWeight);
                 $('#mailCode').val(data.mailCode);
                 $('#remarks').val(data.remarks);
