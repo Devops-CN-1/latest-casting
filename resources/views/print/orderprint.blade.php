@@ -225,12 +225,22 @@
                                 <span class="span-text">{{ $data['netWeight'] }}</span>
                             </div>
                         </td>
-                        <td>
+                        <!-- <td>
                             <div class="flex-row">
                                 <span class="span-text-color">خالص مزدوری</span>
                                 <span class="span-text">{{ $data['mazdoorie'] }}</span>
                             </div>
+                        </td> -->
+
+
+                        <td>
+                            <div class="flex-row">
+                                <span class="span-text-color">خالص مزدوری</span>
+                                <span class="span-text">{{ $data['mazdooriGold'] }}</span>
+                            </div>
                         </td>
+
+                        
                         <td>
                             <div class="flex-row">
                                 <span class="span-text-color">مزدوری</span>
@@ -290,12 +300,6 @@
                             <div class="flex-row">
                                 <span class="span-text-color">بقایا خالص</span>
                                 <span class="val-ltr span-text">{{ $data['RemainingGold'] }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="flex-row">
-                                <span class="span-text-color">مزدوری کا سونا</span>
-                                <span class="span-text">{{ $data['mazdooriGold'] }}</span>
                             </div>
                         </td>
  
