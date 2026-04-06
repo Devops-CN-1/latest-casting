@@ -111,7 +111,7 @@
         height:auto;
         margin: 0 !important;  
         padding-left: 1.5cm !important;
-        padding-right: 1cm !important;
+        padding-right: 1.2cm !important;
         box-sizing: border-box;
         overflow: hidden;
     }
