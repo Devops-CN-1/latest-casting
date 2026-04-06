@@ -53,18 +53,21 @@
  
     .content-table td {
         width: 30%;
-        padding: 3px 25px;
+        padding: 3px 30px;
+        height: 0.9cm;
+        vertical-align: middle;
+        border:1px solid black;
     }
  
     .text-right {
         text-align: right;
     }
  
-    .text-left {
-        text-align: left;
+    .text-center {
+        text-align: center;
     }
  
-    /* .val {
+    .val {
         white-space: nowrap;
     }
  
@@ -72,7 +75,7 @@
         direction: ltr;
         text-align: left;
         unicode-bidi: embed;
-    } */
+    }
     .flex-row {
         display: flex;
         justify-content: space-between;
@@ -132,31 +135,31 @@
         <table class="header-table text-xs">
             <tbody>
                 <tr>
-                    <td class="label text-right">سیریل نمبر</td>
+                    <td class="label text-center">سیریل نمبر</td>
                     <td class="val text-left">{{ $data['serialNumber'] }}</td>
-                    <td class="label text-right">آرڈر نمبر</td>
+                    <td class="label text-center">آرڈر نمبر</td>
                     <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
-                    <td class="label text-right">تاریخ</td>
+                    <td class="label text-center">تاریخ</td>
                     <td class="val text-left">{{ $dateOnly }}</td>
-                    <td class="label text-right">وقت</td>
+                    <td class="label text-center">وقت</td>
                     <td class="val val-ltr">{{ $timeOnly }}</td>
                 </tr>
                 <tr>
-                    <td class="label text-right">ریٹ فی تولہ</td>
+                    <td class="label text-center">ریٹ فی تولہ</td>
                     <td class="val text-left">{{ $data['tollaRate'] }}</td>
-                    <td class="label text-right">ریٹ فی گرام</td>
+                    <td class="label text-center">ریٹ فی گرام</td>
                     <td class="val text-left">{{ $data['gramRate'] }}</td>
-                    <td class="label text-right">ویسٹ فیس دس گرام</td>
+                    <td class="label text-center">ویسٹ فیس دس گرام</td>
                     <td class="val text-left">{{ $data['wasteRate'] }}</td>
-                    <td class="label text-right">مزدوری فی گرام</td>
+                    <td class="label text-center">مزدوری فی گرام</td>
                     <td class="val text-left">0</td>
                 </tr>
                 <tr>
-                    <td class="label text-right">نام و ایڈریس</td>
+                    <td class="label text-center">نام و ایڈریس</td>
                     <td colspan="3" class="val text-left">{{ $data['partyName'] }}</td>
-                    <td class="label text-right">پارٹی نمبر</td>
+                    <td class="label text-center">پارٹی نمبر</td>
                     <td class="val text-left">{{ $data['party_id'] }}</td>
-                    <td class="label text-right">کیش کوڈ</td>
+                    <td class="label text-center">کیش کوڈ</td>
                     <td class="val text-left">
                         ({{ $data['InOutCheck'] == 1 ? 'IN' : 'OUT' }})
                         {{ $data['mailCode'] }}
