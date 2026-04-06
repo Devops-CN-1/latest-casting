@@ -258,7 +258,7 @@
                         <td>
                             <div class="flex-row">
                                 <span class="span-text-color">کل خالص</span>
-                                <span class="val-ltr span-text">{{ $data['totalKhalis'] }}</span>
+                                <span class="val-ltr span-text">{{ $data['totalKhalis'] }} + {{ $data['mazdooriGold'] }}</span>
                             </div>
                         </td>
                         <!-- <td>
