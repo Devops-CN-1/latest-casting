@@ -106,7 +106,7 @@
 </head>
  
 <body>
-    <!-- @php
+    @php
     /* تاریخ cell = date only (d/m/Y). وقت cell = time only (g:i:s A). */
     $raw = trim((string) ($data['currentDateTime'] ?? ''));
     $dateOnly = '';
@@ -126,7 +126,7 @@
     }
     }
     }
-    @endphp -->
+    @endphp
  
     <div class="print-sheet">
         <table class="header-table text-xs">
