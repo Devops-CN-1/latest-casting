@@ -88,6 +88,11 @@
 
         /* On paper: no lines (form already printed) */
         @media print {
+            @page {
+            size: 210mm 135mm;
+            margin: 0;
+        }
+        
             html,
             body {
                 background: transparent !important;
