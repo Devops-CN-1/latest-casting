@@ -1319,6 +1319,11 @@ $(document).ready(function() {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
             let mailCode = parseFloat($('#mailCode').val()) || 0;
+            const mailFrac = mailCode - Math.floor(mailCode);
+            // Treat x.9 (e.g. 15.9, 14.9) as x.99 for calculations
+            if (mailFrac >= 0.9 - 1e-6 && mailFrac < 0.91) {
+                mailCode = Math.floor(mailCode) + 0.99;
+            }
             // replace #someInput with your actual input ID
             let wasteRate = 0;
 
@@ -1392,6 +1397,8 @@ $(document).ready(function() {
 
 
             if ($('#InOutCheck').is(':checked')) {
+
+            
                 
                 let ander = ( 96 - mailCode) / 96;
 
