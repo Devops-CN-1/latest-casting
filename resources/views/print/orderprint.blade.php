@@ -43,9 +43,11 @@
         vertical-align: middle;
     }
 
-    .content-table {
-        width: 100%;
-    }
+        .header-table,
+.content-table {
+    width: 100%;
+    table-layout: fixed;
+}
 
     .content-table td {
         width: 30%;
@@ -87,9 +89,16 @@
         }
 
         .print-sheet {
-            padding-top: 4.5cm;
-            overflow: hidden;
-        }
+        padding-top: 4.5cm;
+        width: 210mm;
+        min-height: 135mm;
+        height:auto;
+        margin: 0 !important;   
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
     }
     </style>
 </head>
