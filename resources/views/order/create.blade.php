@@ -1441,7 +1441,8 @@ $(document).ready(function() {
 
 
 
-            $('#totalKhalis').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
+
+            $('#totalKhalis').val(totalKhalis.toFixed(3));
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
