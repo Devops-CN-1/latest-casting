@@ -33,6 +33,7 @@
         .print-sheet {
             width: 210mm;
             min-height: 135mm;
+            margin: 4cm 1.5cm 0 1.5cm;
             padding-top: 1.8cm;
             padding-right: 0;
             padding-bottom: 1.4cm;
