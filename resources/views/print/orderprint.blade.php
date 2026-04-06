@@ -30,16 +30,7 @@
         }
 
         /* Top 1 cm (header); right 0; left + bottom reserved */
-        .print-sheet {
-            width: 210mm;
-            min-height: 135mm;
-            margin: 4cm 1.5cm 0 1.5cm;
-            padding-top: 1.8cm;
-            padding-right: 0;
-            padding-bottom: 1.4cm;
-            /* padding-left: 2cm; */
-        }
-
+        
         .overlay-table {
             width: 100%;
             border-collapse: collapse;
@@ -92,6 +83,16 @@
             size: 210mm 135mm;
             margin: 0;
         }
+        .print-sheet {
+            width: 210mm;
+            min-height: 135mm;
+            margin: 4cm 1.5cm 0 1.5cm;
+            padding-top: 1.8cm;
+            padding-right: 0;
+            padding-bottom: 1.4cm;
+            /* padding-left: 2cm; */
+        }
+
         
             html,
             body {
