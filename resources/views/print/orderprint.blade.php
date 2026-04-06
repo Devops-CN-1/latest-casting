@@ -49,6 +49,8 @@
             padding: 2px 4px;
             vertical-align: middle;
             word-wrap: break-word;
+            width: 12.5%;
+            height: 0.9cm;
         }
 
         .label {
@@ -111,7 +113,7 @@
 
         table.grid-3 td {
             width: 30%;
-            padding: 3px 5px;
+            padding: 3px 25px;
         }
 
         .text-xs {
@@ -159,31 +161,31 @@
         <table class="overlay-table text-xs">
             <tbody>
                 <tr>
-                    <td class="label text-right">سیریل نمبر</td>
+                    <td class="label text-right" style="visibility: hidden;">سیریل نمبر</td>
                     <td class="val text-left">{{ $data['serialNumber'] }}</td>
-                    <td class="label text-right">آرڈر نمبر</td>
+                    <td class="label text-right" style="visibility: hidden;">آرڈر نمبر</td>
                     <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
-                    <td class="label text-right">تاریخ</td>
+                    <td class="label text-right" style="visibility: hidden;">تاریخ</td>
                     <td class="val text-left">{{ $dateOnly }}</td>
-                    <td class="label text-right">وقت</td>
+                    <td class="label text-right" style="visibility: hidden;">وقت</td>
                     <td class="val val-ltr">{{ $timeOnly }}</td>
                 </tr>
                 <tr>
-                    <td class="label text-right">ریٹ فی تولہ</td>
+                    <td class="label text-right" style="visibility: hidden;">ریٹ فی تولہ</td>
                     <td class="val text-left">{{ $data['tollaRate'] }}</td>
-                    <td class="label text-right">ریٹ فی گرام</td>
+                    <td class="label text-right" style="visibility: hidden;">ریٹ فی گرام</td>
                     <td class="val text-left">{{ $data['gramRate'] }}</td>
-                    <td class="label text-right">ویسٹ فیس دس گرام</td>
+                    <td class="label text-right" style="visibility: hidden;">ویسٹ فیس دس گرام</td>
                     <td class="val text-left">{{ $data['wasteRate'] }}</td>
-                    <td class="label text-right">مزدوری فی گرام</td>
+                    <td class="label text-right" style="visibility: hidden;">مزدوری فی گرام</td>
                     <td class="val text-left">0</td>
                 </tr>
                 <tr>
-                    <td class="label text-right">نام و ایڈریس</td>
+                    <td class="label text-right" style="visibility: hidden;">نام و ایڈریس</td>
                     <td colspan="3" class="val text-left">{{ $data['partyName'] }}</td>
-                    <td class="label text-right">پارٹی نمبر</td>
+                    <td class="label text-right" style="visibility: hidden;">پارٹی نمبر</td>
                     <td class="val text-left">{{ $data['party_id'] }}</td>
-                    <td class="label text-right">کیش کوڈ</td>
+                    <td class="label text-right" style="visibility: hidden;">کیش کوڈ</td>
                     <td class="val text-left">
                         ({{ $data['InOutCheck'] == 1 ? 'IN' : 'OUT' }})
                         {{ $data['mailCode'] }}
