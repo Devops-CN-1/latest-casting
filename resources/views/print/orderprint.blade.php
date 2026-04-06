@@ -33,10 +33,10 @@
         .print-sheet {
             width: 210mm;
             min-height: 135mm;
-            padding-top: 1cm;
+            padding-top: 1.8cm;
             padding-right: 0;
             padding-bottom: 1.4cm;
-            padding-left: 2cm;
+            /* padding-left: 2cm; */
         }
 
         .overlay-table {
@@ -49,7 +49,7 @@
             padding: 2px 4px;
             vertical-align: middle;
             word-wrap: break-word;
-            width: 12.5%;
+            /* width: 12.5%; */
             height: 0.9cm;
         }
 
