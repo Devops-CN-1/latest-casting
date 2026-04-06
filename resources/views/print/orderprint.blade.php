@@ -259,12 +259,12 @@
                                 <span class="val-ltr">{{ $data['totalKhalis'] }}</span>
                             </div>
                         </td>
-                        <td>
+                        <!-- <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>سابقا مزدوری</span>
                                 <span>{{ $data['remainingMazdoori'] }}</span>
                             </div>
-                        </td>
+                        </td> -->
                     </tr>
                     <tr>
                         <td>
@@ -273,13 +273,7 @@
                                 <span>{{ $data['totalWeight'] }}</span>
                             </div>
                         </td>
-                        <td>
-                            <div style="display:flex;justify-content:space-between;gap:6px;">
-                                <span>مزدوری کا سونا</span>
-                                <span>{{ $data['mazdooriGold'] }}</span>
-                            </div>
-                        </td>
-
+                        
                         <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
                                 <span>وصول خالص</span>
@@ -308,9 +302,16 @@
                         </td>
                         <td>
                             <div style="display:flex;justify-content:space-between;gap:6px;">
-                                <span>پَٹھور</span>
+                                <span>مزدوری کا سونا</span>
+                                <span>{{ $data['mazdooriGold'] }}</span>
                             </div>
                         </td>
+
+                        <!-- <td>
+                            <div style="display:flex;justify-content:space-between;gap:6px;">
+                                <span>پَٹھور</span>
+                            </div>
+                        </td> -->
                     </tr>
                     <tr>
                         <td>
