@@ -1438,9 +1438,7 @@ $(document).ready(function() {
 
 
             let totalKhalis = khalis + advance;
-
-
-
+            totalKhalis = Math.round(totalKhalis * 100) / 100;
 
             $('#totalKhalis').val(totalKhalis.toFixed(3));
             $('#netWeight').val(netWeight.toFixed(3));
