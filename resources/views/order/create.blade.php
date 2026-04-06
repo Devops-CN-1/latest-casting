@@ -1535,11 +1535,12 @@ $(document).ready(function() {
 
     $('#op2CashRecieved').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) {
-            e.preventDefault(); // Prevent default behavior
-            // Get values and convert them to numbers
+            if($('#op2GoldRecieved').val() == 0 && $('#op2GoldPaid').val() == 0 && $('#op2CashRecieved').val() == 0){
+                $('#op2GoldRecieved').val('0.001');
+            }
+            e.preventDefault(); 
             let op2cash = parseFloat($('#op2cash').val()) || 0;
             let op2CashRecieved = parseFloat($('#op2CashRecieved').val()) || 0;
-            // Perform calculation
             let op2remainingCash = (op2cash - op2CashRecieved);
             $('#op2RemainingCash').val((Math.ceil(op2remainingCash * 100) / 100).toFixed(2));
             $('#Print').focus();
