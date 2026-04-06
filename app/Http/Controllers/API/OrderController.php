@@ -498,10 +498,6 @@ class OrderController extends Controller
 
                 if ($request->has('op2CashRecieved') && $request->op2CashRecieved > 0) {
 
-                    dd('op2CashRecieved is not empty');
-
-                
-
                     // need to remove old entry agaist Party_id
 
                     AccountCash::where('party_id', $request->party_id)->delete();
@@ -649,8 +645,6 @@ class OrderController extends Controller
 
                 elseif ($request->filled('op2CashRecieved') && $request->op2CashRecieved == 0 && $request->filled('op2GoldRecieved') && $request->op2GoldRecieved >= 0) {
 
-                    dd('op2CashRecieved is empty and op2GoldRecieved is not empty');
-
                     //clear data from  Acount cash related to $request->party_id 
 
                     AccountCash::where('party_id', $request->party_id)->delete();
@@ -736,8 +730,6 @@ class OrderController extends Controller
 
                 } 
                 else {
-                    dd('op2CashRecieved is empty and op2GoldRecieved is empty');
-
 
                     if ($request->has('op2TotalGoldwithMazdooriInGold') && $request->op2TotalGoldwithMazdooriInGold > 0) {
 
