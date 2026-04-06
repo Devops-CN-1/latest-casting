@@ -21,7 +21,9 @@
     }
 
     .print-sheet {
-        padding-top: 1.8cm;
+        padding-top: 3cm;
+        width: 210mm;
+        height: 135mm;
     }
 
     .label {
@@ -72,6 +74,7 @@
         justify-content: space-between;
     }
     @page {
+        size: 210mm 135mm;
         margin: 0;
     }
 
@@ -84,7 +87,8 @@
         }
 
         .print-sheet {
-            padding-top: 1.8cm;
+            padding-top: 4.5cm;
+            overflow: hidden;
         }
     }
     </style>
