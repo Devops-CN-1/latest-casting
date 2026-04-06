@@ -91,7 +91,7 @@
         }
  
         .print-sheet {
-        padding-top: 4.5cm;
+        padding-top: 5.5cm;
         width: 210mm;
         min-height: 135mm;
         height:auto;
