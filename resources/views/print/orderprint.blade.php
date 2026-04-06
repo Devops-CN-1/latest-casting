@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
         margin: 0;
         padding: 0;
     }
-
+ 
     html,
     body {
         font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
@@ -19,58 +19,60 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-
+ 
     .print-sheet {
         padding-top: 3cm;
         width: 210mm;
         height: 135mm;
+        padding-left: 1cm !important;
+        padding-right: 1cm !important;
     }
-
+ 
     .label {
         font-weight: 700;
         white-space: nowrap;
         visibility: hidden;
     }
-
+ 
     .header-table {
         width: 100%;
         table-layout: fixed;
     }
-
+ 
     .header-table td {
         width: 12.5%;
         height: 0.9cm;
         vertical-align: middle;
     }
-
+ 
         .header-table,
 .content-table {
     width: 100%;
     table-layout: fixed;
 }
-
+ 
     .content-table td {
         width: 30%;
         padding: 3px 25px;
     }
-
+ 
     .text-right {
         text-align: right;
     }
-
+ 
     .text-left {
         text-align: left;
     }
-
-    .val {
+ 
+    /* .val {
         white-space: nowrap;
     }
-
+ 
     .val-ltr {
         direction: ltr;
         text-align: left;
         unicode-bidi: embed;
-    }
+    } */
     .flex-row {
         display: flex;
         justify-content: space-between;
@@ -79,32 +81,32 @@
         size: 210mm 135mm;
         margin: 0;
     }
-
+ 
     @media print {
-
+ 
         html,
         body {
             margin: 0;
             padding: 0;
         }
-
+ 
         .print-sheet {
-        padding-top: 4.5cm;
+        padding-top: 3cm;
         width: 210mm;
         min-height: 135mm;
         height:auto;
-        margin: 0 !important;   
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        margin: 0 !important;  
+        padding-left: 1cm !important;
+        padding-right: 1cm !important;
         box-sizing: border-box;
         overflow: hidden;
     }
     }
     </style>
 </head>
-
+ 
 <body>
-    @php
+    <!-- @php
     /* تاریخ cell = date only (d/m/Y). وقت cell = time only (g:i:s A). */
     $raw = trim((string) ($data['currentDateTime'] ?? ''));
     $dateOnly = '';
@@ -124,8 +126,8 @@
     }
     }
     }
-    @endphp
-
+    @endphp -->
+ 
     <div class="print-sheet">
         <table class="header-table text-xs">
             <tbody>
@@ -163,7 +165,7 @@
                 </tr>
             </tbody>
         </table>
-
+ 
         <div class="content">
             <table class="content-table">
                 <tbody>
@@ -244,7 +246,7 @@
                                 <span>{{ $data['totalWeight'] }}</span>
                             </div>
                         </td>
-
+ 
                         <td>
                             <div class="flex-row">
                                 <span>وصول خالص</span>
@@ -277,7 +279,7 @@
                                 <span>{{ $data['mazdooriGold'] }}</span>
                             </div>
                         </td>
-
+ 
                         <!-- <td>
                             <div class="flex-row">
                                 <span>پَٹھور</span>
@@ -299,5 +301,5 @@
         </div>
     </div>
 </body>
-
+ 
 </html>
