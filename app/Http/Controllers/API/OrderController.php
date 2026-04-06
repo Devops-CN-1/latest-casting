@@ -645,7 +645,7 @@ class OrderController extends Controller
                 } 
 
 
-                elseif ($request->filled('op2CashRecieved') && $request->op2CashRecieved == 0 && $request->filled('op2GoldRecieved') && $request->op2GoldRecieved > 0) {
+                elseif ($request->filled('op2CashRecieved') && $request->op2CashRecieved == 0 && $request->filled('op2GoldRecieved') && $request->op2GoldRecieved >= 0) {
 
                     //clear data from  Acount cash related to $request->party_id 
 
