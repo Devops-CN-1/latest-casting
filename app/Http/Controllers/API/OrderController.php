@@ -658,7 +658,7 @@ class OrderController extends Controller
 
                     AccountGold::where('party_id', $request->party_id)->delete();
 
-                    if ($request->has('op2TotalGoldwithMazdooriInGold') && $request->op2TotalGoldwithMazdooriInGold > 0) {
+                    if ($request->has('op2TotalGoldwithMazdooriInGold') ) {
 
                         // need to remove old entry agaist Party_id
 
