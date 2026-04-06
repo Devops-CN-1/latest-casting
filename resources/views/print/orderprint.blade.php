@@ -15,7 +15,8 @@
     html,
     body {
         font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-        font-size: 10px;
+        font-size: 12px;
+        font-weight: bold;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
@@ -24,8 +25,8 @@
         padding-top: 3cm;
         width: 210mm;
         height: 135mm;
-        padding-left: 1.5cm !important;
-        padding-right: 1.5cm !important;
+        padding-left: 1cm !important;
+        padding-right: 1cm !important;
     }
  
     .label {
@@ -52,15 +53,23 @@
 }
 .content-table {
         border-collapse: collapse;
+        height: 0.9cm;
+        vertical-align: middle;
     }
     .content-table td {
         width: 30%;
-        padding: 3px 30px;
+        padding: 0px 30px;
         height: 0.9cm;
         vertical-align: middle;
         border:1px solid black;
+        border-collapse: collapse;
     }
- 
+    .span-text{
+        height: 0.9cm;
+        background-color: rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+    }
     .text-right {
         text-align: right;
     }
@@ -96,13 +105,13 @@
         }
  
         .print-sheet {
-        padding-top: 5.4cm;
+        padding-top: 5.5cm;
         width: 210mm;
         min-height: 135mm;
         height:auto;
         margin: 0 !important;  
         padding-left: 1.5cm !important;
-        padding-right: 1.5cm !important;
+        padding-right: 1cm !important;
         box-sizing: border-box;
         overflow: hidden;
     }
@@ -177,13 +186,13 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>وزن کاسٹنگ</span>
+                                <span class="span-text">وزن کاسٹنگ</span>
                                 <span>{{ $data['weightCastig'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>سابقا خالص</span>
+                                <span class="span-text">سابقا خالص</span>
                                 <span class="val-ltr">{{ $data['advance'] }}</span>
                             </div>
                         </td>
@@ -192,13 +201,13 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>واپسی کاسٹنگ</span>
+                                <span class="span-text">واپسی کاسٹنگ</span>
                                 <span>{{ $data['wapsiGold'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>کل خالص</span>
+                                <span class="span-text">کل خالص</span>
                                 <span class="val-ltr">{{ $data['totalKhalis'] }}</span>
                             </div>
                         </td>
@@ -207,19 +216,19 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>نیٹ وزن</span>
+                                <span class="span-text">نیٹ وزن</span>
                                 <span>{{ $data['netWeight'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>خالص مزدوری</span>
+                                <span class="span-text">خالص مزدوری</span>
                                 <span>{{ $data['mazdoorie'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>مزدوری</span>
+                                <span class="span-text">مزدوری</span>
                                 <span>{{ $data['mazdoorie'] }}</span>
                             </div>
                         </td>
@@ -227,13 +236,13 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>ویسٹ</span>
+                                <span class="span-text">ویسٹ</span>
                                 <span>{{ $data['wasteCasted'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>کل خالص</span>
+                                <span class="span-text">کل خالص</span>
                                 <span class="val-ltr">{{ $data['totalKhalis'] }}</span>
                             </div>
                         </td>
@@ -247,20 +256,20 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>کل وزن</span>
+                                <span class="span-text">کل وزن</span>
                                 <span>{{ $data['totalWeight'] }}</span>
                             </div>
                         </td>
  
                         <td>
                             <div class="flex-row">
-                                <span>وصول خالص</span>
+                                <span class="span-text">وصول خالص</span>
                                 <span>{{ $data['GoldRecieved'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>کل مزدوری</span>
+                                <span class="span-text">کل مزدوری</span>
                                 <span>{{ $data['totalMazdoori'] }}</span>
                             </div>
                         </td>
@@ -268,19 +277,19 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>میل نکلا</span>
+                                <span class="span-text">میل نکلا</span>
                                 <span>{{ $data['totalWeightCasted'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>بقایا خالص</span>
+                                <span class="span-text">بقایا خالص</span>
                                 <span class="val-ltr">{{ $data['RemainingGold'] }}</span>
                             </div>
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span>مزدوری کا سونا</span>
+                                <span class="span-text">مزدوری کا سونا</span>
                                 <span>{{ $data['mazdooriGold'] }}</span>
                             </div>
                         </td>
@@ -294,7 +303,7 @@
                     <tr>
                         <td>
                             <div class="flex-row">
-                                <span>خالص</span>
+                                <span class="span-text">خالص</span>
                                 <span>{{ $data['khalis'] }}</span>
                             </div>
                         </td>
