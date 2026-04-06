@@ -24,8 +24,8 @@
         padding-top: 3cm;
         width: 210mm;
         height: 135mm;
-        padding-left: 1cm !important;
-        padding-right: 1cm !important;
+        padding-left: 1.5cm !important;
+        padding-right: 1.5cm !important;
     }
  
     .label {
@@ -50,7 +50,9 @@
     width: 100%;
     table-layout: fixed;
 }
- 
+.content-table {
+        border-collapse: collapse;
+    }
     .content-table td {
         width: 30%;
         padding: 3px 30px;
@@ -94,13 +96,13 @@
         }
  
         .print-sheet {
-        padding-top: 5.5cm;
+        padding-top: 5.4cm;
         width: 210mm;
         min-height: 135mm;
         height:auto;
         margin: 0 !important;  
-        padding-left: 1cm !important;
-        padding-right: 1cm !important;
+        padding-left: 1.5cm !important;
+        padding-right: 1.5cm !important;
         box-sizing: border-box;
         overflow: hidden;
     }
