@@ -1088,7 +1088,7 @@ $(document).ready(function() {
             var ampm = h24 >= 12 ? 'PM' : 'AM';
             var minutes = String(now.getMinutes()).padStart(2, '0');
             var seconds = String(now.getSeconds()).padStart(2, '0');
-            // Carbon-parseable; print view formats as d/m/Y and g:i:s A
+            // Carbon-parseable; print view formats as d/M/Y and g:i:s A
             var dateTime = day + '/' + month + '/' + year + ' ' + h12 + ':' + minutes + ':' + seconds + ' ' + ampm;
             $('#currentDateTime').val(dateTime);
         }
@@ -1574,7 +1574,7 @@ $(document).ready(function() {
     $('#op2CashRecieved').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) {
             if($('#op2GoldRecieved').val() == 0 && $('#op2GoldPaid').val() == 0 && $('#op2CashRecieved').val() == 0){
-                $('#op2GoldRecieved').val('0.001');
+                $('#op2GoldRecieved').val('0.000');
             }
             e.preventDefault(); 
             let op2cash = parseFloat($('#op2cash').val()) || 0;
