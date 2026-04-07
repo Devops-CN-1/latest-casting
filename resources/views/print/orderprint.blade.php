@@ -156,7 +156,7 @@
                     <td class="label text-center">آرڈر نمبر</td>
                     <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
                     <td class="label text-center">تاریخ</td>
-                    <td class="val text-left">{{ $dateOnly }}</td>
+                    <td class="val val-ltr">{{ $dateOnly }}</td>
                     <td class="label text-center">وقت</td>
                     <td class="val val-ltr">{{ $timeOnly }}</td>
                 </tr>
