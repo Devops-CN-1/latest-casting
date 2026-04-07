@@ -498,8 +498,6 @@ class OrderController extends Controller
 
                 if ($request->has('op2CashRecieved') && $request->op2CashRecieved > 0) {
 
-                
-
                     // need to remove old entry agaist Party_id
 
                     AccountCash::where('party_id', $request->party_id)->delete();
@@ -645,7 +643,7 @@ class OrderController extends Controller
                 } 
 
 
-                elseif ($request->filled('op2CashRecieved') && $request->op2CashRecieved == 0 && $request->filled('op2GoldRecieved') && $request->op2GoldRecieved > 1) {
+                elseif ($request->filled('op2CashRecieved') && $request->op2CashRecieved == 0 && $request->filled('op2GoldRecieved') && $request->op2GoldRecieved >= 0) {
 
                     //clear data from  Acount cash related to $request->party_id 
 
@@ -654,7 +652,7 @@ class OrderController extends Controller
 
                     AccountGold::where('party_id', $request->party_id)->delete();
 
-                    if ($request->has('op2TotalGoldwithMazdooriInGold') && $request->op2TotalGoldwithMazdooriInGold > 0) {
+                    if ($request->has('op2TotalGoldwithMazdooriInGold') ) {
 
                         // need to remove old entry agaist Party_id
 
@@ -732,7 +730,6 @@ class OrderController extends Controller
 
                 } 
                 else {
-
 
                     if ($request->has('op2TotalGoldwithMazdooriInGold') && $request->op2TotalGoldwithMazdooriInGold > 0) {
 

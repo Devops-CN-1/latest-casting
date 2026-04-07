@@ -699,6 +699,9 @@
 
                 // Basic fields
                 $('#party_id').val(data.party_id);
+                if(data['party_regular']){
+                    $('#partyName').val(data['party_regular'].partyName);
+                }
                 $('#weightCastig').val(data.castingWeight);
                 $('#mailCode').val(data.mailCode);
                 $('#remarks').val(data.remarks);
@@ -1319,6 +1322,11 @@ $(document).ready(function() {
         if (e.which === 13 || e.which === 9) { // Enter (13) or Tab (9)
             e.preventDefault(); // Prevent default tab behavior
             let mailCode = parseFloat($('#mailCode').val()) || 0;
+            const mailFrac = mailCode - Math.floor(mailCode);
+            // Treat x.9 (e.g. 15.9, 14.9) as x.99 for calculations
+            if (mailFrac >= 0.9 - 1e-6 && mailFrac < 0.91) {
+                mailCode = Math.floor(mailCode) + 0.99;
+            }
             // replace #someInput with your actual input ID
             let wasteRate = 0;
 
@@ -1392,6 +1400,8 @@ $(document).ready(function() {
 
 
             if ($('#InOutCheck').is(':checked')) {
+
+            
                 
                 let ander = ( 96 - mailCode) / 96;
 
@@ -1428,10 +1438,9 @@ $(document).ready(function() {
 
 
             let totalKhalis = khalis + advance;
+            totalKhalis = Math.round(totalKhalis * 100) / 100;
 
-
-
-            $('#totalKhalis').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
+            $('#totalKhalis').val(totalKhalis.toFixed(3));
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
@@ -1535,11 +1544,12 @@ $(document).ready(function() {
 
     $('#op2CashRecieved').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) {
-            e.preventDefault(); // Prevent default behavior
-            // Get values and convert them to numbers
+            if($('#op2GoldRecieved').val() == 0 && $('#op2GoldPaid').val() == 0 && $('#op2CashRecieved').val() == 0){
+                $('#op2GoldRecieved').val('0.001');
+            }
+            e.preventDefault(); 
             let op2cash = parseFloat($('#op2cash').val()) || 0;
             let op2CashRecieved = parseFloat($('#op2CashRecieved').val()) || 0;
-            // Perform calculation
             let op2remainingCash = (op2cash - op2CashRecieved);
             $('#op2RemainingCash').val((Math.ceil(op2remainingCash * 100) / 100).toFixed(2));
             $('#Print').focus();
