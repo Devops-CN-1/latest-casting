@@ -1398,6 +1398,7 @@ $(document).ready(function() {
             let gramRate = parseFloat($('#gramRate').val()) || 0;
             let netWeight = weightCastig - wapsiGold;
             let waste = ( netWeight *  wasteRate) / 10;
+            waste = Math.round(waste * 100) / 100;
             let totalWeight = netWeight + waste;
             let advance = parseFloat($('#advance').val()) || 0;
 
