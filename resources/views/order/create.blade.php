@@ -1463,6 +1463,9 @@ $(document).ready(function() {
 
 
             
+            debugger;
+            console.log(khalis, advance);
+
             let totalKhalis = khalis + advance;
             totalKhalis = Math.round(totalKhalis * 100) / 100;
 
@@ -1484,7 +1487,6 @@ $(document).ready(function() {
             let wasteCastedValue =parseFloat($('#wasteCasted').val()) || 0;
             let inOutValue = ( wasteCastedValue * 96 ) / (mailCode + 96);
             $('#InOut').val((Math.floor(inOutValue * 100) / 100).toFixed(3));
-            debugger;
             let op2Goldvalue = parseFloat($('#op2Gold').val()) || 0;
             let op2MazdooriInGoldvalue = parseFloat($('#op2MazdooriInGold').val()) || 0;
             let op2TotalGoldwithMazdooriInGold = op2Goldvalue + op2MazdooriInGoldvalue ;
