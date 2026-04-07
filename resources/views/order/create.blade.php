@@ -925,6 +925,7 @@ function loadTodayOrderParties() {
             $sel.find('option:not(:first)').remove();
             if (response.status === 'success' && response.parties && response.parties.length) {
                 response.parties.forEach(function(p) {
+                    debugger
                     $sel.append($('<option></option>').val(p.party_id).text(p.label));
                 });
             }
