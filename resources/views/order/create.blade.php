@@ -1350,7 +1350,7 @@ $(document).ready(function() {
             const mailFrac = mailCode - Math.floor(mailCode);
             // Treat x.9 (e.g. 15.9, 14.9) as x.99 for calculations
             if (mailFrac >= 0.9 - 1e-6 && mailFrac < 0.91) {
-                mailCode = Math.floor(mailCode) + 0.99;
+                mailCode = Math.floor(mailCode) + 0.97;
             }
             // replace #someInput with your actual input ID
             let wasteRate = 0;
