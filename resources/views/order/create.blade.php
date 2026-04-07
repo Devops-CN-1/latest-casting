@@ -1459,10 +1459,10 @@ $(document).ready(function() {
 
             }
 
-            let totalKhalis = khalis + advance;
-            totalKhalis = Math.round(totalKhalis * 100) / 100;
 
-            $('#totalKhalis').val(totalKhalis.toFixed(3));
+            
+
+            
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
@@ -1472,6 +1472,10 @@ $(document).ready(function() {
             var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
             var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
             $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
+
+            let totalKhalis = khalisFromCasted + advance;
+            totalKhalis = Math.round(totalKhalis * 100) / 100;
+            $('#totalKhalis').val(totalKhalis.toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
