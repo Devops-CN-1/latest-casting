@@ -1466,6 +1466,11 @@ $(document).ready(function() {
             // debugger;
             // console.log(khalis, advance);
 
+            $('#netWeight').val(netWeight.toFixed(3));
+            $('#wasteCasted').val(waste.toFixed(3));
+            $('#totalWeight').val(totalWeight.toFixed(3));
+            $('#totalMazdoori').val(totalMazdoori);
+
             var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
             $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
             var khalisfortotalkhalis = $('#khalis').val();
@@ -1475,10 +1480,7 @@ $(document).ready(function() {
             totalKhalis = Math.round(totalKhalis * 100) / 100;
 
             $('#totalKhalis').val(totalKhalis.toFixed(3));
-            $('#netWeight').val(netWeight.toFixed(3));
-            $('#wasteCasted').val(waste.toFixed(3));
-            $('#totalWeight').val(totalWeight.toFixed(3));
-            $('#totalMazdoori').val(totalMazdoori);
+           
 
             var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
             var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
