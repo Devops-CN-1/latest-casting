@@ -1473,6 +1473,8 @@ $(document).ready(function() {
             var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
             $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
 
+            debugger;
+            console.log(khalisFromCasted, advance);
             let totalKhalis = khalisFromCasted + advance;
             totalKhalis = Math.round(totalKhalis * 100) / 100;
             $('#totalKhalis').val(totalKhalis.toFixed(3));
