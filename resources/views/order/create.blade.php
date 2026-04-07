@@ -1461,7 +1461,8 @@ $(document).ready(function() {
 
 
 
-
+            debugger;
+            console.log(khalis, advance);
             let totalKhalis = khalis + advance;
             totalKhalis = Math.round(totalKhalis * 100) / 100;
 
