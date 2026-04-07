@@ -1471,6 +1471,7 @@ $(document).ready(function() {
             var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
             var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
             var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
+            var khalisFromCasted = Math.round(khalisFromCasted * 100) / 100;
             $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
 
             debugger;
