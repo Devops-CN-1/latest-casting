@@ -639,6 +639,26 @@
 
 
 
+    /** created_at from API is UTC; show in Pakistan (Asia/Karachi) for the dropdown */
+    function formatCreatedAtPakistan(createdAt) {
+        if (!createdAt) return '';
+        var s = String(createdAt).trim();
+        var iso = s.indexOf('T') !== -1 ? s : s.replace(' ', 'T');
+        var hasTz = /Z$/i.test(iso) || /[+-]\d{2}:?\d{2}$/.test(iso);
+        var d = hasTz ? new Date(iso) : new Date(iso + 'Z');
+        if (isNaN(d.getTime())) return s;
+        return d.toLocaleString('en-PK', {
+            timeZone: 'Asia/Karachi',
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+    }
+
     function getOldParchies() {
         var partyId = $('#getPartyData').val().trim();
 
@@ -663,7 +683,7 @@
                 response.forEach(function(order) {
 
                     let formattedOrderId = String(order.id).padStart(6, '0');
-                    select.append('<option value="'+ order.id +'">'+ formattedOrderId +': '+ order.created_at +'</option>');
+                    select.append('<option value="'+ order.id +'">'+ formattedOrderId +': '+ formatCreatedAtPakistan(order.created_at) +'</option>');
                 });
 
                 hideLoader();
