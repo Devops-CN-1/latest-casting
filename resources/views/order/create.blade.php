@@ -647,16 +647,21 @@
         var hasTz = /Z$/i.test(iso) || /[+-]\d{2}:?\d{2}$/.test(iso);
         var d = hasTz ? new Date(iso) : new Date(iso + 'Z');
         if (isNaN(d.getTime())) return s;
-        return d.toLocaleString('en-PK', {
+        var parts = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Asia/Karachi',
             year: 'numeric',
-            month: 'short',
+            month: '2-digit',
             day: '2-digit',
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: true
-        });
+            hour12: false
+        }).formatToParts(d);
+        var o = {};
+        for (var i = 0; i < parts.length; i++) {
+            if (parts[i].type !== 'literal') o[parts[i].type] = parts[i].value;
+        }
+        return o.year + '-' + o.month + '-' + o.day + ' ' + o.hour + ':' + o.minute + ':' + o.second;
     }
 
     function getOldParchies() {
