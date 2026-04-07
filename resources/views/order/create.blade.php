@@ -1447,6 +1447,7 @@ $(document).ready(function() {
 
                 var maildata = mailCode + 96 ; 
                 var khalis = (totalWeight * 96) / maildata;
+                khalis = Math.round(khalis * 100) / 100;
                 let resultroundedvalue = (Math.ceil(khalis * 100) / 100).toFixed(3);
                 $('#khalis').val(resultroundedvalue);
                 let ander = khalis / totalWeight ;
@@ -1461,8 +1462,7 @@ $(document).ready(function() {
 
 
 
-            debugger;
-            console.log(khalis, advance);
+            
             let totalKhalis = khalis + advance;
             totalKhalis = Math.round(totalKhalis * 100) / 100;
 
