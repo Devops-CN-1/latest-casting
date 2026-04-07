@@ -1459,32 +1459,19 @@ $(document).ready(function() {
 
             }
 
+            let totalKhalis = khalis + advance;
+            totalKhalis = Math.round(totalKhalis * 100) / 100;
 
-
-
-            
-            // debugger;
-            // console.log(khalis, advance);
-
+            $('#totalKhalis').val(totalKhalis.toFixed(3));
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
             $('#totalMazdoori').val(totalMazdoori);
 
-            var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
-            $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
-            var khalisfortotalkhalis = $('#khalis').val();
-
-
-            let totalKhalis = khalisfortotalkhalis + advance;
-            totalKhalis = Math.round(totalKhalis * 100) / 100;
-
-            $('#totalKhalis').val(totalKhalis.toFixed(3));
-           
-
             var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
             var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
-            
+            var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
+            $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
