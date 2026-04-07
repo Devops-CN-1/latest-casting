@@ -1539,7 +1539,7 @@ $(document).ready(function() {
             if (op2TotalGoldwithMazdooriInGold >= 0) {
                 $('#op2GoldRecieved').focus();
             } else {
-                $('#op2GoldPaid').focus();
+                $('#op2GoldRecieved').focus();
             }
         }
     });
