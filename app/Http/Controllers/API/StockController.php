@@ -247,15 +247,72 @@ class StockController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function expenseGoldList(){
+    public function expenseGoldList(Request $request)
+    {
+        if ($request->has('draw')) {
+            $draw = (int) $request->input('draw', 1);
+            $start = max(0, (int) $request->input('start', 0));
+            $length = (int) $request->input('length', 25);
+            if ($length <= 0) {
+                $length = 25;
+            }
+            $length = min($length, 500);
 
-        $expenseGoldList = ExpenseGold::orderBy('created_at', 'desc')->get();
-        return response()->json([
-                'message' => 'Expense Gold List',
-                'data' => $expenseGoldList
+            $searchValue = trim((string) $request->input('search.value', ''));
+
+            $recordsTotal = ExpenseGold::query()->count();
+
+            $query = ExpenseGold::query();
+            if ($searchValue !== '') {
+                $like = '%'.$searchValue.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('gold', 'like', $like)
+                        ->orWhere('remarks', 'like', $like);
+                });
+            }
+
+            $recordsFiltered = (clone $query)->count();
+
+            $orderColumnIndex = (int) $request->input('order.0.column', 2);
+            $orderDir = strtolower((string) $request->input('order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $columnMap = [1 => 'gold', 2 => 'created_at', 3 => 'remarks'];
+            $orderCol = $columnMap[$orderColumnIndex] ?? 'created_at';
+            $query->orderBy($orderCol, $orderDir);
+
+            $rows = $query->skip($start)->take($length)->get();
+
+            $data = [];
+            foreach ($rows as $i => $item) {
+                $created = $item->created_at;
+                $data[] = [
+                    (string) ($start + $i + 1),
+                    $item->gold,
+                    $created ? $created->format('d/m/Y, H:i:s') : '',
+                    (string) ($item->remarks ?? ''),
+                ];
+            }
+
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $data,
             ]);
+        }
 
+        $perPage = min(100, max(1, (int) $request->input('per_page', 50)));
+        $paginator = ExpenseGold::orderBy('created_at', 'desc')->paginate($perPage);
 
+        return response()->json([
+            'message' => 'Expense Gold List',
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }    
 
     public function expenseCashList(){
@@ -269,25 +326,144 @@ class StockController extends Controller
 
     }
 
-    public function stockGoldList(){
+    public function stockGoldList(Request $request)
+    {
+        if ($request->has('draw')) {
+            $draw = (int) $request->input('draw', 1);
+            $start = max(0, (int) $request->input('start', 0));
+            $length = (int) $request->input('length', 25);
+            if ($length <= 0) {
+                $length = 25;
+            }
+            $length = min($length, 500);
 
-        $stockGoldList = StockGold::orderBy('created_at', 'desc')->get();
-        return response()->json([
-                'message' => 'Stock Gold List',
-                'data' => $stockGoldList
+            $searchValue = trim((string) $request->input('search.value', ''));
+
+            $recordsTotal = StockGold::query()->count();
+
+            $query = StockGold::query();
+            if ($searchValue !== '') {
+                $like = '%'.$searchValue.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('gold', 'like', $like)
+                        ->orWhere('status', 'like', $like)
+                        ->orWhere('remarks', 'like', $like);
+                });
+            }
+
+            $recordsFiltered = (clone $query)->count();
+
+            $orderColumnIndex = (int) $request->input('order.0.column', 3);
+            $orderDir = strtolower((string) $request->input('order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $columnMap = [1 => 'gold', 2 => 'status', 3 => 'created_at', 4 => 'remarks'];
+            $orderCol = $columnMap[$orderColumnIndex] ?? 'created_at';
+            $query->orderBy($orderCol, $orderDir);
+
+            $rows = $query->skip($start)->take($length)->get();
+
+            $data = [];
+            foreach ($rows as $i => $item) {
+                $created = $item->created_at;
+                $data[] = [
+                    (string) ($start + $i + 1),
+                    $item->gold,
+                    (string) ($item->status ?? ''),
+                    $created ? $created->format('d/m/Y, H:i:s') : '',
+                    (string) ($item->remarks ?? ''),
+                ];
+            }
+
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $data,
             ]);
+        }
 
+        $perPage = min(100, max(1, (int) $request->input('per_page', 50)));
+        $paginator = StockGold::orderBy('created_at', 'desc')->paginate($perPage);
 
-    }    
-    public function stockCashList(){
-
-        $stockCashList = StockCash::orderBy('created_at', 'desc')->get();
         return response()->json([
-                'message' => 'Stock Cash List',
-                'data' => $stockCashList
+            'message' => 'Stock Gold List',
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
+    }
+
+    public function stockCashList(Request $request)
+    {
+        if ($request->has('draw')) {
+            $draw = (int) $request->input('draw', 1);
+            $start = max(0, (int) $request->input('start', 0));
+            $length = (int) $request->input('length', 25);
+            if ($length <= 0) {
+                $length = 25;
+            }
+            $length = min($length, 500);
+
+            $searchValue = trim((string) $request->input('search.value', ''));
+
+            $recordsTotal = StockCash::query()->count();
+
+            $query = StockCash::query();
+            if ($searchValue !== '') {
+                $like = '%'.$searchValue.'%';
+                $query->where(function ($q) use ($like) {
+                    $q->where('cash', 'like', $like)
+                        ->orWhere('status', 'like', $like)
+                        ->orWhere('remarks', 'like', $like);
+                });
+            }
+
+            $recordsFiltered = (clone $query)->count();
+
+            $orderColumnIndex = (int) $request->input('order.0.column', 3);
+            $orderDir = strtolower((string) $request->input('order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $columnMap = [1 => 'cash', 2 => 'status', 3 => 'created_at', 4 => 'remarks'];
+            $orderCol = $columnMap[$orderColumnIndex] ?? 'created_at';
+            $query->orderBy($orderCol, $orderDir);
+
+            $rows = $query->skip($start)->take($length)->get();
+
+            $data = [];
+            foreach ($rows as $i => $item) {
+                $created = $item->created_at;
+                $data[] = [
+                    (string) ($start + $i + 1),
+                    $item->cash,
+                    (string) ($item->status ?? ''),
+                    $created ? $created->format('d/m/Y, H:i:s') : '',
+                    (string) ($item->remarks ?? ''),
+                ];
+            }
+
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $data,
             ]);
+        }
 
+        $perPage = min(100, max(1, (int) $request->input('per_page', 50)));
+        $paginator = StockCash::orderBy('created_at', 'desc')->paginate($perPage);
 
+        return response()->json([
+            'message' => 'Stock Cash List',
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }
 
     public function leenaPartiesSummary()
