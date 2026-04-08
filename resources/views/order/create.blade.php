@@ -939,7 +939,7 @@ $(document).ready(function() {
 
         loadTodayOrderParties();
 
-        When user selects a party from "Last Deal Party" dropdown, load that party's data
+        // When user selects a party from "Last Deal Party" dropdown, load that party's data
         $('#lastPartyBillNo').on('change', function() {
             var partyID = $(this).val();
             if (!partyID) return;
