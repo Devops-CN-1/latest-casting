@@ -1284,10 +1284,11 @@
                     try {
                         $tbl.DataTable({
                             processing: true,
-                            serverSide: true,
+                            serverSide: false,
                             ajax: {
                                 url: '/api/stock-gold-list',
                                 type: 'GET',
+                                dataSrc: 'data',
                                 headers: {
                                     'Authorization': 'Bearer {{ session('auth_token') }}',
                                     'Accept': 'application/json'
@@ -1298,11 +1299,13 @@
                                 }
                             },
                             columns: [
-                                { data: 0, name: 'serial', orderable: false, searchable: false },
-                                { data: 1, name: 'gold', render: function(d) { return fmtGold2(d); } },
-                                { data: 2, name: 'status' },
-                                { data: 3, name: 'created_at' },
-                                { data: 4, name: 'remarks' }
+                                { data: null, name: 'serial', orderable: false, searchable: false, render: function(data, type, row, meta) {
+                                    return meta.row + meta.settings._iDisplayStart + 1;
+                                }},
+                                { data: 'gold', name: 'gold', render: function(d) { return fmtGold2(d); } },
+                                { data: 'status', name: 'status' },
+                                { data: 'created_at', name: 'created_at' },
+                                { data: 'remarks', name: 'remarks' }
                             ],
                             pageLength: 100,
                             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -1368,10 +1371,11 @@
                     try {
                         $tbl.DataTable({
                             processing: true,
-                            serverSide: true,
+                            serverSide: false,
                             ajax: {
                                 url: '/api/stock-cash-list',
                                 type: 'GET',
+                                dataSrc: 'data',
                                 headers: {
                                     'Authorization': 'Bearer {{ session('auth_token') }}',
                                     'Accept': 'application/json'
@@ -1382,11 +1386,13 @@
                                 }
                             },
                             columns: [
-                                { data: 0, name: 'serial', orderable: false, searchable: false },
-                                { data: 1, name: 'cash', render: function(d) { return fmtCash2(d); } },
-                                { data: 2, name: 'status' },
-                                { data: 3, name: 'created_at' },
-                                { data: 4, name: 'remarks' }
+                                { data: null, name: 'serial', orderable: false, searchable: false, render: function(data, type, row, meta) {
+                                    return meta.row + meta.settings._iDisplayStart + 1;
+                                }},
+                                { data: 'cash', name: 'cash', render: function(d) { return fmtCash2(d); } },
+                                { data: 'status', name: 'status' },
+                                { data: 'created_at', name: 'created_at' },
+                                { data: 'remarks', name: 'remarks' }
                             ],
                             pageLength: 100,
                             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
