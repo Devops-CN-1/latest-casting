@@ -319,7 +319,7 @@
                 <div class="w-3/5">
                     <div class="flex items-center justify-between">
                         <span id="currentTime" class="w-1/3 text-black font-mono text-xl font-bold"></span>
-                        <select id="orderSelect" onchange="fetchOldParchies(this.value)" class="w-4/6 bg-white text-black border border-gray-300">
+                        <select id="orderSelect" onchange="fetchOldParchies(this.value)" title="ایک سے زیادہ پرچی ہوں تو یہاں mouse رکھ کر scroll: اگلی / پچھلی" class="w-4/6 bg-white text-black border border-gray-300">
                           </select>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1033,6 +1033,37 @@ $(document).ready(function() {
         $('#gramRate').val(RatePerGram.toFixed(3));
 
         loadTodayOrderParties();
+
+        // Old Parchi dropdown: mouse wheel cycles next/previous when 2+ orders (cursor over select)
+        var orderSelectEl = document.getElementById('orderSelect');
+        if (orderSelectEl) {
+            orderSelectEl.addEventListener('wheel', function (e) {
+                var $sel = $('#orderSelect');
+                var $opts = $sel.find('option[value!=""]');
+                if ($opts.length < 2) {
+                    return;
+                }
+                e.preventDefault();
+                var vals = $opts.map(function () { return this.value; }).get();
+                var cur = $sel.val();
+                var idx = vals.indexOf(cur);
+                if (idx < 0) {
+                    idx = 0;
+                }
+                if (e.deltaY > 0) {
+                    idx = Math.min(idx + 1, vals.length - 1);
+                } else if (e.deltaY < 0) {
+                    idx = Math.max(idx - 1, 0);
+                } else {
+                    return;
+                }
+                var newVal = vals[idx];
+                if (newVal !== cur) {
+                    $sel.val(newVal);
+                    fetchOldParchies(newVal);
+                }
+            }, { passive: false });
+        }
 
         // When user selects a party from "Last Deal Party" dropdown, load that party's data
         // $('#lastPartyBillNo').on('change', function() {
