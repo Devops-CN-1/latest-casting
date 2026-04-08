@@ -151,7 +151,7 @@
                                 
                                     <input type="number" name="wasteDiscountRate" id="wasteDiscountRate" value="0.00" 
                                     class="w-5/12 h-7 bg-[#ffc0c0] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
-                                    <input type="number" name="wasteRate" id="wasteRate" value="value="0.100" " 
+                                    <input type="number" name="wasteRate" id="wasteRate" value="0.100" 
                                     class="w-5/12 h-7 bg-[#ff0000] outline-none shadow-inner border-2 border-l-[#8d8d7d] border-t-[#9c9d8a] border-r-[b5b5a8] border-b-white bg-white"  />
                                 
                             </div>
@@ -744,8 +744,9 @@
                 xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
             },
             success: function (response) {
+                enableButtons();
                 applyOrderRecordToForm(response);
-                disableButtons();
+                lockOrderFormAfterLastOrderLoaded();
                 hideLoader();
             },
             error: function(xhr) {
@@ -966,6 +967,7 @@ $(document).ready(function() {
                     if (response.response_code === 201) {
                         toastr.error(response.message, 'Error');
                     } else if (response.response_code === 200) {
+                        enableButtons();
                         $('#lastPartyBills').val(response.data.totalOrders);
                         $('#party_id').val(partyID);
                         if (response.data.party_type === "cash") {
@@ -984,6 +986,7 @@ $(document).ready(function() {
                         $('#getPartyData').val(partyID);
                         if (response.data.last_order) {
                             applyOrderRecordToForm(response.data.last_order, { preserveBalances: true });
+                            lockOrderFormAfterLastOrderLoaded();
                         }
                     }
                     hideLoader();
@@ -1044,7 +1047,7 @@ $(document).ready(function() {
                     if (response.response_code === 201) {
                         toastr.error(response.message, 'Error');
                     } else if (response.response_code === 200) {
-
+                        enableButtons();
                         $('#lastPartyBills').val(response.data.totalOrders);
                         if (response.data.party_type === "cash") {
                             $('#partyName').val("cash party");
@@ -1065,6 +1068,7 @@ $(document).ready(function() {
                         }
                         if (response.data.last_order) {
                             applyOrderRecordToForm(response.data.last_order, { preserveBalances: true });
+                            lockOrderFormAfterLastOrderLoaded();
                         }
                     }
 
@@ -1621,18 +1625,20 @@ function print() {
     }
 }
 
-function disableButtons() {
-    $('#saveOrder').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
-    // $('#JustPrint').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
-    $('#Print').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
-    $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', true);
+/** After last order data is shown: read-only except JustPrint, Clear, and Last Deal Party. */
+function lockOrderFormAfterLastOrderLoaded() {
+    var $panel = $('#order-create-panel');
+    $panel.find('input, select, textarea').not('#lastPartyBillNo').prop('disabled', true);
+    $panel.find('button').not('#JustPrint, #clearButton').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+    $('#JustPrint, #clearButton').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+    $panel.find('a').css({ pointerEvents: 'none', opacity: 0.55 });
 }
 
 function enableButtons() {
-    $('#saveOrder').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-    // $('#JustPrint').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-    $('#Print').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-    $('#order-create-panel').find('input, select, textarea').not('#orderSelect').prop('disabled', false);
+    var $panel = $('#order-create-panel');
+    $panel.find('input, select, textarea').prop('disabled', false);
+    $panel.find('button').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+    $panel.find('a').css({ pointerEvents: '', opacity: '' });
 }
 
 </script>
