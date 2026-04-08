@@ -261,7 +261,7 @@
                             <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2CashRecieved" id="op2CashRecieved" />
                             <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000]">وصول کیا</label>
                             <label class="w-32 py-1.5 font-semibold text-center text-[#f1da69] bg-[#800000] ml-1">واپس دیا</label>
-                            <input class="w-1/2 border  px-1 bg-[#c0c0ff]" type="number" name="op2GoldPaid" id="op2GoldPaid" />
+                            <input class="w-1/2 border  px-1 bg-[#c0c0ff] order-readonly-input" type="number" name="op2GoldPaid" id="op2GoldPaid" />
                         </div>
 
                         <div class="flex items-center">
