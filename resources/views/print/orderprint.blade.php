@@ -261,12 +261,12 @@
                                 <span class="val-ltr span-text">{{ $data['totalKhalis'}}</span>
                             </div>
                         </td>
-                        <!-- <td>
+                        <td>
                             <div class="flex-row">
                                 <span>سابقا مزدوری</span>
                                 <span>{{ $data['remainingMazdoori'] }}</span>
                             </div>
-                        </td> -->
+                        </td>
                     </tr>
                     <tr>
                         <td>
