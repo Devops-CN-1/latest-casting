@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
-        <div id="order-create-panel" class="w-full p-5 bg-[#004000]">
+    <div class="flex flex-1 min-h-0 flex-col w-full overflow-hidden">
+        <div id="order-create-viewport" class="relative flex-1 min-h-0 w-full max-w-none overflow-hidden">
+            <div id="order-create-scale-inner" class="absolute top-0 left-0 w-full">
+        <div class="w-full max-w-none mx-0 px-0">
+        <div id="order-create-panel" class="w-full p-2 pt-1 bg-[#004000]">
             <!-- ayat ul kursi -->
             <h1 class="text-xs font-semibold text-center text-[#cbd2a2]">
                 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ
@@ -131,8 +134,8 @@
                             <span class="mt-2 block">کُل مزدوری</span>
                         </div>
                     </div>
-                    <div class="mt-2 flex justify-center items-center">
-                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="">
+                    <div class="mt-1 flex justify-center items-center">
+                        <img src="{{asset('assets/images/makkahmadina.png')}}" alt="" class="max-h-14 w-auto object-contain">
                     </div>
                 </div>
                 <div class="w-[30%]">
@@ -331,6 +334,9 @@
                 </div>
             </div>
         </div>
+        </div>
+            </div>
+        </div>
     </div>
 
     <!-- Loader Overlay -->
@@ -342,6 +348,11 @@
     </div>
 
     <style>
+        /* One-screen fit: scaled content clips inside viewport (see fitOrderCreateToViewport) */
+        #order-create-viewport {
+            contain: layout style;
+        }
+
         /* Prevent editing and focus on readonly display inputs (JS can still set .val()) */
         .order-readonly-input {
             pointer-events: none;
@@ -491,6 +502,45 @@
     function hideLoader() {
         $('#tableLoader').addClass('hidden');
     }
+
+    var orderCreateResizeTimer;
+    function fitOrderCreateToViewport() {
+        var vp = document.getElementById('order-create-viewport');
+        var inner = document.getElementById('order-create-scale-inner');
+        if (!vp || !inner) return;
+        var header = document.querySelector('body > header');
+        var hh = header ? header.offsetHeight : 0;
+        var avail = Math.max(200, window.innerHeight - hh);
+        vp.style.height = avail + 'px';
+        vp.style.maxHeight = avail + 'px';
+
+        inner.style.transform = '';
+        inner.style.width = '100%';
+
+        var h = inner.offsetHeight;
+        var w = inner.scrollWidth || inner.offsetWidth;
+        var vpW = Math.max(1, vp.clientWidth);
+        var s = Math.min(1, avail / Math.max(1, h), vpW / Math.max(1, w));
+
+        if (s < 0.999) {
+            inner.style.transformOrigin = 'top left';
+            inner.style.transform = 'scale(' + s + ')';
+            inner.style.width = (100 / s) + '%';
+        } else {
+            inner.style.transform = '';
+            inner.style.width = '100%';
+        }
+    }
+
+    function scheduleFitOrderCreate() {
+        clearTimeout(orderCreateResizeTimer);
+        orderCreateResizeTimer = setTimeout(function () {
+            requestAnimationFrame(fitOrderCreateToViewport);
+        }, 50);
+    }
+
+    $(window).on('resize', scheduleFitOrderCreate);
+    $(window).on('load', scheduleFitOrderCreate);
 
     toastr.options = {
         "closeButton": true,
@@ -912,9 +962,11 @@ function loadTodayOrderParties() {
                 });
             }
             getLastOrderInformation();
+            scheduleFitOrderCreate();
         },
         error: function(xhr) {
             getLastOrderInformation();
+            scheduleFitOrderCreate();
         }
     });
 }
@@ -934,14 +986,19 @@ function getLastOrderInformation(){
                 $('#lastPartyBillNo').val(response.party_id);
                 $('#serialNumber').val(formattedOrderId);
             }
+            scheduleFitOrderCreate();
         },
         error: function(xhr) {
             if (xhr.status !== 404) toastr.error(xhr.responseJSON && xhr.responseJSON.message, 'Error');
+            scheduleFitOrderCreate();
         }
     });
 }
 
 $(document).ready(function() {
+        scheduleFitOrderCreate();
+        $('#order-create-panel img').on('load', scheduleFitOrderCreate);
+
         updateCurrentTime();
         setInterval(updateCurrentTime, 1000);
         $('#getPartyData').focus();
