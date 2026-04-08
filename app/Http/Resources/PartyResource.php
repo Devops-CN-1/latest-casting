@@ -53,10 +53,12 @@ class PartyResource extends JsonResource
         $lastEntry = $accountDetails->sortByDesc('created_at')->first();
         $lastRemarks = $lastEntry['remarks'] ?? null;
 
-        $lastOrder = $this->whenLoaded('orders', fn() => $this->orders->sortByDesc('created_at')->first());
-        $totalOrders = $this->whenLoaded('orders', fn() => $this->orders->count());
+        $lastOrderPayload = null;
+        if ($this->relationLoaded('orders') && $this->orders->isNotEmpty()) {
+            $lastOrderPayload = $this->orders->sortByDesc('created_at')->first()->toArray();
+        }
 
-      
+        $totalOrders = $this->whenLoaded('orders', fn() => $this->orders->count());
 
         return [
             'id'            => $this->partyID,
@@ -86,7 +88,8 @@ class PartyResource extends JsonResource
             ],
             'account_details' => $accountDetails,
             'totalOrders'       => $totalOrders ? $totalOrders : null,
-            'lastRemarks'  =>$lastRemarks,
+            'lastRemarks'       => $lastRemarks,
+            'last_order'        => $lastOrderPayload,
         ];
     }
 }

@@ -652,6 +652,83 @@
         });
     }
 
+    /**
+     * Fill the order form from an order row (same shape as /api/party/orderRecord/{id}).
+     * @param {object} data
+     * @param {{ preserveBalances?: boolean }} [options] — if true, keep current advance & remainingMazdoori (live party balances).
+     */
+    function applyOrderRecordToForm(data, options) {
+        if (!data) {
+            return;
+        }
+        var opts = options || {};
+
+        $('#party_id').val(data.party_id);
+        $('#weightCastig').val(data.castingWeight);
+        $('#mailCode').val(data.mailCode);
+        $('#remarks').val(data.remarks);
+        $('#wapsiGold').val(data.wapsiGold);
+        $('#netWeight').val(data.weightReady);
+        $('#wasteCasted').val(data.wasteCasted);
+        $('#totalWeight').val(data.totalWeight);
+        $('#totalWeightCasted').val(data.totalWeightCasted);
+        $('#khalis').val(data.khalis);
+        if (!opts.preserveBalances) {
+            $('#advance').val(data.advance);
+            $('#remainingMazdoori').val(data.remainingMazdoori);
+        }
+        $('#totalKhalis').val(data.totalKhalis);
+        $('#InOut').val(data.InOut);
+        $('#mazdoorie').val(data.mazdoorie);
+        $('#totalMazdoori').val(data.totalMazdoori);
+        $('#mazdoriRate').val(data.mazdoriRate);
+        $('#wasteRate').val(data.wasteRate);
+        $('#tollaRate').val(data.tollaRate);
+        if (data.gramRate != null && data.gramRate !== '') {
+            $('#gramRate').val(data.gramRate);
+        }
+
+        var gramRateNum = parseFloat(data.gramRate);
+        if (isNaN(gramRateNum)) {
+            gramRateNum = 0;
+        }
+
+        $('input[name="selectOption"][value="' + data.selectOption + '"]').prop('checked', true);
+
+        $('#op1khalasGold').val(data.totalKhalis);
+        $('#op1mazdori').val(data.totalMazdoori);
+        $('#op1GoldRecieved').val(data.op1GoldRecieved);
+        $('#op1MazdooriRecieved').val(data.op1MazdooriRecieved);
+        $('#op1GoldPaid').val(data.op1GoldPaid);
+        $('#op1MazdooriPaid').val(data.op1MazdooriPaid);
+        $('#op1RemainingGold').val(data.op1RemainingGold);
+        $('#op1RemainingCash').val(data.op1RemainingCash);
+
+        $('#op2Gold').val(data.totalKhalis);
+        $('#op2MazdooriInGold').val(data.totalMazdooriInGold);
+        var op2TotalGoldwithMazdooriInGoldtotal = (
+            parseFloat(data.totalKhalis) + parseFloat(data.totalMazdooriInGold)
+        ).toFixed(3);
+        $('#op2TotalGoldwithMazdooriInGold').val(op2TotalGoldwithMazdooriInGoldtotal);
+        $('#op2cash').val(((parseFloat(data.op2RemainingGold) || 0) * gramRateNum).toFixed(3));
+        $('#op2CashRecieved').val(data.op2CashRecieved);
+        $('#op2GoldRecieved').val(data.op2GoldRecieved);
+        $('#op2GoldPaid').val(data.op2GoldPaid);
+        $('#op2RemainingCash').val(data.op2RemainingCash);
+        $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
+
+        $('#op3cash').val(Math.ceil((parseFloat(data.totalKhalis) || 0) * gramRateNum).toFixed(3));
+        $('#op3mazdooriInCash').val(Math.ceil(parseFloat(data.totalMazdoori) || 0).toFixed(3));
+        $('#op3CashRecieved').val(data.op3CashRecieved);
+        $('#op3CashPaid').val(data.op3CashPaid);
+        var totalop3totalCashwithMazdooriInCash = (Math.ceil((parseFloat(data.totalKhalis) || 0) * gramRateNum) + Math.ceil(parseFloat(data.totalMazdoori) || 0)).toFixed(3);
+        $('#op3totalCashwithMazdooriInCash').val(totalop3totalCashwithMazdooriInCash);
+        $('#op3RemainingCash').val(data.op3RemainingCash);
+
+        $('#InOutCheck').prop('checked', data.InOutCheck == 1 || data.InOutCheck === true);
+        $('#pieceCheck').prop('checked', data.Piece == 1 || data.Piece === true);
+    }
+
     function fetchOldParchies(id) {
         if (!id) {
             enableButtons();
@@ -667,73 +744,7 @@
                 xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
             },
             success: function (response) {
-                let data = response; // Your JSON object from API
-
-                // Basic fields
-                $('#party_id').val(data.party_id);
-                $('#weightCastig').val(data.castingWeight);
-                $('#mailCode').val(data.mailCode);
-                $('#remarks').val(data.remarks);
-                $('#wapsiGold').val(data.wapsiGold);
-                $('#netWeight').val(data.weightReady);
-                $('#wasteCasted').val(data.wasteCasted);
-                $('#totalWeight').val(data.totalWeight);
-                $('#totalWeightCasted').val(data.totalWeightCasted);
-                $('#khalis').val(data.khalis);
-                $('#advance').val(data.advance);
-                $('#totalKhalis').val(data.totalKhalis);
-                $('#InOut').val(data.InOut);
-                $('#mazdoorie').val(data.mazdoorie);
-                $('#remainingMazdoori').val(data.remainingMazdoori);
-                $('#totalMazdoori').val(data.totalMazdoori);
-                $('#mazdoriRate').val(data.mazdoriRate);
-                $('#wasteRate').val(data.wasteRate);
-                $('#tollaRate').val(data.tollaRate);
-
-                // ✅ Radio button selection based on selectOption
-                $('input[name="selectOption"][value="' + data.selectOption + '"]').prop('checked', true);
-
-                // ✅ Option 1 fields
-                $('#op1khalasGold').val(data.totalKhalis);
-                $('#op1mazdori').val(data.totalMazdoori);
-                $('#op1GoldRecieved').val(data.op1GoldRecieved);
-                $('#op1MazdooriRecieved').val(data.op1MazdooriRecieved);
-                $('#op1GoldPaid').val(data.op1GoldPaid);
-                $('#op1MazdooriPaid').val(data.op1MazdooriPaid);
-                $('#op1RemainingGold').val(data.op1RemainingGold);
-                $('#op1RemainingCash').val(data.op1RemainingCash);
-
-                // ✅ Option 2 fields
-                $('#op2Gold').val(data.totalKhalis);
-                $('#op2MazdooriInGold').val(data.totalMazdooriInGold);
-                let op2TotalGoldwithMazdooriInGoldtotal = (
-                    parseFloat(data.totalKhalis) + parseFloat(data.totalMazdooriInGold)
-                ).toFixed(3);
-
-                $('#op2TotalGoldwithMazdooriInGold').val(op2TotalGoldwithMazdooriInGoldtotal);
-
-                $('#op2cash').val((data.op2RemainingGold * data.gramRate  ).toFixed(3));
-
-                $('#op2CashRecieved').val(data.op2CashRecieved);
-                $('#op2GoldRecieved').val(data.op2GoldRecieved);
-                $('#op2GoldPaid').val(data.op2GoldPaid);
-                $('#op2RemainingCash').val(data.op2RemainingCash);
-                $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
-
-                // ✅ Option 3 fields
-                $('#op3cash').val(Math.ceil(data.totalKhalis * data.gramRate).toFixed(3));
-                $('#op3mazdooriInCash').val(Math.ceil(data.totalMazdoori).toFixed(3));
-                
-                $('#op3CashRecieved').val(data.op3CashRecieved);
-                $('#op3CashPaid').val(data.op3CashPaid);
-                let totalop3totalCashwithMazdooriInCash = (Math.ceil(data.totalKhalis * data.gramRate) + Math.ceil(data.totalMazdoori)).toFixed(3);
-             $('#op3totalCashwithMazdooriInCash').val(totalop3totalCashwithMazdooriInCash);
-             $('#op3RemainingCash').val(data.op3RemainingCash);
-
-
-                // ✅ Checkbox for InOutCheck
-                $('#InOutCheck').prop('checked', data.InOutCheck == 1);
-
+                applyOrderRecordToForm(response);
                 disableButtons();
                 hideLoader();
             },
@@ -971,6 +982,9 @@ $(document).ready(function() {
                             $('#remarks').val(response.data.lastRemarks);
                         }
                         $('#getPartyData').val(partyID);
+                        if (response.data.last_order) {
+                            applyOrderRecordToForm(response.data.last_order, { preserveBalances: true });
+                        }
                     }
                     hideLoader();
                 },
@@ -1049,8 +1063,9 @@ $(document).ready(function() {
                         $('#remarks').val(response.data.lastRemarks);
 
                         }
-               
-                        
+                        if (response.data.last_order) {
+                            applyOrderRecordToForm(response.data.last_order, { preserveBalances: true });
+                        }
                     }
 
                     $('#remarks').focus();
