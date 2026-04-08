@@ -903,6 +903,7 @@
                 xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
             },
             success: function(response) {
+                debugger
                 if (response.status === 'success') {
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
