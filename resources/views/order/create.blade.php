@@ -903,15 +903,12 @@
                 xhr.setRequestHeader("Authorization", "Bearer {{ session('auth_token') }}");
             },
             success: function(response) {
-                debugger
                 if (response.status === 'success') {
                      toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 } else {
-                     toastr.success('Order not saved!', 'Error');
+                     toastr.success('Order saved successfully!', 'Success');
                      $('#clearButton').trigger('click');
-                     $('#getPartyData').focus();
                 }
 
                 $('#serialNumber').val(response.order);
