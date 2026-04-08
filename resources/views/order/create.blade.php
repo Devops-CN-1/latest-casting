@@ -765,7 +765,7 @@
         $('#op2GoldRecieved').val(data.op2GoldRecieved);
         $('#op2GoldPaid').val(data.op2GoldPaid);
         $('#op2RemainingCash').val(data.op2RemainingCash);
-        $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
+        $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(3) : '');
 
         $('#op3cash').val(Math.ceil((parseFloat(data.totalKhalis) || 0) * gramRateNum).toFixed(3));
         $('#op3mazdooriInCash').val(Math.ceil(parseFloat(data.totalMazdoori) || 0).toFixed(3));
@@ -1477,7 +1477,7 @@ $(document).ready(function() {
 
             // Perform calculation
             let op2RemainingGold = (op2TotalGoldwithMazdooriInGold + op2GoldPaid) - op2GoldRecieved;
-            $('#op2RemainingGold').val(op2RemainingGold.toFixed(2));
+            $('#op2RemainingGold').val(op2RemainingGold.toFixed(3));
 
             let gramRate =  $('#gramRate').val();
             let goldValueInCash = op2RemainingGold * gramRate ;
