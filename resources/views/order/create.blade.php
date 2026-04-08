@@ -655,7 +655,7 @@
     /**
      * Fill the order form from an order row (same shape as /api/party/orderRecord/{id}).
      * @param {object} data
-     * @param {{ preserveBalances?: boolean }} [options] — if true, keep current advance & remainingMazdoori (live party balances).
+     * @param {object} [options] optional; if options.preserveBalances is true, keep current advance and remainingMazdoori (live party balances).
      */
     function applyOrderRecordToForm(data, options) {
         if (!data) {
