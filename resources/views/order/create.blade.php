@@ -1549,7 +1549,7 @@ $(document).ready(function() {
             let op2TotalGoldwithMazdooriInGold =parseFloat( $('#op2TotalGoldwithMazdooriInGold').val()) || 0;
             let op2GoldRecieved =parseFloat( $('#op2GoldRecieved').val()) || 0;
             $('#op2RemainingGold').val((op2TotalGoldwithMazdooriInGold - op2GoldRecieved).toFixed(3));
-            $('#op2GoldPaid').focus();
+            $('#op2CashRecieved').focus();
         }
     });   
 
