@@ -1047,7 +1047,7 @@ $(document).ready(function() {
                     if (response.response_code === 201) {
                         toastr.error(response.message, 'Error');
                     } else if (response.response_code === 200) {
-                        enableButtons();
+
                         $('#lastPartyBills').val(response.data.totalOrders);
                         if (response.data.party_type === "cash") {
                             $('#partyName').val("cash party");
@@ -1065,10 +1065,6 @@ $(document).ready(function() {
                         $('#party_id').val(partyID);
                         $('#remarks').val(response.data.lastRemarks);
 
-                        }
-                        if (response.data.last_order) {
-                            applyOrderRecordToForm(response.data.last_order, { preserveBalances: true });
-                            lockOrderFormAfterLastOrderLoaded();
                         }
                     }
 
