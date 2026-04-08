@@ -639,6 +639,31 @@
 
 
 
+    /** created_at from API is UTC; show in Pakistan (Asia/Karachi) for the dropdown */
+    function formatCreatedAtPakistan(createdAt) {
+        if (!createdAt) return '';
+        var s = String(createdAt).trim();
+        var iso = s.indexOf('T') !== -1 ? s : s.replace(' ', 'T');
+        var hasTz = /Z$/i.test(iso) || /[+-]\d{2}:?\d{2}$/.test(iso);
+        var d = hasTz ? new Date(iso) : new Date(iso + 'Z');
+        if (isNaN(d.getTime())) return s;
+        var parts = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Karachi',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).formatToParts(d);
+        var o = {};
+        for (var i = 0; i < parts.length; i++) {
+            if (parts[i].type !== 'literal') o[parts[i].type] = parts[i].value;
+        }
+        return o.year + '-' + o.month + '-' + o.day + ' ' + o.hour + ':' + o.minute + ':' + o.second;
+    }
+
     function getOldParchies() {
         var partyId = $('#getPartyData').val().trim();
 
@@ -663,7 +688,7 @@
                 response.forEach(function(order) {
 
                     let formattedOrderId = String(order.id).padStart(6, '0');
-                    select.append('<option value="'+ order.id +'">'+ formattedOrderId +': '+ order.created_at +'</option>');
+                    select.append('<option value="'+ order.id +'">'+ formattedOrderId +': '+ formatCreatedAtPakistan(order.created_at) +'</option>');
                 });
 
                 hideLoader();
@@ -749,7 +774,7 @@
                 $('#op2GoldRecieved').val(data.op2GoldRecieved);
                 $('#op2GoldPaid').val(data.op2GoldPaid);
                 $('#op2RemainingCash').val(data.op2RemainingCash);
-                $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(2) : '');
+                $('#op2RemainingGold').val(data.op2RemainingGold != null ? parseFloat(data.op2RemainingGold).toFixed(3) : '');
 
                 // ✅ Option 3 fields
                 $('#op3cash').val(Math.ceil(data.totalKhalis * data.gramRate).toFixed(3));
@@ -1063,7 +1088,7 @@ $(document).ready(function() {
             var ampm = h24 >= 12 ? 'PM' : 'AM';
             var minutes = String(now.getMinutes()).padStart(2, '0');
             var seconds = String(now.getSeconds()).padStart(2, '0');
-            // Carbon-parseable; print view formats as d/m/Y and g:i:s A
+            // Carbon-parseable; print view formats as d/M/Y and g:i:s A
             var dateTime = day + '/' + month + '/' + year + ' ' + h12 + ':' + minutes + ':' + seconds + ' ' + ampm;
             $('#currentDateTime').val(dateTime);
         }
@@ -1325,7 +1350,7 @@ $(document).ready(function() {
             const mailFrac = mailCode - Math.floor(mailCode);
             // Treat x.9 (e.g. 15.9, 14.9) as x.99 for calculations
             if (mailFrac >= 0.9 - 1e-6 && mailFrac < 0.91) {
-                mailCode = Math.floor(mailCode) + 0.99;
+                mailCode = Math.floor(mailCode) + 0.95;
             }
             // replace #someInput with your actual input ID
             let wasteRate = 0;
@@ -1373,6 +1398,7 @@ $(document).ready(function() {
             let gramRate = parseFloat($('#gramRate').val()) || 0;
             let netWeight = weightCastig - wapsiGold;
             let waste = ( netWeight *  wasteRate) / 10;
+            waste = Math.round(waste * 100) / 100;
             let totalWeight = netWeight + waste;
             let advance = parseFloat($('#advance').val()) || 0;
 
@@ -1422,6 +1448,7 @@ $(document).ready(function() {
 
                 var maildata = mailCode + 96 ; 
                 var khalis = (totalWeight * 96) / maildata;
+                khalis = Math.round(khalis * 100) / 100;
                 let resultroundedvalue = (Math.ceil(khalis * 100) / 100).toFixed(3);
                 $('#khalis').val(resultroundedvalue);
                 let ander = khalis / totalWeight ;
@@ -1434,13 +1461,9 @@ $(document).ready(function() {
             }
 
 
+            
 
-
-
-            let totalKhalis = khalis + advance;
-            totalKhalis = Math.round(totalKhalis * 100) / 100;
-
-            $('#totalKhalis').val(totalKhalis.toFixed(3));
+            
             $('#netWeight').val(netWeight.toFixed(3));
             $('#wasteCasted').val(waste.toFixed(3));
             $('#totalWeight').val(totalWeight.toFixed(3));
@@ -1449,7 +1472,14 @@ $(document).ready(function() {
             var totalwaitforcountkhails = parseFloat($('#totalWeight').val()) || 0;
             var mailniklaforcountkhails = parseFloat($('#totalWeightCasted').val()) || 0;
             var khalisFromCasted = totalwaitforcountkhails - mailniklaforcountkhails;
+            var khalisFromCasted = Math.round(khalisFromCasted * 100) / 100;
             $('#khalis').val((Math.floor(khalisFromCasted * 100) / 100).toFixed(3));
+
+            debugger;
+            console.log(khalisFromCasted, advance);
+            let totalKhalis = khalisFromCasted + advance;
+            totalKhalis = Math.round(totalKhalis * 100) / 100;
+            $('#totalKhalis').val(totalKhalis.toFixed(3));
 
 
             $('#op2Gold').val((Math.ceil(totalKhalis * 100) / 100).toFixed(3));
@@ -1458,7 +1488,6 @@ $(document).ready(function() {
             let wasteCastedValue =parseFloat($('#wasteCasted').val()) || 0;
             let inOutValue = ( wasteCastedValue * 96 ) / (mailCode + 96);
             $('#InOut').val((Math.floor(inOutValue * 100) / 100).toFixed(3));
-            debugger;
             let op2Goldvalue = parseFloat($('#op2Gold').val()) || 0;
             let op2MazdooriInGoldvalue = parseFloat($('#op2MazdooriInGold').val()) || 0;
             let op2TotalGoldwithMazdooriInGold = op2Goldvalue + op2MazdooriInGoldvalue ;
@@ -1510,7 +1539,7 @@ $(document).ready(function() {
             if (op2TotalGoldwithMazdooriInGold >= 0) {
                 $('#op2GoldRecieved').focus();
             } else {
-                $('#op2GoldPaid').focus();
+                $('#op2GoldRecieved').focus();
             }
         }
     });
@@ -1519,7 +1548,7 @@ $(document).ready(function() {
         if (e.which === 13 || e.which === 9) {
             let op2TotalGoldwithMazdooriInGold =parseFloat( $('#op2TotalGoldwithMazdooriInGold').val()) || 0;
             let op2GoldRecieved =parseFloat( $('#op2GoldRecieved').val()) || 0;
-            $('#op2RemainingGold').val((op2TotalGoldwithMazdooriInGold - op2GoldRecieved).toFixed(2));
+            $('#op2RemainingGold').val((op2TotalGoldwithMazdooriInGold - op2GoldRecieved).toFixed(3));
             $('#op2GoldPaid').focus();
         }
     });   
@@ -1533,7 +1562,7 @@ $(document).ready(function() {
 
             // Perform calculation
             let op2RemainingGold = (op2TotalGoldwithMazdooriInGold + op2GoldPaid) - op2GoldRecieved;
-            $('#op2RemainingGold').val(op2RemainingGold.toFixed(2));
+            $('#op2RemainingGold').val(op2RemainingGold.toFixed(3));
 
             let gramRate =  $('#gramRate').val();
             let goldValueInCash = op2RemainingGold * gramRate ;
@@ -1545,7 +1574,7 @@ $(document).ready(function() {
     $('#op2CashRecieved').on('keydown', function(e) {
         if (e.which === 13 || e.which === 9) {
             if($('#op2GoldRecieved').val() == 0 && $('#op2GoldPaid').val() == 0 && $('#op2CashRecieved').val() == 0){
-                $('#op2GoldRecieved').val('0.001');
+                $('#op2GoldRecieved').val('0.000');
             }
             e.preventDefault(); 
             let op2cash = parseFloat($('#op2cash').val()) || 0;

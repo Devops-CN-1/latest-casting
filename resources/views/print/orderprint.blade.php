@@ -126,14 +126,14 @@
  
 <body>
     @php
-    /* تاریخ cell = date only (d/m/Y). وقت cell = time only (g:i:s A). */
+    /* تاریخ cell = date only (d/M/Y). وقت cell = time only (g:i:s A). */
     $raw = trim((string) ($data['currentDateTime'] ?? ''));
     $dateOnly = '';
     $timeOnly = '';
     if ($raw !== '' && strtoupper($raw) !== 'N/A') {
     try {
     $dt = \Carbon\Carbon::parse($raw);
-    $dateOnly = $dt->format('d/m/Y');
+    $dateOnly = $dt->format('d/M/Y');
     $timeOnly = $dt->format('g:i:s A');
     } catch (\Throwable $e) {
     if (preg_match('/^(.+?)\s+(\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM))$/i', $raw, $m)) {
@@ -156,7 +156,7 @@
                     <td class="label text-center">آرڈر نمبر</td>
                     <td class="val text-left">{{ $data['lastPartyBills'] }}</td>
                     <td class="label text-center">تاریخ</td>
-                    <td class="val text-left">{{ $dateOnly }}</td>
+                    <td class="val val-ltr">{{ $dateOnly }}</td>
                     <td class="label text-center">وقت</td>
                     <td class="val val-ltr">{{ $timeOnly }}</td>
                 </tr>

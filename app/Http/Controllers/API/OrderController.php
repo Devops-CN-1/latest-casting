@@ -1079,7 +1079,7 @@ class OrderController extends Controller
                 $party = Party::with('partyRegular')->where('partyID', $row->party_id)->first();
                 $label = (string) $row->party_id;
                 if ($party && $party->partyRegular) {
-                    $label .= ' - ' . ($party->partyRegular->businessName ?? '');
+                    $label .= ' - ' . ($party->partyRegular->partyName ?? '');
                 } elseif ($party && $party->type === 'cash') {
                     $label .= ' - cash party';
                 }
