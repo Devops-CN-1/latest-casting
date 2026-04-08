@@ -1539,7 +1539,7 @@ $(document).ready(function() {
             if (op2TotalGoldwithMazdooriInGold >= 0) {
                 $('#op2GoldRecieved').focus();
             } else {
-                $('#op2GoldRecieved').focus();
+                $('#op2GoldPaid').focus();
             }
         }
     });
@@ -1549,7 +1549,7 @@ $(document).ready(function() {
             let op2TotalGoldwithMazdooriInGold =parseFloat( $('#op2TotalGoldwithMazdooriInGold').val()) || 0;
             let op2GoldRecieved =parseFloat( $('#op2GoldRecieved').val()) || 0;
             $('#op2RemainingGold').val((op2TotalGoldwithMazdooriInGold - op2GoldRecieved).toFixed(3));
-            $('#op2CashRecieved').focus();
+            $('#op2GoldPaid').focus();
         }
     });   
 
