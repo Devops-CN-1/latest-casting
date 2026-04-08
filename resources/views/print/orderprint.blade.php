@@ -236,7 +236,7 @@
                         <td>
                             <div class="flex-row">
                                 <span class="span-text-color">خالص مزدوری</span>
-                                <span class="span-text">{{ $data['mazdooriGold'] }}</span>
+                                <span class="span-text">{{ $data['mazdoorie'] }}</span>
                             </div>
                         </td>
 
