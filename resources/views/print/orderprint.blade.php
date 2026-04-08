@@ -66,9 +66,11 @@
     }
     .span-text-color{
         height: 0.9cm;
-        background-color: rgba(0,0,0,0.08);
         display: flex;
         align-items: center;
+    }
+    .span-text-color-right{
+        background-color: rgba(0,0,0,0.08);
     }
     .span-text{
         height: 0.9cm;
@@ -298,7 +300,7 @@
                         </td>
                         <td>
                             <div class="flex-row">
-                                <span class="span-text-color">بقایا خالص</span>
+                                <span class="span-text-color span-text-color-right">بقایا خالص</span>
                                 <span class="val-ltr span-text">{{ $data['RemainingGold'] }}</span>
                             </div>
                         </td>
