@@ -524,25 +524,44 @@ class OrderController extends Controller
 
                 //////////////////////////////////////AccountGold///////////////////////////////////////////////////////////
 
-                    if ($request->has('op2GoldRecieved')) {
+                    if ($request->has('op2GoldRecieved') || $request->has('op2GoldPaid')) {
 
                         AccountGold::where('party_id', $request->party_id)->delete();
 
                         // need to remove old entry agaist Party_id
+                        if ($request->has('op2GoldRecieved')) { // if op2GoldRecieved is not empty
 
-                        AccountGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'op2 gold Received',
-                        ]);
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'op2 gold Received',
+                            ]);
 
-                        AccountGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Paid',
-                            'remarks' => 'op2 gold  Paid',
-                        ]);
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Paid',
+                                'remarks' => 'op2 gold  Paid',
+                            ]);
+                        }
+                        if ($request->has('op2GoldPaid')) { 
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'op2 gold  Paid',
+                            ]);
+
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Received',
+                                'remarks' => 'op2 gold  Received',
+                            ]);
+                        }
+
+                        
                     }
 
                 /////////////////////////////////////// AccountHistoryCash  ///////////////////////////////////
@@ -589,25 +608,44 @@ class OrderController extends Controller
                         ]);
                     }
 
-                    if ($request->has('op2GoldRecieved')) {
+                    if ($request->has('op2GoldRecieved') || $request->has('op2GoldPaid')) {
 
                         // need to remove old entry agaist Party_id
+                        if ($request->has('op2GoldRecieved')) { // if op2GoldRecieved is not empty
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'op2 gold Received',
+                                'user_id' => Auth::id()
+                            ]);
 
-                        AccountHistoryGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'op2 gold Received',
-                            'user_id' => Auth::id()
-                        ]);
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Paid',
+                                'remarks' => 'op2 gold  Paid',
+                                'user_id' => Auth::id()
+                            ]);
+                        }
+                        if ($request->has('op2GoldPaid')) { 
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'op2 gold  Paid',
+                                'user_id' => Auth::id()
+                            ]);
 
-                        AccountHistoryGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Paid',
-                            'remarks' => 'op2 gold  Paid',
-                            'user_id' => Auth::id()
-                        ]);
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Received',
+                                'remarks' => 'op2 gold  Received',
+                                'user_id' => Auth::id()
+                            ]);
+                        }
+
                     }
 
                 ///////////////////////////////// stockGold  /////////////////////////////////////////
@@ -619,12 +657,25 @@ class OrderController extends Controller
                             'remarks' => 'Khalas Gold Entry'
                         ]);
                     }
-                    if (!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0) {
-                        StockGold::create([
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'Received Gold Entry'
-                        ]);
+                    if (!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0 || $request->has('op2GoldPaid') && $request->op2GoldPaid > 0) {
+                        
+                        if (!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0){   
+                            StockGold::create([
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'Received Gold Entry'
+                            ]);
+                        }
+
+                        if (!empty($request->op2GoldPaid) && $request->op2GoldPaid > 0){   
+                            StockGold::create([
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'Paid Gold Entry'
+                            ]);
+                        }
+
+                        
                     }
 
                 //////////////////////////////  StockCash  //////////////////////////////////////////
@@ -664,16 +715,30 @@ class OrderController extends Controller
                         ]);
                     }
 
-                    if ($request->has('op2GoldRecieved') && $request->op2GoldRecieved > 0) {
+                    if (($request->has('op2GoldRecieved') && $request->op2GoldRecieved > 0 ) || ($request->has('op2GoldPaid') && $request->op2GoldPaid > 0 ) ) {
 
                         // need to remove old entry agaist Party_id
+                        if($request->op2GoldRecieved > 0){
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'op2 gold Received',
+                            ]);
+                        }
 
-                        AccountGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'op2 gold Received',
-                        ]);
+                        if($request->op2GoldPaid > 0){
+
+                            AccountGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'op2 gold Paid',
+                            ]);
+                        }
+
+                        
+                        
                     }
 
                     ////////////////////////////////////   AccountHistoryCash  /////////////////////////////////////////
@@ -701,14 +766,28 @@ class OrderController extends Controller
                         ]);
                     }
 
-                    if (!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0) {
-                        AccountHistoryGold::create([
-                            'party_id' => $request->party_id,
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'Gold Received',
-                            'user_id' => Auth::id()
-                        ]);
+                    if ((!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0) || (!empty($request->op2GoldPaid) && $request->op2GoldPaid > 0)) {
+                        if((!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0)){
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'Gold Received',
+                                'user_id' => Auth::id()
+                            ]);
+                        }
+
+                        if((!empty($request->op2GoldPaid) && $request->op2GoldPaid > 0)){
+                            AccountHistoryGold::create([
+                                'party_id' => $request->party_id,
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'Gold Received',
+                                'user_id' => Auth::id()
+                            ]);
+                        }
+
+
                     }
 
                 ///////////////////////////////////  StockGold /////////////////////////////////////////////////// 
@@ -720,12 +799,23 @@ class OrderController extends Controller
                             'remarks' => 'Khalas Gold Entry'
                         ]);
                     }
-                    if (!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0) {
-                        StockGold::create([
-                            'gold' => $request->op2GoldRecieved,
-                            'status' => 'Received',
-                            'remarks' => 'Received Gold Entry'
-                        ]);
+                    if ((!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0) || (!empty($request->op2GoldPaid) && $request->op2GoldPaid > 0)) {
+                        
+                        if((!empty($request->op2GoldRecieved) && $request->op2GoldRecieved > 0)){
+                            StockGold::create([
+                                'gold' => $request->op2GoldRecieved,
+                                'status' => 'Received',
+                                'remarks' => 'Received Gold Entry'
+                            ]);
+                        }
+
+                        if((!empty($request->op2GoldPaid) && $request->op2GoldPaid > 0)){
+                            StockGold::create([
+                                'gold' => $request->op2GoldPaid,
+                                'status' => 'Paid',
+                                'remarks' => 'Received Gold Entry'
+                            ]);
+                        }
                     }
 
                 } 
