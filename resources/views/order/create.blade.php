@@ -494,6 +494,58 @@
 
 <script>
 
+    $(document).on('wheel', function(e) {
+
+    let $select = $('#orderSelect');
+
+    // ✅ Check if select exists
+    if ($select.length === 0) return;
+
+    let $options = $select.find('option');
+
+    // ✅ Check if options exist
+    if ($options.length === 0) return;
+
+    // ✅ Convert options to array
+    let orders = [];
+    $options.each(function() {
+        orders.push({
+            value: $(this).val(),
+            text: $(this).text()
+        });
+    });
+
+    // console.log('All Orders:', orders);
+
+    // ✅ Get selected index
+    let currentIndex = $options.index($options.filter(':selected'));
+
+    // ✅ If nothing selected OR first option selected
+    if (currentIndex === -1 || currentIndex === 0) {
+        currentIndex = 1;
+
+        $select.prop('selectedIndex', currentIndex).trigger('change');
+        return;
+    }
+
+    // console.log('Selected Index:', currentIndex);
+    // console.log('Selected Value:', $select.val());
+    // console.log('Selected Text:', $options.eq(currentIndex).text());
+
+    if (e.originalEvent.deltaY > 0) {
+        // ⬇ Scroll Down
+        if (currentIndex < $options.length - 1) {
+            $select.prop('selectedIndex', currentIndex + 1).trigger('change');
+        }
+    } else {
+        // ⬆ Scroll Up
+        if (currentIndex > 1) {
+            $select.prop('selectedIndex', currentIndex - 1).trigger('change');
+        }
+    }
+
+    });
+
     // Loader functions
     function showLoader() {
         $('#tableLoader').removeClass('hidden');
